@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: buildreq.c,v 1.4 2004/02/23 20:14:10 sobomax Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -352,14 +352,14 @@ int rc_check(rc_handle *rh, char *host, unsigned short port, char *msg)
 	if ((client_id = rc_own_ipaddress(rh)) == 0)
 		return ERROR_RC;
 
-	rc_avpair_add(rh, &(data.send_pairs), PW_NAS_IP_ADDRESS, &client_id, 0, 0); 
+	rc_avpair_add(rh, &(data.send_pairs), PW_NAS_IP_ADDRESS, &client_id, 0, 0);
 
 	/*
 	 * Fill in Service-Type
 	 */
 
 	service_type = PW_ADMINISTRATIVE;
-	rc_avpair_add(rh, &(data.send_pairs), PW_SERVICE_TYPE, &service_type, 0, 0); 
+	rc_avpair_add(rh, &(data.send_pairs), PW_SERVICE_TYPE, &service_type, 0, 0);
 
 	rc_buildreq(rh, &data, PW_STATUS_SERVER, host, port, timeout, retries);
 	result = rc_send_server (rh, &data, msg);

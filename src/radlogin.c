@@ -1,5 +1,5 @@
 /*
- * $Id: radlogin.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: radlogin.c,v 1.4 2004/02/23 20:14:10 sobomax Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
@@ -10,7 +10,7 @@
  */
 
 static char	rcsid[] =
-		"$Id: radlogin.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $";
+		"$Id: radlogin.c,v 1.4 2004/02/23 20:14:10 sobomax Exp $";
 
 #include	<config.h>
 #include	<includes.h>
@@ -346,7 +346,7 @@ main (int argc, char **argv)
  	 if (rc_conf_int(rh, "auth_order") & AUTH_LOCAL_FST)
  	 {
  	 	login_func = auth_local(username, passwd);
- 	 
+
  	 	if (!login_func)
  	 		if (rc_conf_int(rh, "auth_order") & AUTH_RADIUS_SND)
  	 			login_func = auth_radius(rh, client_port, username, passwd);

@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.5 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: sendserver.c,v 1.6 2004/02/23 20:14:10 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -89,7 +89,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 
 		        /* Remeber the start of the digest */
 		  	vector = buf;
-		  
+
 			/* Xor the password into the MD5 digest */
 			for (pc = i; pc < (i + AUTH_VECTOR_LEN); pc++)
 		  	{
