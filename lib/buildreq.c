@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.4 2004/02/23 20:14:10 sobomax Exp $
+ * $Id: buildreq.c,v 1.5 2004/07/03 15:52:10 sobomax Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -301,7 +301,7 @@ int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
 	int		result;
 	char		msg[4096];
 	int		i;
-	SERVER		*acctserver = rc_conf_srv(rh, "authserver");
+	SERVER		*acctserver = rc_conf_srv(rh, "acctserver");
 	int		timeout = rc_conf_int(rh, "radius_timeout");
 	int		retries = rc_conf_int(rh, "radius_retries");
 
