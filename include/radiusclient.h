@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient.h,v 1.9 2004/10/05 09:57:22 sobomax Exp $
+ * $Id: radiusclient.h,v 1.10 2004/10/17 18:22:21 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -43,6 +43,8 @@ typedef long 	      INT4;
 
 #define NAME_LENGTH		32
 #define	GETSTR_LENGTH		128	/* must be bigger than AUTH_PASS_LEN */
+
+#define	MAX_SECRET_LENGTH	(3 * 16) /* MUST be multiple of 16 */
 
 #define	VENDOR(x)		(((x) >> 16) & 0xffff)
 #define	ATTRID(x)		((x) & 0xffff)
@@ -93,7 +95,6 @@ struct rc_conf
 typedef struct rc_conf rc_handle;
 
 #define AUTH_HDR_LEN			20
-#define MAX_SECRET_LENGTH		(3 * 16) /* MUST be multiple of 16 */
 #define CHAP_VALUE_LENGTH		16
 
 #define PW_AUTH_UDP_PORT		1645
