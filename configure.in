@@ -1,5 +1,5 @@
 # 
-#  $Id: configure.in,v 1.15 2004/11/26 13:50:12 sobomax Exp $
+#  $Id: configure.in,v 1.16 2004/11/26 16:15:39 sobomax Exp $
 # 
 #  Copyright (C) 1996,1997 Lars Fenneberg
 # 
@@ -28,6 +28,8 @@ AC_SUBST(LIBVERSION)
 
 pkgsysconfdir=${sysconfdir}/$PACKAGE
 AC_SUBST(pkgsysconfdir)
+
+AC_PROG_LIBTOOL
 
 AC_PROG_CC
 
