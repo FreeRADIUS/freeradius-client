@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.10 2004/10/08 13:42:41 sobomax Exp $
+ * $Id: sendserver.c,v 1.11 2004/10/08 13:43:36 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
