@@ -1,5 +1,5 @@
 # 
-#  $Id: Makefile.am,v 1.1 2003/12/02 10:39:09 sobomax Exp $
+#  $Id: Makefile.am,v 1.2 2004/11/17 13:18:10 janakj Exp $
 # 
 #  Copyright (C) 1997 Lars Fenneberg
 # 
@@ -16,7 +16,7 @@ INCLUDES = -D_GNU_SOURCE
 ACLOCAL = @ACLOCAL@
 LTLIBOBJS = @LTLIBOBJS@
 
-SUBDIRS = include lib src etc man doc patches login.radius
+SUBDIRS = include lib src etc man doc patches login.radius debian rpm
 EXTRA_DIST = BUGS CHANGES COPYRIGHT README README.radexample
 
 CLEANFILES = *~
