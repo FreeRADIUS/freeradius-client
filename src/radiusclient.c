@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: radiusclient.c,v 1.1 2004/10/04 10:15:20 sobomax Exp $
+ * $Id: radiusclient.c,v 1.2 2004/10/05 09:35:46 sobomax Exp $
  */
 
 #include <stdio.h>
@@ -78,12 +78,12 @@ main(int argc, char **argv)
         usage();
 
     if ((rh = rc_read_config(rc_conf)) == NULL) {
-        fprintf(stderr, "error opening radius configuration file");
+        fprintf(stderr, "error opening radius configuration file\n");
         exit(1);
     }
 
     if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0) {
-        fprintf(stderr, "error reading radius dictionary");
+        fprintf(stderr, "error reading radius dictionary\n");
         exit(2);
     }
 
@@ -91,7 +91,7 @@ main(int argc, char **argv)
     vp = &send;
     for (i = 0; i < argc; i++) {
         if (rc_avpair_parse(rh, argv[i], vp) < 0) {
-            fprintf(stderr, "%s: can't parse AV pair", argv[i]);
+            fprintf(stderr, "%s: can't parse AV pair\n", argv[i]);
             exit(3);
         }
         vp = &send->next;
