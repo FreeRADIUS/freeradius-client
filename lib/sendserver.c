@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.12 2005/03/01 14:58:44 janakj Exp $
+ * $Id: sendserver.c,v 1.13 2005/03/21 23:50:13 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -147,7 +147,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		    case PW_TYPE_INTEGER:
 		    case PW_TYPE_IPADDR:
 			*buf++ = sizeof (UINT4) + 2;
-			if (vsa_length_ptr != NULL) *vsa_length_ptr += (UINT4) + 2;
+			if (vsa_length_ptr != NULL) *vsa_length_ptr += sizeof(UINT4) + 2;
 			lvalue = htonl (vp->lvalue);
 			memcpy (buf, (char *) &lvalue, sizeof (UINT4));
 			buf += sizeof (UINT4);
