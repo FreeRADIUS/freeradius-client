@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.8 2004/11/16 13:49:19 sobomax Exp $
+ * $Id: config.c,v 1.9 2005/01/03 13:07:36 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -105,6 +105,7 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *p)
 			rc_log(LOG_CRIT, "read_config: out of memory");
 			return -1;
 		}
+		serv->max = 0;
 	}
 
 	while ((p = strtok(p, ", \t")) != NULL) {
