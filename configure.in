@@ -1,5 +1,5 @@
 # 
-#  $Id: configure.in,v 1.12 2004/10/17 18:28:14 sobomax Exp $
+#  $Id: configure.in,v 1.13 2004/10/24 09:23:12 sobomax Exp $
 # 
 #  Copyright (C) 1996,1997 Lars Fenneberg
 # 
@@ -21,7 +21,7 @@ case "$target" in
 	;;
 esac
 
-AM_INIT_AUTOMAKE(radiusclient, 0.4.5)
+AM_INIT_AUTOMAKE(radiusclient, 0.4.6)
 
 LIBVERSION=2:0:0
 AC_SUBST(LIBVERSION)
