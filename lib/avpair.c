@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.13 2005/03/01 14:58:44 janakj Exp $
+ * $Id: avpair.c,v 1.14 2005/03/21 08:57:35 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -186,7 +186,7 @@ VALUE_PAIR *rc_avpair_gen (rc_handle *rh, AUTH_HDR *auth)
 	VALUE_PAIR     *vp;
 	VALUE_PAIR     *pair;
 	unsigned char          hex[3];		/* For hex string conversion. */
-	char            buffer[256];
+	char            buffer[(AUTH_STRING_LEN * 2) + 1];
 	int		vendorlen;
 
 	/*
