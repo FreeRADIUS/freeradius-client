@@ -1,9 +1,9 @@
-$Id: README,v 1.1 2003/12/02 10:39:09 sobomax Exp $
+$Id: README,v 1.2 2005/03/01 14:58:44 janakj Exp $
 
 Please view doc/instop.html with your favourite WWW browser, e.g lynx or
 netscape.
 
-Currently radiusclient will compile on the following platforms:
+Currently radiusclient-ng will compile on the following platforms:
 
 	Compiled on:
 

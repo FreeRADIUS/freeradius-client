@@ -1,5 +1,5 @@
 /*
- * $Id: radius.c,v 1.5 2004/02/23 20:14:10 sobomax Exp $
+ * $Id: radius.c,v 1.6 2005/03/01 14:58:44 janakj Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
@@ -11,7 +11,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient.h>
+#include <radiusclient-ng.h>
 #include <messages.h>
 #include <radlogin.h>
 

@@ -22,7 +22,7 @@ if ($sessionid)
 
 
 # Radius accounting record generator.
-    my $prog_radacct = "/usr/local/lib/radiusclient/radacct";
+    my $prog_radacct = "/usr/local/lib/radiusclient-ng/radacct";
 
 # The session ID, username, raw port and ID are given to this script 
 # through the ipparam parameter of pppd 2.2.0e and above.

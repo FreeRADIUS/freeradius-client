@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.12 2005/01/13 13:23:25 sobomax Exp $
+ * $Id: avpair.c,v 1.13 2005/03/01 14:58:44 janakj Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -16,7 +16,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient.h>
+#include <radiusclient-ng.h>
 
 /*
  * Function: rc_avpair_add

@@ -1,5 +1,5 @@
 /*
- * $Id: md5.c,v 1.1 2003/12/02 10:39:20 sobomax Exp $
+ * $Id: md5.c,v 1.2 2005/03/01 14:58:44 janakj Exp $
  */
 
 /* MD5C.C - RSA Data Security, Inc., MD5 message-digest algorithm
@@ -31,7 +31,7 @@ documentation and/or software.
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient.h>
+#include <radiusclient-ng.h>
 
 typedef unsigned char		*POINTER;
 

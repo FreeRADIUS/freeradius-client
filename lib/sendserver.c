@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.11 2004/10/08 13:43:36 sobomax Exp $
+ * $Id: sendserver.c,v 1.12 2005/03/01 14:58:44 janakj Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -16,7 +16,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient.h>
+#include <radiusclient-ng.h>
 #include <pathnames.h>
 
 static void rc_random_vector (unsigned char *);

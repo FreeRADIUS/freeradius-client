@@ -1,5 +1,5 @@
 /*
- * $Id: clientid.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: clientid.c,v 1.4 2005/03/01 14:58:44 janakj Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -11,7 +11,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient.h>
+#include <radiusclient-ng.h>
 
 struct map2id_s {
 	char *name;

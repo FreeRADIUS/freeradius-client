@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient.h,v 1.11 2004/10/24 08:48:29 sobomax Exp $
+ * $Id: radiusclient-ng.h,v 1.1 2005/03/01 14:58:44 janakj Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -14,8 +14,8 @@
  *
  */
 
-#ifndef RADIUSCLIENT_H
-#define RADIUSCLIENT_H
+#ifndef RADIUSCLIENT_NG_H
+#define RADIUSCLIENT_NG_H
 
 #include	<sys/types.h>
 #include	<stdio.h>
@@ -489,4 +489,4 @@ void rc_md5_calc(unsigned char *, unsigned char *, unsigned int);
 
 __END_DECLS
 
-#endif /* RADIUSCLIENT_H */
+#endif /* RADIUSCLIENT_NG_H */

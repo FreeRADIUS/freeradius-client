@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.9 2005/01/03 13:07:36 sobomax Exp $
+ * $Id: config.c,v 1.10 2005/03/01 14:58:44 janakj Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -16,7 +16,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient.h>
+#include <radiusclient-ng.h>
 #include <options.h>
 
 static int test_config(rc_handle *, char *);

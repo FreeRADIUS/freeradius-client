@@ -60,7 +60,7 @@ my $login_host = "203.176.0.4"; # marikit.iphil.net
 
 # Programs and files.
 my $prog_pppd     = "/usr/sbin/pppd";
-my $prog_radacct  = "/usr/local/lib/radiusclient/radacct";
+my $prog_radacct  = "/usr/local/lib/radiusclient-ng/radacct";
 my $prog_rlogin   = "/usr/bin/rlogin";
 my $prog_telnet   = "/bin/telnet";
 my $prog_tcpclear = "/bin/telnet -e ''";

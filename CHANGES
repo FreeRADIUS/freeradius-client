@@ -1,7 +1,11 @@
-$Id: CHANGES,v 1.1 2003/12/02 10:39:17 sobomax Exp $
+$Id: CHANGES,v 1.2 2005/03/01 14:58:44 janakj Exp $
 
 This file only documents fixed bugs and new features.. well, if I am not
 too lazy...
+
+01-03-2005      Renamed to radiusclient-ng because the API is different
+                and this change will make it possible to have the original
+		libraries installed as well (jan@iptel.org).
 
 02-03-2002	Fixed buffer overflow in rc_check_reply.
 

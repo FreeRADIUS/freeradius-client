@@ -23,7 +23,7 @@ my $path_portinfo = "/var/ipoint/acct/portinfo";
 
 
 # Radius accounting record generator.
-    my $prog_radacct = "/usr/local/lib/radiusclient/radacct";
+    my $prog_radacct = "/usr/local/lib/radiusclient-ng/radacct";
 
 sub netmask 
 {

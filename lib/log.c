@@ -1,5 +1,5 @@
 /*
- * $Id: log.c,v 1.2 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: log.c,v 1.3 2005/03/01 14:58:44 janakj Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -11,7 +11,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient.h>
+#include <radiusclient-ng.h>
 
 /*
  * Function: rc_openlog

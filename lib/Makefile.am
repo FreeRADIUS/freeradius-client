@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.am,v 1.2 2003/12/02 14:19:08 sobomax Exp $
+# $Id: Makefile.am,v 1.3 2005/03/01 14:58:44 janakj Exp $
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
@@ -20,15 +20,15 @@ CLEANFILES = *~
 
 noinst_HEADERS = options.h
 
-#radiusclient_SOURCES = buildreq.c clientid.c env.c sendserver.c avpair.c \
+#radiusclient_ng_SOURCES = buildreq.c clientid.c env.c sendserver.c avpair.c \
 #	config.c dict.c ip_util.c log.c md5.c util.c lock.c
 
-#radiusclient_LIBADD = @LIBOBJS@
+#radiusclient_ng_LIBADD = @LIBOBJS@
 
-#lib_LIBRARIES = radiusclient
+#lib_LIBRARIES = radiusclient-ng
 
-lib_LTLIBRARIES = libradiusclient.la
-libradiusclient_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
+lib_LTLIBRARIES = libradiusclient-ng.la
+libradiusclient_ng_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
 	avpair.c config.c dict.c ip_util.c log.c md5.c util.c lock.c
-libradiusclient_la_LDFLAGS = -version-info $(LIBVERSION)
-#libradiusclient_la_LIBADD = @LTLIBOBJS@
+libradiusclient_ng_la_LDFLAGS = -version-info $(LIBVERSION)
+#libradiusclient_ng_la_LIBADD = @LTLIBOBJS@

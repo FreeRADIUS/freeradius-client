@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: radiusclient.c,v 1.4 2004/10/24 08:48:29 sobomax Exp $
+ * $Id: radiusclient.c,v 1.5 2005/03/01 14:58:44 janakj Exp $
  */
 
 #include <ctype.h>
@@ -31,7 +31,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <radiusclient.h>
+#include <radiusclient-ng.h>
 
 int process(void *, VALUE_PAIR *, int, int);
 
