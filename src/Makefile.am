@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.am,v 1.1 2003/12/02 10:39:22 sobomax Exp $
+# $Id: Makefile.am,v 1.2 2004/10/04 10:15:20 sobomax Exp $
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
@@ -21,8 +21,9 @@ CLEANFILES = *~
 
 noinst_HEADERS = radlogin.h
 
-sbin_PROGRAMS = radlogin radstatus radacct radexample
+sbin_PROGRAMS = radlogin radstatus radacct radexample radiusclient
 radlogin_SOURCES = radlogin.c radius.c local.c
 radacct_SOURCES = radacct.c
 radstatus_SOURCES = radstatus.c
 radexample_SOURCES = radexample.c
+radiusclient_SOURCES = radiusclient.c
