@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.2 2003/12/02 14:19:08 sobomax Exp $
+ * $Id: avpair.c,v 1.3 2003/12/02 14:20:35 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
