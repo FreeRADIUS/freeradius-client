@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient.h,v 1.6 2004/03/10 20:53:20 sobomax Exp $
+ * $Id: radiusclient.h,v 1.7 2004/04/14 18:45:03 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -78,6 +78,7 @@ struct rc_conf
 {
 	struct _option		*config_options;
 	UINT4 			this_host_ipaddr;
+	UINT4			*this_host_bind_ipaddr;
 	struct map2id_s		*map2id_list;
 	struct dict_attr	*dictionary_attributes;
 	struct dict_value	*dictionary_values;
@@ -85,6 +86,7 @@ struct rc_conf
 	char			buf[GETSTR_LENGTH];
 	char			buf1[14];
 	char			ifname[512];
+	char			*ppbuf;
 };
 
 typedef struct rc_conf rc_handle;
@@ -402,6 +404,7 @@ void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
 void rc_avpair_free(VALUE_PAIR *);
 int rc_avpair_parse(rc_handle *, char *, VALUE_PAIR **);
 int rc_avpair_tostr(rc_handle *, VALUE_PAIR *, char *, int, char *, int);
+char *rc_avpair_log(rc_handle *, VALUE_PAIR *);
 VALUE_PAIR *rc_avpair_readin(rc_handle *, FILE *);
 
 /*	buildreq.c		*/
@@ -448,6 +451,7 @@ const char *rc_ip_hostname(UINT4);
 unsigned short rc_getport(int);
 int rc_own_hostname(char *, int);
 UINT4 rc_own_ipaddress(rc_handle *);
+UINT4 rc_own_bind_ipaddress(rc_handle *);
 
 
 /*	log.c			*/

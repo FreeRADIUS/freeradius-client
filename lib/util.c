@@ -1,5 +1,5 @@
 /*
- * $Id: util.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: util.c,v 1.4 2004/04/14 18:45:03 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -268,5 +268,9 @@ rc_destroy(rc_handle *rh)
 	rc_map2id_free(rh);
 	rc_dict_free(rh);
 	rc_config_free(rh);
+	if (rh->this_host_bind_ipaddr != NULL)
+		free(rh->this_host_bind_ipaddr);
+	if (rh->ppbuf != NULL)
+		free(rh->ppbuf);
 	free(rh);
 }

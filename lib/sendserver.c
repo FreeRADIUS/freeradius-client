@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.6 2004/02/23 20:14:10 sobomax Exp $
+ * $Id: sendserver.c,v 1.7 2004/04/14 18:45:03 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -179,7 +179,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	struct timeval  authtime;
 	fd_set          readfds;
 	AUTH_HDR       *auth, *recv_auth;
-	UINT4           auth_ipaddr, own_ipaddr;
+	UINT4           auth_ipaddr;
 	char           *server_name;	/* Name of server to query */
 	int             salen;
 	int             result;
@@ -225,8 +225,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	sin = (struct sockaddr_in *) & salocal;
 	memset ((char *) sin, '\0', (size_t) length);
 	sin->sin_family = AF_INET;
-	own_ipaddr = rc_own_ipaddress(rh);
-	sin->sin_addr.s_addr = htonl(own_ipaddr != 0 ? own_ipaddr : INADDR_ANY);
+	sin->sin_addr.s_addr = htonl(rc_own_bind_ipaddress(rh));
 	sin->sin_port = htons ((unsigned short) 0);
 	if (bind (sockfd, (struct sockaddr *) sin, length) < 0 ||
 		   getsockname (sockfd, (struct sockaddr *) sin, &length) < 0)

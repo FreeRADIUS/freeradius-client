@@ -1,5 +1,5 @@
 /*
- * $Id: ip_util.c,v 1.4 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: ip_util.c,v 1.5 2004/04/14 18:45:03 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -189,7 +189,8 @@ UINT4 rc_own_ipaddress(rc_handle *rh)
 	char hostname[256];
 
 	if (!rh->this_host_ipaddr) {
-		if (rc_conf_str(rh, "bindaddr") == NULL) {
+		if (rc_conf_str(rh, "bindaddr") == NULL ||
+		    strcmp(rc_conf_str(rh, "bindaddr"), "*") == 0) {
 			if (rc_own_hostname(hostname, sizeof(hostname)) < 0)
 				return 0;
 		} else {
@@ -203,4 +204,42 @@ UINT4 rc_own_ipaddress(rc_handle *rh)
 	}
 
 	return rh->this_host_ipaddr;
+}
+
+/*
+ * Function: rc_own_bind_ipaddress
+ *
+ * Purpose: get the IP address to be used as a source address
+ *          for sending requests in host order
+ *
+ * Returns: IP address
+ *
+ */
+
+UINT4 rc_own_bind_ipaddress(rc_handle *rh)
+{
+	char hostname[256];
+	UINT4 rval;
+
+	if (rh->this_host_bind_ipaddr != NULL)
+		return *rh->this_host_bind_ipaddr;
+
+	rh->this_host_bind_ipaddr = malloc(sizeof(*rh->this_host_bind_ipaddr));
+	if (rh->this_host_bind_ipaddr == NULL)
+		rc_log(LOG_CRIT, "rc_own_bind_ipaddress: out of memory");
+	if (rc_conf_str(rh, "bindaddr") == NULL ||
+	    strcmp(rc_conf_str(rh, "bindaddr"), "*") == 0) {
+		rval = INADDR_ANY;
+	} else {
+		strncpy(hostname, rc_conf_str(rh, "bindaddr"), sizeof(hostname));
+		hostname[sizeof(hostname) - 1] = '\0';
+		if ((rval = rc_get_ipaddr (hostname)) == 0) {
+			rc_log(LOG_ERR, "rc_own_ipaddress: couldn't get IP address from bindaddr");
+			rval = INADDR_ANY;
+		}
+	}
+	if (rh->this_host_bind_ipaddr != NULL)
+		*rh->this_host_bind_ipaddr = rval;
+
+	return rval;
 }
