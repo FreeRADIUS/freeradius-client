@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.6 2004/10/24 09:15:18 sobomax Exp $
+ * $Id: buildreq.c,v 1.7 2005/01/03 13:12:30 sobomax Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -232,7 +232,7 @@ int rc_acct(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send)
 	int		result;
 	time_t		start_time, dtime;
 	char		msg[4096];
-	int		i, j;
+	int		i;
 	SERVER		*acctserver = rc_conf_srv(rh, "acctserver");
 	int		timeout = rc_conf_int(rh, "radius_timeout");
 	int		retries = rc_conf_int(rh, "radius_retries");
@@ -275,14 +275,12 @@ int rc_acct(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send)
 			data.receive_pairs = NULL;
 		}
 		rc_buildreq(rh, &data, PW_ACCOUNTING_REQUEST, acctserver->name[i],
-			    acctserver->port[i], timeout, 0);
+			    acctserver->port[i], timeout, retries);
 
-		for (j = 0; j < retries + 1 && result != OK_RC && result != BADRESP_RC; j++) {
-			dtime = time(NULL) - start_time;
-			rc_avpair_assign(adt_vp, &dtime, 0);
+		dtime = time(NULL) - start_time;
+		rc_avpair_assign(adt_vp, &dtime, 0);
 
-			result = rc_send_server (rh, &data, msg);
-		}
+		result = rc_send_server (rh, &data, msg);
 	}
 
 	rc_avpair_free(data.receive_pairs);
