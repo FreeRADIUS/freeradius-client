@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.3 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: sendserver.c,v 1.4 2004/01/17 18:44:32 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -376,6 +376,7 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 	int             totallen;
 	unsigned char   calc_digest[AUTH_VECTOR_LEN];
 	unsigned char   reply_digest[AUTH_VECTOR_LEN];
+	unsigned char	*ptr;
 
 	totallen = ntohs (auth->length);
 	secretlen = strlen (secret);
@@ -405,7 +406,37 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 	memcpy ((char *) reply_digest, (char *) auth->vector, AUTH_VECTOR_LEN);
 	memcpy ((char *) auth->vector, (char *) vector, AUTH_VECTOR_LEN);
 	memcpy ((char *) auth + totallen, secret, secretlen);
+#ifdef DIGEST_DEBUG
+        rc_log(LOG_ERR, "Calculating digest on:");
+        for (ptr = (u_char *)auth; ptr < ((u_char *)auth) + totallen + secretlen; ptr += 32) {
+                char buf[65];
+                int i;
+
+                buf[0] = '\0';
+                for (i = 0; i < 32; i++) {
+                        if (ptr + i >= ((u_char *)auth) + totallen + secretlen)
+                                break;
+                        sprintf(buf + i * 2, "%.2X", ptr[i]);
+                }
+                rc_log(LOG_ERR, "  %s", buf);
+        }
+#endif
 	rc_md5_calc (calc_digest, (char *) auth, totallen + secretlen);
+#ifdef DIGEST_DEBUG
+	rc_log(LOG_ERR, "Digest is:");
+        for (ptr = (u_char *)calc_digest; ptr < ((u_char *)calc_digest) + 16; ptr += 32) {
+                char buf[65];
+                int i;
+
+                buf[0] = '\0';
+                for (i = 0; i < 32; i++) {
+                        if (ptr + i >= ((u_char *)calc_digest) + 16)
+                                break;
+                        sprintf(buf + i * 2, "%.2X", ptr[i]);
+                }
+                rc_log(LOG_ERR, "  %s", buf);
+        }
+#endif
 
 #ifdef DIGEST_DEBUG
 	{
