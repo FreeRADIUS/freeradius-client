@@ -14,7 +14,7 @@
 @SET_MAKE@
 
 #
-# $Id: Makefile.in,v 1.5 2003/12/02 16:01:15 sobomax Exp $
+# $Id: Makefile.in,v 1.6 2004/10/04 10:27:19 sobomax Exp $
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
@@ -114,17 +114,18 @@ CLEANFILES = *~
 
 noinst_HEADERS = radlogin.h
 
-sbin_PROGRAMS = radlogin radstatus radacct radexample
+sbin_PROGRAMS = radlogin radstatus radacct radexample radiusclient
 radlogin_SOURCES = radlogin.c radius.c local.c
 radacct_SOURCES = radacct.c
 radstatus_SOURCES = radstatus.c
 radexample_SOURCES = radexample.c
+radiusclient_SOURCES = radiusclient.c
 subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 sbin_PROGRAMS = radlogin$(EXEEXT) radstatus$(EXEEXT) radacct$(EXEEXT) \
-	radexample$(EXEEXT)
+	radexample$(EXEEXT) radiusclient$(EXEEXT)
 PROGRAMS = $(sbin_PROGRAMS)
 
 am_radacct_OBJECTS = radacct.$(OBJEXT)
@@ -137,6 +138,11 @@ radexample_OBJECTS = $(am_radexample_OBJECTS)
 radexample_LDADD = $(LDADD)
 radexample_DEPENDENCIES = ../lib/libradiusclient.la
 radexample_LDFLAGS =
+am_radiusclient_OBJECTS = radiusclient.$(OBJEXT)
+radiusclient_OBJECTS = $(am_radiusclient_OBJECTS)
+radiusclient_LDADD = $(LDADD)
+radiusclient_DEPENDENCIES = ../lib/libradiusclient.la
+radiusclient_LDFLAGS =
 am_radlogin_OBJECTS = radlogin.$(OBJEXT) radius.$(OBJEXT) \
 	local.$(OBJEXT)
 radlogin_OBJECTS = $(am_radlogin_OBJECTS)
@@ -162,11 +168,12 @@ LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 CFLAGS = @CFLAGS@
 DIST_SOURCES = $(radacct_SOURCES) $(radexample_SOURCES) \
-	$(radlogin_SOURCES) $(radstatus_SOURCES)
+	$(radiusclient_SOURCES) $(radlogin_SOURCES) \
+	$(radstatus_SOURCES)
 HEADERS = $(noinst_HEADERS)
 
 DIST_COMMON = $(noinst_HEADERS) Makefile.am Makefile.in
-SOURCES = $(radacct_SOURCES) $(radexample_SOURCES) $(radlogin_SOURCES) $(radstatus_SOURCES)
+SOURCES = $(radacct_SOURCES) $(radexample_SOURCES) $(radiusclient_SOURCES) $(radlogin_SOURCES) $(radstatus_SOURCES)
 
 all: all-am
 
@@ -218,6 +225,9 @@ radacct$(EXEEXT): $(radacct_OBJECTS) $(radacct_DEPENDENCIES)
 radexample$(EXEEXT): $(radexample_OBJECTS) $(radexample_DEPENDENCIES) 
 	@rm -f radexample$(EXEEXT)
 	$(LINK) $(radexample_LDFLAGS) $(radexample_OBJECTS) $(radexample_LDADD) $(LIBS)
+radiusclient$(EXEEXT): $(radiusclient_OBJECTS) $(radiusclient_DEPENDENCIES) 
+	@rm -f radiusclient$(EXEEXT)
+	$(LINK) $(radiusclient_LDFLAGS) $(radiusclient_OBJECTS) $(radiusclient_LDADD) $(LIBS)
 radlogin$(EXEEXT): $(radlogin_OBJECTS) $(radlogin_DEPENDENCIES) 
 	@rm -f radlogin$(EXEEXT)
 	$(LINK) $(radlogin_LDFLAGS) $(radlogin_OBJECTS) $(radlogin_LDADD) $(LIBS)
