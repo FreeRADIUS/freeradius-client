@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.9 2004/10/08 13:37:52 sobomax Exp $
+ * $Id: sendserver.c,v 1.10 2004/10/08 13:42:41 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -56,7 +56,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		}
 		*buf++ = (vp->attribute & 0xff);
 
-		switch (vp->attribute & 0xffff)
+		switch (vp->attribute)
 		{
 		 case PW_USER_PASSWORD:
 
