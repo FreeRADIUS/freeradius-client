@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.7 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: avpair.c,v 1.8 2004/04/14 19:46:59 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -654,6 +654,10 @@ int rc_avpair_tostr (rc_handle *rh, VALUE_PAIR *pair, char *name, int ln, char *
 	    case PW_TYPE_STRING:
 	    	lv--;
 		ptr = (unsigned char *) pair->strvalue;
+		if (pair->attribute == PW_DIGEST_ATTRIBUTES) {
+			pair->strvalue[*(ptr + 1)] = '\0';
+			ptr += 2;
+		}
 		while (*ptr != '\0')
 		{
 			if (!(isprint (*ptr)))
@@ -704,6 +708,41 @@ int rc_avpair_tostr (rc_handle *rh, VALUE_PAIR *pair, char *name, int ln, char *
 	}
 
 	return 0;
+}
+
+/*
+ * Function: rc_avpair_log
+ *
+ * Purpose: format sequence of attribute value pairs into printable
+ * string. The string is dynamically allocated and is automatically
+ * freed when rc_handle is destroyed or rc_avpair_log() is called
+ * again.
+ *
+ */
+char *
+rc_avpair_log(rc_handle *rh, VALUE_PAIR *pair)
+{
+	int len, nlen;
+	VALUE_PAIR *vp;
+	char name[33], value[256];
+	char *cp;
+
+	len = 0;
+	for (vp = pair; vp != NULL; vp = vp->next) {
+		if (rc_avpair_tostr(rh, vp, name, sizeof(name), value,
+		    sizeof(value)) == -1)
+		        return NULL;
+		nlen = len + 32 + 3 + strlen(value) + 2 + 2;
+		cp = realloc(rh->ppbuf, nlen);
+		if (cp == NULL) {
+			rc_log(LOG_ERR, "rc_avpair_log: can't allocate memory");
+			return NULL;
+		}
+		sprintf(cp + len, "%-32s = '%s'\n", name, value);
+		rh->ppbuf = cp;
+		len = nlen - 1;
+	}
+	return (len > 0) ? rh->ppbuf : NULL;
 }
 
 /*
