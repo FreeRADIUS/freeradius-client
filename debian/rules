@@ -63,7 +63,7 @@ dirs:
 	dh_installmenu
 #	dh_installmanpages
 	dh_undocumented login.radius.1 radacct.1 radexample.1 radlogin.1 radstatus.1
-	dh_installchangelogs CHANGES 
+	dh_installchangelogs 
 
 binary-arch: dirs radiusclient-ng libradius-ng libradius-ng-dev
 	dh_installdeb
