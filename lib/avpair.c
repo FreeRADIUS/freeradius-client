@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.11 2004/10/24 08:52:41 sobomax Exp $
+ * $Id: avpair.c,v 1.12 2005/01/13 13:23:25 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -470,7 +470,7 @@ int rc_avpair_parse (rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 {
 	int             mode;
 	char            attrstr[AUTH_ID_LEN];
-	char            valstr[AUTH_ID_LEN];
+	char            valstr[AUTH_STRING_LEN];
 	DICT_ATTR      *attr = NULL;
 	DICT_VALUE     *dval;
 	VALUE_PAIR     *pair;
