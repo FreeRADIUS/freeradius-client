@@ -14,7 +14,7 @@
 @SET_MAKE@
 
 #
-# $Id: Makefile.in,v 1.3 2003/12/02 14:34:15 sobomax Exp $
+# $Id: Makefile.in,v 1.4 2003/12/02 14:49:18 sobomax Exp $
 #
 # Copyright (C) 1997,1998 Lars Fenneberg
 #
@@ -115,6 +115,7 @@ subdir = etc
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
+depcomp =
 DIST_SOURCES =
 DATA = $(pkgsysconf_DATA)
 
@@ -133,7 +134,7 @@ distclean-libtool:
 	-rm -f libtool
 $(srcdir)/Makefile.in:  Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  etc/Makefile
+	  $(AUTOMAKE) --foreign  --ignore-deps etc/Makefile
 Makefile:  $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && \
 	  CONFIG_HEADERS= CONFIG_LINKS= \
