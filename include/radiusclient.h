@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient.h,v 1.2 2003/12/02 12:30:55 sobomax Exp $
+ * $Id: radiusclient.h,v 1.3 2003/12/02 16:34:30 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -170,12 +170,33 @@ typedef struct pw_auth_hdr
 #define PW_ACCT_MULTI_SESSION_ID	50	/* string */
 #define PW_ACCT_LINK_COUNT		51	/* integer */
 
-/*	Experimental SIP-specific attributes (draft-sterman-aaa-sip-00.txt) */
+/*	Experimental SIP-specific attributes (draft-sterman-aaa-sip-00.txt etc) */
 
+#define	PW_SIP_METHOD			101	/* integer */
+#define	PW_SIP_RESPONSE_CODE		102	/* integer */
+#define	PW_SIP_CSEQ			103	/* string */
+#define	PW_SIP_TO_TAG			104	/* string */
+#define	PW_SIP_FROM_TAG			105	/* string */
+#define	PW_SIP_BRANCH_ID		106	/* string */
+#define	PW_SIP_TRANSLATED_REQUEST_URI	107	/* string */
+#define	PW_SIP_SOURCE_IP_ADDRESS	108	/* ipaddr */
+#define	PW_SIP_SOURCE_PORT		109	/* integer */
+#define	PW_SIP_USER_ID			110	/* string */
+#define	PW_SIP_USER_REALM		111	/* string */
+#define	PW_SIP_USER_NONCE		112	/* string */
+#define	PW_SIP_USER_METHOD		113	/* string */
+#define	PW_SIP_USER_DIGEST_URI		114	/* string */
+#define	PW_SIP_USER_NONCE_COUNT		115	/* string */
+#define	PW_SIP_USER_QOP			116	/* string */
+#define	PW_SIP_USER_OPAQUE		117	/* string */
+#define	PW_SIP_USER_RESPONSE		118	/* string */
+#define	PW_SIP_USER_CNONCE		119	/* string */
+#define	PW_SIP_URI_USER			208	/* string */
+#define	PW_SIP_REQ_URI			210	/* string */
+#define	PW_SIP_CC			212	/* string */
+#define	PW_SIP_RPID			213	/* string */
 #define	PW_DIGEST_RESPONSE		206	/* string */
 #define	PW_DIGEST_ATTRIBUTES		207	/* string */
-#define	PW_SIP_URI_USER			208	/* string */
-#define	PW_SIP_RPID			213	/* string */
 #define	PW_DIGEST_REALM			1063	/* string */
 #define	PW_DIGEST_NONCE			1064	/* string */
 #define	PW_DIGEST_METHOD		1065	/* string */
