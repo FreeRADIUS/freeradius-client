@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: config.c,v 1.4 2004/03/10 20:34:21 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -94,11 +94,6 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *p)
 	}
 
 	serv = (SERVER *) option->val;
-
-	for (i = 0; i < serv->max; i++) {
-		free(serv->name[i]);
-	}
-	serv->max = 0;
 
 	while ((p = strtok(p, ", \t")) != NULL) {
 
