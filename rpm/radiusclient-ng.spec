@@ -1,5 +1,5 @@
 %define name radiusclient-ng
-%define ver  0.4.7
+%define ver  0.4.8
 %define rel  0
 
 Summary:	A portable, easy-to-use and standard compliant library for RADIUS protocol (RFCs 2128 and 2139).
