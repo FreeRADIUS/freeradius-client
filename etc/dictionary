@@ -83,6 +83,16 @@ ATTRIBUTE	Login-LAT-Port		63	integer
 ATTRIBUTE	Connect-Info		77	string
 
 #
+#	RFC3162 IPv6 attributes
+#
+ATTRIBUTE	NAS-IPv6-Address	95	string
+ATTRIBUTE	Framed-Interface-Id	96	string
+ATTRIBUTE	Framed-IPv6-Prefix	97	string
+ATTRIBUTE	Login-IPv6-Host		98	string
+ATTRIBUTE	Framed-IPv6-Route	99	string
+ATTRIBUTE	Framed-IPv6-Pool	100	string
+
+#
 #	Experimental Non Protocol Attributes used by Cistron-Radiusd
 #
 ATTRIBUTE	Huntgroup-Name		221	string

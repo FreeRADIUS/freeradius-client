@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient.h,v 1.5 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: radiusclient.h,v 1.6 2004/03/10 20:53:20 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -164,6 +164,16 @@ typedef struct rc_conf rc_handle;
 #define	PW_NAS_PORT_TYPE                61      /* integer */
 #define	PW_PORT_LIMIT                   62      /* integer */
 #define PW_LOGIN_LAT_PORT               63      /* string */
+#define PW_CONNECT_INFO                 77      /* string */
+
+/* RFC3162 IPv6 attributes */
+
+#define PW_NAS_IPV6_ADDRESS             95      /* string */
+#define PW_FRAMED_INTERFACE_ID          96      /* string */
+#define PW_FRAMED_IPV6_PREFIX           97      /* string */
+#define PW_LOGIN_IPV6_HOST              98      /* string */
+#define PW_FRAMED_IPV6_ROUTE            99      /* string */
+#define PW_FRAMED_IPV6_POOL             100     /* string */
 
 /*	Accounting */
 
