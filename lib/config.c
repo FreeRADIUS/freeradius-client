@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.5 2004/11/16 13:24:21 sobomax Exp $
+ * $Id: config.c,v 1.6 2004/11/16 13:25:03 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
