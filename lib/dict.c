@@ -1,5 +1,5 @@
 /*
- * $Id: dict.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: dict.c,v 1.4 2004/03/30 12:35:55 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -62,6 +62,13 @@ int rc_read_dictionary (rc_handle *rh, const char *filename)
 		    *buffer == '\r')
 		{
 			continue;
+		}
+
+		/* Strip out comments */
+		cp = strchr(buffer, '#');
+		if (cp != NULL)
+		{
+			*cp = '\0';
 		}
 
 		if (strncmp (buffer, "ATTRIBUTE", 9) == 0)
