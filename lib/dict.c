@@ -1,5 +1,5 @@
 /*
- * $Id: dict.c,v 1.4 2004/03/30 12:35:55 sobomax Exp $
+ * $Id: dict.c,v 1.5 2004/09/15 23:29:25 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -132,22 +132,24 @@ int rc_read_dictionary (rc_handle *rh, const char *filename)
 
 			dvend = NULL;
 			if (optstr[0] != '\0') {
-				char *cp1 = optstr;
-				do {
-					cp = strsep(&cp1, ",");
-					if (cp[0] == '\0')
-						continue;
-					if (strncmp(cp, "vendor=", 7) == 0)
-						cp += 7;
-					dvend = rc_dict_findvend(rh, cp);
+				char *cp1;
+				for (cp1 = optstr; cp1 != NULL; cp1 = cp) {
+					cp = strchr(cp1, ',');
+					if (cp != NULL) {
+						*cp = '\0';
+						cp++;
+					}
+					if (strncmp(cp1, "vendor=", 7) == 0)
+						cp1 += 7;
+					dvend = rc_dict_findvend(rh, cp1);
 					if (dvend == NULL) {
 						rc_log(LOG_ERR,
 						 "rc_read_dictionary: unknown Vendor-Id %s on line %d of dictionary %s",
-							 cp, line_no, filename);
+							 cp1, line_no, filename);
 						fclose(dictfd);
 						return -1;
 					}
-				} while (cp1 != NULL);
+				}
 			}
 
 			/* Create a new attribute for the list */
