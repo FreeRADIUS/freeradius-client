@@ -71,6 +71,9 @@ radius_timeout	10
 # resend request this many times before trying the next server
 radius_retries	3
 
+# local address from which radius packets have to be sent
+bindaddr localhost
+
 # LOCAL settings
 
 # program to execute for local login

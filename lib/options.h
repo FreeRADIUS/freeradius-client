@@ -1,5 +1,5 @@
 /*
- * $Id: options.h,v 1.1 2003/12/02 10:39:20 sobomax Exp $
+ * $Id: options.h,v 1.2 2003/12/02 13:30:55 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
@@ -51,6 +51,7 @@ static OPTION config_options[] = {
 {"default_realm",	OT_STR, ST_UNDEF, NULL},
 {"radius_timeout",	OT_INT, ST_UNDEF, NULL},
 {"radius_retries",	OT_INT,	ST_UNDEF, NULL},
+{"bindaddr",		OT_STR, ST_UNDEF, NULL},
 /* local options */
 {"login_local",		OT_STR, ST_UNDEF, NULL},
 };

@@ -1,5 +1,5 @@
 /*
- * $Id: ip_util.c,v 1.1 2003/12/02 10:39:20 sobomax Exp $
+ * $Id: ip_util.c,v 1.2 2003/12/02 13:30:55 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -190,8 +190,13 @@ UINT4 rc_own_ipaddress(void)
 	char hostname[256];
 
 	if (!this_host_ipaddr) {
-		if (rc_own_hostname(hostname, sizeof(hostname)) < 0)
-			return 0;
+		if (rc_conf_str("bindaddr") == NULL) {
+			if (rc_own_hostname(hostname, sizeof(hostname)) < 0)
+				return 0;
+		} else {
+			strncpy(hostname, rc_conf_str("bindaddr"), sizeof(hostname));
+			hostname[sizeof(hostname) - 1] = '\0';
+		}
 		if ((this_host_ipaddr = rc_get_ipaddr (hostname)) == 0) {
 			rc_log(LOG_ERR, "rc_own_ipaddress: couldn't get own IP address");
 			return 0;
