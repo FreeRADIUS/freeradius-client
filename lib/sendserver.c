@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.7 2004/04/14 18:45:03 sobomax Exp $
+ * $Id: sendserver.c,v 1.8 2004/10/08 13:37:14 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -35,7 +35,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 {
 	int             length, i, pc, secretlen, padded_length;
 	int             total_length = 0;
-	UINT4           lvalue;
+	UINT4           lvalue, vendor;
 	unsigned char   passbuf[MAX(AUTH_PASS_LEN, CHAP_VALUE_LENGTH)];
 	unsigned char   md5buf[256];
 	unsigned char   *buf, *vector, *vsa_length_ptr;
@@ -49,7 +49,8 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 			*buf++ = PW_VENDOR_SPECIFIC;
 			vsa_length_ptr = buf;
 			*buf++ = 6;
-			*(UINT4 *)buf = htonl(VENDOR(vp->attribute));
+			vendor = htonl(VENDOR(vp->attribute));
+			memcpy(buf, &vendor, sizeof(UINT4));
 			buf += 4;
 			total_length += 6;
 		}
