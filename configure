@@ -1846,7 +1846,7 @@ INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
 # some platforms.
 
 
-LIBVERSION=1:0:0
+LIBVERSION=2:0:0
 
 
 pkgsysconfdir=${sysconfdir}/$PACKAGE
