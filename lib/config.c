@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.4 2004/03/10 20:34:21 sobomax Exp $
+ * $Id: config.c,v 1.5 2004/11/16 13:24:21 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -70,7 +70,7 @@ static int set_option_int(char *filename, int line, OPTION *option, char *p)
 		return -1;
 	}
 
-	if ((iptr = malloc(sizeof(iptr))) == NULL) {
+	if ((iptr = malloc(sizeof(*iptr))) == NULL) {
 		rc_log(LOG_CRIT, "read_config: out of memory");
 		return -1;
 	}
