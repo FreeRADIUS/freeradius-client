@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient-ng.h,v 1.1 2005/03/01 14:58:44 janakj Exp $
+ * $Id: radiusclient-ng.h,v 1.2 2005/04/01 01:33:11 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -400,7 +400,7 @@ __BEGIN_DECLS
 VALUE_PAIR *rc_avpair_add(rc_handle *, VALUE_PAIR **, int, void *, int, int);
 int rc_avpair_assign(VALUE_PAIR *, void *, int);
 VALUE_PAIR *rc_avpair_new(rc_handle *, int, void *, int, int);
-VALUE_PAIR *rc_avpair_gen(rc_handle *, AUTH_HDR *);
+VALUE_PAIR *rc_avpair_gen(rc_handle *, VALUE_PAIR *, unsigned char *, int, int);
 VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, int, int);
 void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
 void rc_avpair_free(VALUE_PAIR *);

@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.13 2005/03/21 23:50:13 sobomax Exp $
+ * $Id: sendserver.c,v 1.14 2005/04/01 01:33:10 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -324,9 +324,23 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 
 	recv_auth = (AUTH_HDR *)recv_buffer;
 
+	if (length < AUTH_HDR_LEN || length < ntohs(recv_auth->length)) {
+		rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: reply is too short",
+		    server_name, data->svc_port);
+		close(sockfd);
+		memset(secret, '\0', sizeof(secret));
+		return ERROR_RC;
+	}
+
 	result = rc_check_reply (recv_auth, BUFFER_LEN, secret, vector, data->seq_nbr);
 
-	data->receive_pairs = rc_avpair_gen(rh, recv_auth);
+	length = ntohs(recv_auth->length)  - AUTH_HDR_LEN;
+	if (length > 0) {
+		data->receive_pairs = rc_avpair_gen(rh, NULL, recv_auth->data,
+		    length, 0);
+	} else {
+		data->receive_pairs = NULL;
+	}
 
 	close (sockfd);
 	memset (secret, '\0', sizeof (secret));

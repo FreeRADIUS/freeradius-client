@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.14 2005/03/21 08:57:35 sobomax Exp $
+ * $Id: avpair.c,v 1.15 2005/04/01 01:33:10 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -56,43 +56,32 @@ VALUE_PAIR *rc_avpair_add (rc_handle *rh, VALUE_PAIR **list, int attrid, void *p
 
 int rc_avpair_assign (VALUE_PAIR *vp, void *pval, int len)
 {
-	int	result = -1;
 
 	switch (vp->type)
 	{
 		case PW_TYPE_STRING:
-
-			if (((len == -1) && (strlen ((char *) pval)) > AUTH_STRING_LEN)
-			    || (len > AUTH_STRING_LEN)) {
+			if (len == -1)
+				len = strlen((char *)pval);
+			if (len > AUTH_STRING_LEN) {
 		        	rc_log(LOG_ERR, "rc_avpair_assign: bad attribute length");
-		        	return result;
-		    }
-
-			if (len >= 0) {
-				memcpy(vp->strvalue, (char *)pval, len);
-				vp->strvalue[len] = '\0';
-				vp->lvalue = len;
-			} else {
-		    	strncpy (vp->strvalue, (char *) pval, AUTH_STRING_LEN);
-		    	vp->lvalue = strlen((char *) pval);
+		        	return -1;
 			}
-
-			result = 0;
+			memcpy(vp->strvalue, (char *)pval, len);
+			vp->strvalue[len] = '\0';
+			vp->lvalue = len;
 			break;
 
 		case PW_TYPE_DATE:
 		case PW_TYPE_INTEGER:
 	        case PW_TYPE_IPADDR:
-
 			vp->lvalue = * (UINT4 *) pval;
-
-			result = 0;
 			break;
 
 		default:
 			rc_log(LOG_ERR, "rc_avpair_assign: unknown attribute %d", vp->type);
+			return -1;
 	}
-	return result;
+	return 0;
 }
 
 /*
@@ -108,14 +97,14 @@ VALUE_PAIR *rc_avpair_new (rc_handle *rh, int attrid, void *pval, int len, int v
 {
 	VALUE_PAIR     *vp = NULL;
 	DICT_ATTR      *pda;
-	DICT_VENDOR    *vend;
 
+	attrid = attrid | (vendorpec << 16);
 	if ((pda = rc_dict_getattr (rh, attrid)) == NULL)
 	{
 		rc_log(LOG_ERR,"rc_avpair_new: unknown attribute %d", attrid);
 		return NULL;
 	}
-	if (vendorpec != 0 && (vend = rc_dict_getvend(rh, vendorpec)) == NULL)
+	if (vendorpec != 0 && rc_dict_getvend(rh, vendorpec) == NULL)
 	{
 		rc_log(LOG_ERR,"rc_avpair_new: unknown Vendor-Id %d", vendorpec);
 		return NULL;
@@ -123,7 +112,7 @@ VALUE_PAIR *rc_avpair_new (rc_handle *rh, int attrid, void *pval, int len, int v
 	if ((vp = malloc (sizeof (VALUE_PAIR))) != NULL)
 	{
 		strncpy (vp->name, pda->name, sizeof (vp->name));
-		vp->attribute = attrid | (vendorpec << 16);
+		vp->attribute = attrid;
 		vp->next = NULL;
 		vp->type = pda->type;
 		if (rc_avpair_assign (vp, pval, len) == 0)
@@ -167,154 +156,142 @@ VALUE_PAIR *rc_avpair_new (rc_handle *rh, int attrid, void *pval, int len, int v
  * Function: rc_avpair_gen
  *
  * Purpose: takes attribute/value pairs from buffer and builds a
- *	    value_pair list using allocated memory.
+ *	    value_pair list using allocated memory. Uses recursion.
  *
  * Returns: value_pair list or NULL on failure
  */
 
-VALUE_PAIR *rc_avpair_gen (rc_handle *rh, AUTH_HDR *auth)
+VALUE_PAIR *
+rc_avpair_gen(rc_handle *rh, VALUE_PAIR *pair, unsigned char *ptr,
+    int length, int vendorpec)
 {
-	int             length;
-	int             x_len;
-	int             attribute;
-	int             attrlen;
-	UINT4           lvalue;
-	unsigned char         *x_ptr;
-	unsigned char         *ptr;
-	DICT_ATTR      *attr;
-	DICT_VENDOR    *vend;
-	VALUE_PAIR     *vp;
-	VALUE_PAIR     *pair;
-	unsigned char          hex[3];		/* For hex string conversion. */
-	char            buffer[(AUTH_STRING_LEN * 2) + 1];
-	int		vendorlen;
+	int attribute, attrlen, x_len;
+	unsigned char *x_ptr;
+	UINT4 lvalue;
+	DICT_ATTR *attr;
+	VALUE_PAIR *rpair;
+	char buffer[(AUTH_STRING_LEN * 2) + 1];
+	/* For hex string conversion. */
+	char hex[3];
 
-	/*
-	 * Extract attribute-value pairs
-	 */
-	ptr = auth->data;
-	length = ntohs ((unsigned short) auth->length) - AUTH_HDR_LEN;
-	vp = NULL;
-	vend = NULL;
-	vendorlen = 0;
-
-	while (length > 0)
-	{
-		attribute = *ptr++;
-		if (vendorlen > 0)
-			attribute |= (vend->vendorpec << 16);
-		attrlen = *ptr++;
-		attrlen -= 2;
-		length -= 2;
-
-		if (attrlen < 0 || (attribute == PW_VENDOR_SPECIFIC && attrlen < 6))
-		{
-			rc_log(LOG_ERR, "rc_avpair_gen: received attribute with invalid length");
-			break;
-		}
-
-		if (vendorlen <= 0 && attribute == PW_VENDOR_SPECIFIC) {
-			int sublen, vendorpec;
-			unsigned char *subptr;
-
-			memcpy(&lvalue, ptr, 4);
-			vendorpec = ntohl(lvalue);
-			vend = rc_dict_getvend(rh, vendorpec);
-			if (vend == NULL) {
-				rc_log(LOG_WARNING, "rc_avpair_gen: received VSA attribute with unknown Vendor-Id %d",
-					vendorpec);
-				ptr += attrlen;
-				length -= attrlen;
-				vendorlen = 0;
-				continue;
-			}
-
-			subptr = ptr + 4;
-			sublen = attrlen - 4;
-			while (sublen > 0) {
-				if (subptr[1] < 2)	/* too short */
-					break;
-				if (subptr[1] > sublen)	/* too long */
-					break;
-				sublen -= subptr[1];	/* just right */
-				subptr += subptr[1];
-			}
-			if (sublen != 0) {
-				rc_log(LOG_WARNING, "rc_avpair_gen: received mailformed VSA attribute %d, ignoring",
-					vendorpec);
-				ptr += attrlen;
-				length -= attrlen;
-				vendorlen = 0;
-				continue;
-			}
-			ptr += 4;
-			vendorlen = attrlen - 4;
-			attribute = *ptr++ | (vend->vendorpec << 16);
-			attrlen   = *ptr++;
-			attrlen -= 2;
-			length -= 6;
-		}
-
-		if ((attr = rc_dict_getattr (rh, attribute)) == NULL)
-		{
-			*buffer= '\0';	/* Initial length. */
-			for (x_ptr = ptr, x_len = attrlen ;
-				x_len > 0 ;
-				x_len--, x_ptr++)
-			{
-				sprintf (hex, "%2.2X", *x_ptr);
-				strcat (buffer, hex);
-			}
-			if (VENDOR(attribute) == 0) {
-				rc_log(LOG_WARNING, "rc_avpair_gen: received unknown attribute %d of length %d: 0x%s",
-					attribute, attrlen, buffer);
-			} else {
-				rc_log(LOG_WARNING, "rc_avpair_gen: received unknown VSA attribute %d, vendor %d of length %d: 0x%s",
-					attribute & 0xffff, VENDOR(attribute), attrlen, buffer);
-			}
-		}
-		else
-		{
-			if ((pair = malloc (sizeof (VALUE_PAIR))) == NULL)
-			{
-				rc_log(LOG_CRIT, "rc_avpair_gen: out of memory");
-				rc_avpair_free(vp);
-				return NULL;
-			}
-			strcpy (pair->name, attr->name);
-			pair->attribute = attr->value;
-			pair->type = attr->type;
-			pair->next = NULL;
-
-			switch (attr->type)
-			{
-
-			    case PW_TYPE_STRING:
-				memcpy (pair->strvalue, (char *) ptr, (size_t) attrlen);
-				pair->strvalue[attrlen] = '\0';
-				pair->lvalue = attrlen;
-				rc_avpair_insert (&vp, NULL, pair);
-				break;
-
-			    case PW_TYPE_INTEGER:
-			    case PW_TYPE_IPADDR:
-				memcpy ((char *) &lvalue, (char *) ptr,
-					sizeof (UINT4));
-				pair->lvalue = ntohl (lvalue);
-				rc_avpair_insert (&vp, NULL, pair);
-				break;
-
-			    default:
-				rc_log(LOG_WARNING, "rc_avpair_gen: %s has unknown type", attr->name);
-				free (pair);
-				break;
-			}
-		}
-		ptr += attrlen;
-		length -= attrlen;
-		if (vendorlen > 0) vendorlen -= (attrlen + 2);
+	if (length < 2) {
+		rc_log(LOG_ERR, "rc_avpair_gen: received attribute with "
+		    "invalid length");
+		goto shithappens;
 	}
-	return vp;
+	attrlen = ptr[1];
+	if (length < attrlen) {
+		rc_log(LOG_ERR, "rc_avpair_gen: received attribute with "
+		    "invalid length");
+		goto shithappens;
+	}
+
+	/* Advance to the next attribute and process recursively */
+	if (length != attrlen) {
+		pair = rc_avpair_gen(rh, pair, ptr + attrlen, length - attrlen,
+		    vendorpec);
+		if (pair == NULL)
+			return NULL;
+	}
+
+	/* Actual processing */
+	attribute = ptr[0] | (vendorpec << 16);
+	ptr += 2;
+	attrlen -= 2;
+
+	/* VSA */
+	if (attribute == PW_VENDOR_SPECIFIC) {
+		if (attrlen < 4) {
+			rc_log(LOG_ERR, "rc_avpair_gen: received VSA "
+			    "attribute with invalid length");
+			goto shithappens;
+		}
+		memcpy(&lvalue, ptr, 4);
+		vendorpec = ntohl(lvalue);
+		if (rc_dict_getvend(rh, vendorpec) == NULL) {
+			/* Warn and skip over the unknown VSA */
+			rc_log(LOG_WARNING, "rc_avpair_gen: received VSA "
+			    "attribute with unknown Vendor-Id %d", vendorpec);
+			return pair;
+		}
+		/* Process recursively */
+		return rc_avpair_gen(rh, pair, ptr + 4, attrlen - 4,
+		    vendorpec);
+	}
+
+	/* Normal */
+	attr = rc_dict_getattr(rh, attribute);
+	if (attr == NULL) {
+		buffer[0] = '\0';	/* Initial length. */
+		x_ptr = ptr;
+		for (x_len = attrlen; x_len > 0; x_len--, x_ptr++) {
+			sprintf(hex, "%2.2X", x_ptr[0]);
+			strcat(buffer, hex);
+		}
+		if (vendorpec == 0) {
+			rc_log(LOG_WARNING, "rc_avpair_gen: received "
+			    "unknown attribute %d of length %d: 0x%s",
+			    attribute, attrlen + 2, buffer);
+		} else {
+			rc_log(LOG_WARNING, "rc_avpair_gen: received "
+			    "unknown VSA attribute %d, vendor %d of "
+			    "length %d: 0x%s", attribute & 0xffff,
+			    VENDOR(attribute), attrlen + 2, buffer);
+		}
+		goto shithappens;
+	}
+
+	rpair = malloc(sizeof(*rpair));
+	if (rpair == NULL) {
+		rc_log(LOG_CRIT, "rc_avpair_gen: out of memory");
+		goto shithappens;
+	}
+	memset(rpair, '\0', sizeof(*rpair));
+
+	/* Insert this new pair at the beginning of the list */
+	rpair->next = pair;
+	pair = rpair;
+	strcpy(pair->name, attr->name);
+	pair->attribute = attr->value;
+	pair->type = attr->type;
+
+	switch (attr->type) {
+	case PW_TYPE_STRING:
+		memcpy(pair->strvalue, (char *)ptr, (size_t)attrlen);
+		pair->strvalue[attrlen] = '\0';
+		pair->lvalue = attrlen;
+		break;
+
+	case PW_TYPE_INTEGER:
+		if (attrlen != 4) {
+			rc_log(LOG_ERR, "rc_avpair_gen: received INT "
+			    "attribute with invalid length");
+			goto shithappens;
+		}
+	case PW_TYPE_IPADDR:
+		if (attrlen != 4) {
+			rc_log(LOG_ERR, "rc_avpair_gen: received IPADDR"
+			    " attribute with invalid length");
+			goto shithappens;
+		}
+		memcpy((char *)&lvalue, (char *)ptr, 4);
+		pair->lvalue = ntohl(lvalue);
+		break;
+
+	default:
+		rc_log(LOG_WARNING, "rc_avpair_gen: %s has unknown type",
+		    attr->name);
+		goto shithappens;
+	}
+	return pair;
+
+shithappens:
+	while (pair != NULL) {
+		rpair = pair->next;
+		free(pair);
+		pair = rpair;
+	}
+	return NULL;
 }
 
 /*
@@ -416,34 +393,40 @@ void rc_avpair_free (VALUE_PAIR *pair)
  * Function: rc_fieldcpy
  *
  * Purpose: Copy a data field from the buffer.  Advance the buffer
- *          past the data field.
+ *          past the data field. Ensure that no more than len - 1
+ *          bytes are copied and that resulting string is terminated
+ *          with '\0'.
  *
  */
 
-static void rc_fieldcpy (char *string, char **uptr, const char *stopat)
+static void
+rc_fieldcpy(char *string, char **uptr, const char *stopat, size_t len)
 {
-	char           *ptr;
+	char *ptr, *estring;
 
 	ptr = *uptr;
+	estring = string + len - 1;
 	if (*ptr == '"')
 	{
 		ptr++;
 		while (*ptr != '"' && *ptr != '\0' && *ptr != '\n')
 		{
-			*string++ = *ptr++;
+			if (string < estring)
+				*string++ = *ptr++;
 		}
-		*string = '\0';
 		if (*ptr == '"')
 		{
 			ptr++;
 		}
+		*string = '\0';
 		*uptr = ptr;
 		return;
 	}
 
 	while (*ptr != '\0' && strchr(stopat, *ptr) == NULL)
 	{
-		*string++ = *ptr++;
+		if (string < estring)
+			*string++ = *ptr++;
 	}
 	*string = '\0';
 	*uptr = ptr;
@@ -490,7 +473,7 @@ int rc_avpair_parse (rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 		switch (mode)
 		{
 		    case PARSE_MODE_NAME:		/* Attribute Name */
-			rc_fieldcpy (attrstr, &buffer, " \t\n=,");
+			rc_fieldcpy (attrstr, &buffer, " \t\n=,", sizeof(attrstr));
 			if ((attr =
 				rc_dict_findattr (rh, attrstr)) == NULL)
 			{
@@ -522,7 +505,7 @@ int rc_avpair_parse (rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 			break;
 
 		    case PARSE_MODE_VALUE:		/* Value */
-			rc_fieldcpy (valstr, &buffer, " \t\n,");
+			rc_fieldcpy (valstr, &buffer, " \t\n,", sizeof(valstr));
 
 			if ((pair = malloc (sizeof (VALUE_PAIR))) == NULL)
 			{
