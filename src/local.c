@@ -1,10 +1,10 @@
 /*
- * $Id: local.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: local.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
@@ -32,7 +32,7 @@ LFUNC auth_local(char *username, char *passwd)
 		return NULL;
 	}
 	endpwent();
-	
+
 #ifdef SHADOW_PASSWORD
         if((spw = getspnam(pw->pw_name)) == NULL) {
 			endspent();
@@ -40,24 +40,24 @@ LFUNC auth_local(char *username, char *passwd)
 			printf(SC_LOCAL_FAILED);
 			return NULL;
         }
-        else 
-        { 
-        	pw->pw_passwd = spw->sp_pwdp; 
+        else
+        {
+        	pw->pw_passwd = spw->sp_pwdp;
         }
         endspent();
 #endif /* SHADOW_PASSWORD */
 
 	xpasswd = crypt(passwd, pw->pw_passwd);
-	
+
 	if (*pw->pw_passwd == '\0' || strcmp(xpasswd, pw->pw_passwd)) {
 		rc_log(LOG_NOTICE, "authentication FAILED, type local, username %s", username);
 		printf(SC_LOCAL_FAILED);
-		return NULL;		
+		return NULL;
 	}
 
 	rc_log(LOG_NOTICE, "authentication OK, type local, username %s", username);
 	printf(SC_LOCAL_OK);
-	
+
 	return local_login;
 }
 

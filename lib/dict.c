@@ -1,15 +1,15 @@
 /*
- * $Id: dict.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: dict.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.
  *
- * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan 
+ * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan
  * and Merit Network, Inc. All Rights Reserved
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
@@ -47,7 +47,7 @@ int rc_read_dictionary (rc_handle *rh, const char *filename)
 
 	if ((dictfd = fopen (filename, "r")) == NULL)
 	{
-		rc_log(LOG_ERR, "rc_read_dictionary: couldn't open dictionary %s: %s", 
+		rc_log(LOG_ERR, "rc_read_dictionary: couldn't open dictionary %s: %s",
 				filename, strerror(errno));
 		return -1;
 	}
@@ -298,7 +298,7 @@ int rc_read_dictionary (rc_handle *rh, const char *filename)
 	}
 	fclose (dictfd);
 	return 0;
-} 
+}
 
 /*
  * Function: rc_dict_getattr
@@ -307,7 +307,7 @@ int rc_read_dictionary (rc_handle *rh, const char *filename)
  *	    attribute id number.
  *
  */
- 
+
 DICT_ATTR *rc_dict_getattr (rc_handle *rh, int attribute)
 {
 	DICT_ATTR      *attr;
@@ -322,7 +322,7 @@ DICT_ATTR *rc_dict_getattr (rc_handle *rh, int attribute)
 		attr = attr->next;
 	}
 	return NULL;
-} 
+}
 
 /*
  * Function: rc_dict_findattr
@@ -346,7 +346,7 @@ DICT_ATTR *rc_dict_findattr (rc_handle *rh, const char *attrname)
 		attr = attr->next;
 	}
 	return NULL;
-} 
+}
 
 
 /*
@@ -435,7 +435,7 @@ rc_dict_getval (rc_handle *rh, UINT4 value, const char *attrname)
 		val = val->next;
 	}
 	return NULL;
-} 
+}
 
 /*
  * Function: rc_dict_free

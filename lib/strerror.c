@@ -1,11 +1,11 @@
 /*
- * $Id: strerror.c,v 1.1 2003/12/02 10:39:17 sobomax Exp $
+ * $Id: strerror.c,v 1.2 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg and Christian Graefe
  *
- * This file is provided under the terms and conditions of the GNU general 
- * public license, version 2 or any later version, incorporated herein by 
- * reference. 
+ * This file is provided under the terms and conditions of the GNU general
+ * public license, version 2 or any later version, incorporated herein by
+ * reference.
  *
  */
 

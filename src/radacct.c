@@ -1,16 +1,16 @@
 /*
- * $Id: radacct.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: radacct.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
 
 static char	rcsid[] =
-		"$Id: radacct.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $";
+		"$Id: radacct.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $";
 
 #include <config.h>
 #include <includes.h>
@@ -80,7 +80,7 @@ main (int argc, char **argv)
 
 	if ((rh = rc_read_config(path_radiusclient_conf)) == NULL)
 		exit(ERROR_RC);
-	
+
 	if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0)
 		exit (ERROR_RC);
 
@@ -92,7 +92,7 @@ main (int argc, char **argv)
 		client_port = rc_map2id(rh, ttyn);
 	}
 	else
-	{	
+	{
 		/* we take stdout here, because stdin is usually connected
 	 	 *  to our input file
 	 	 */
@@ -110,7 +110,7 @@ main (int argc, char **argv)
 
 		username = service = type = "(unknown)";
 		fproto = NULL;
-	
+
 		if ((vp = rc_avpair_get(send, PW_ACCT_STATUS_TYPE, 0)) != NULL)
 				if ((dval = rc_dict_getval(rh, vp->lvalue, vp->name)) != NULL) {
 					type = dval->name;

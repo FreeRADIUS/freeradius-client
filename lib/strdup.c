@@ -1,11 +1,11 @@
 /*
- * $Id: strdup.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: strdup.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg and Christian Graefe
  *
- * This file is provided under the terms and conditions of the GNU general 
- * public license, version 2 or any later version, incorporated herein by 
- * reference. 
+ * This file is provided under the terms and conditions of the GNU general
+ * public license, version 2 or any later version, incorporated herein by
+ * reference.
  *
  */
 
@@ -29,5 +29,5 @@ char *strdup(char *str)
 	if ((p = malloc(strlen(str)+1)) == NULL)
 		return p;
 
-	return strcpy(p, str);	
+	return strcpy(p, str);
 }

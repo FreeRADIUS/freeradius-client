@@ -1,16 +1,16 @@
 /*
- * $Id: radlogin.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: radlogin.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
 
 static char	rcsid[] =
-		"$Id: radlogin.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $";
+		"$Id: radlogin.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $";
 
 #include	<config.h>
 #include	<includes.h>
@@ -28,7 +28,7 @@ alarm_handler(int sn)
 {
 	fprintf(stderr, SC_TIMEOUT, rc_conf_int(rh, "login_timeout"));
 	sleep(1);
-	exit(ERROR_RC);	
+	exit(ERROR_RC);
 }
 
 static int
@@ -62,7 +62,7 @@ login_allowed(char *tty)
 	} else {
 		printf(SC_NOLOGIN);
 	}
-	return 0;		
+	return 0;
 }
 
 static char *
@@ -77,12 +77,12 @@ subst_placeholders(char *str, char *tty)
 	char domainname[256];
 #endif
 
-#if defined(HAVE_UNAME)	
+#if defined(HAVE_UNAME)
 	uname(&uts);
 #endif
-	
+
 	p = str;
-	q = buf;	
+	q = buf;
 
 	while (*p != '\0') {
 		switch (*p) {
@@ -166,7 +166,7 @@ usage(void)
 {
 	fprintf(stderr,"Usage: %s [-Vhnd] [-f <config_file>] [-i <client_port>] [-m <login_tries>]\n\n", pname);
 	fprintf(stderr,"  -V		output version information\n");
-	fprintf(stderr,"  -h		output this text\n");     
+	fprintf(stderr,"  -h		output this text\n");
 	fprintf(stderr,"  -n		don't display issue file\n");
 	fprintf(stderr,"  -f		filename of alternate config file\n");
 	fprintf(stderr,"  -i		ttyname to send to the server\n");
@@ -188,7 +188,7 @@ main (int argc, char **argv)
 	char		passwd[AUTH_PASS_LEN + 1];
 	int 		tries, remaining, c;
 	UINT4		client_port;
-	void 		(*login_func)(rc_handle *, char *);	
+	void 		(*login_func)(rc_handle *, char *);
 	FILE		*fp;
 	char 		buf[4096];
 	char		tty[1024], *p;
@@ -201,7 +201,7 @@ main (int argc, char **argv)
         extern int optind;
 
 	pname = (pname = strrchr(argv[0],'/'))?pname+1:argv[0];
-	
+
 	rc_openlog(pname);
 
 	while ((c = getopt(argc,argv,"f:m:i:nhV")) > 0)
@@ -233,7 +233,7 @@ main (int argc, char **argv)
 
 	if ((rh = rc_read_config(path_radiusclient_conf)) == NULL)
 		exit(ERROR_RC);
-	
+
 	if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0)
 		exit (ERROR_RC);
 
@@ -243,7 +243,7 @@ main (int argc, char **argv)
 	if (ttyn != NULL)
 	{
 		client_port = rc_map2id(rh, ttyn);
-		
+
 		if ((p = strrchr(ttyn, '/')) == NULL)
 			strncpy(tty, ttyn, sizeof(tty));
 		else
@@ -261,7 +261,7 @@ main (int argc, char **argv)
 
 			client_port = rc_map2id(rh, ttyn);
 		}
-		else 
+		else
 		{
 			*tty = '\0';
 			client_port = 0;
@@ -281,7 +281,7 @@ main (int argc, char **argv)
 	else
 	{
 		*username = '\0';
-		
+
 		if (!noissue) {
 			if (rc_conf_str(rh, "issue") && ((fp = fopen(rc_conf_str(rh, "issue"), "r")) != NULL))
 			{
@@ -302,7 +302,7 @@ main (int argc, char **argv)
 		rc_log(LOG_CRIT, "rc_new_env: FATAL: out of memory");
 		abort();
 	}
-	
+
 #ifdef SECURITY_DISABLED
 	if (rc_import_env(env,environ) < 0)
 	{
@@ -317,10 +317,10 @@ main (int argc, char **argv)
 	signal(SIGALRM, alarm_handler);
 
 	remaining = rc_conf_int(rh, "login_timeout");
-	
+
 	if (!maxtries)
 		maxtries = rc_conf_int(rh, "login_tries");
-		
+
 	tries = 1;
 	while (tries <= maxtries)
 	{
@@ -334,19 +334,19 @@ main (int argc, char **argv)
 	 		exit (ERROR_RC);
 	 }
 	 p = rc_getstr(rh, SC_PASSWORD,0);
-	 if (p) 
-	 	strncpy (passwd, p, sizeof (passwd));		
-	 else 
+	 if (p)
+	 	strncpy (passwd, p, sizeof (passwd));
+	 else
 		exit (ERROR_RC);
 
 	 remaining = alarm(0);
-	 
+
 	 login_func = NULL;
 
  	 if (rc_conf_int(rh, "auth_order") & AUTH_LOCAL_FST)
  	 {
  	 	login_func = auth_local(username, passwd);
- 	 		
+ 	 
  	 	if (!login_func)
  	 		if (rc_conf_int(rh, "auth_order") & AUTH_RADIUS_SND)
  	 			login_func = auth_radius(rh, client_port, username, passwd);
@@ -370,7 +370,7 @@ main (int argc, char **argv)
 		}
 
 	 *username = '\0';
-	 
+
 	 if ((++tries) <= maxtries) {
 		alarm(remaining);
 	 	sleep(tries * 2);
@@ -381,6 +381,6 @@ main (int argc, char **argv)
 
 	fprintf(stderr, SC_EXCEEDED);
 	sleep(1);
-	
+
 	exit (ERROR_RC);
 }

@@ -1,15 +1,15 @@
 /*
- * $Id: sendserver.c,v 1.4 2004/01/17 18:44:32 sobomax Exp $
+ * $Id: sendserver.c,v 1.5 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.
  *
- * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan 
+ * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan
  * and Merit Network, Inc. All Rights Reserved
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
@@ -39,7 +39,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 	unsigned char   passbuf[MAX(AUTH_PASS_LEN, CHAP_VALUE_LENGTH)];
 	unsigned char   md5buf[256];
 	unsigned char   *buf, *vector, *vsa_length_ptr;
-	
+
 	buf = auth->data;
 
 	while (vp != NULL)
@@ -60,7 +60,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		 case PW_USER_PASSWORD:
 
 		  /* Encrypt the password */
-	
+
 		  /* Chop off password at AUTH_PASS_LEN */
 		  length = vp->lvalue;
 		  if (length > AUTH_PASS_LEN)
@@ -69,10 +69,10 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		  /* Calculate the padded length */
 		  padded_length = (length+(AUTH_VECTOR_LEN-1)) & ~(AUTH_VECTOR_LEN-1);
 
-		  /* Record the attribute length */		
+		  /* Record the attribute length */
 		  *buf++ = padded_length + 2;
 		  if (vsa_length_ptr != NULL) *vsa_length_ptr += padded_length + 2;
-		  
+
 		  /* Pad the password with zeros */
 		  memset ((char *) passbuf, '\0', AUTH_PASS_LEN);
 		  memcpy ((char *) passbuf, vp->strvalue, (size_t) length);
@@ -86,10 +86,10 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		  	memcpy ((char *) md5buf + secretlen, vector,
 		  		  AUTH_VECTOR_LEN);
 		  	rc_md5_calc (buf, md5buf, secretlen + AUTH_VECTOR_LEN);
-		  
+
 		        /* Remeber the start of the digest */
 		  	vector = buf;
-		  	
+		  
 			/* Xor the password into the MD5 digest */
 			for (pc = i; pc < (i + AUTH_VECTOR_LEN); pc++)
 		  	{
@@ -98,9 +98,9 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		  }
 
 		  total_length += padded_length + 2;
-		  
+
 		  break;
-#if 0		
+#if 0
 		 case PW_CHAP_PASSWORD:
 
 		  *buf++ = CHAP_VALUE_LENGTH + 2;
@@ -128,7 +128,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 			*buf++ ^= passbuf[i];
 		  }
 		  total_length += CHAP_VALUE_LENGTH + 2;
-		 
+
 		  break;
 #endif
 		 default:
@@ -199,13 +199,13 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		return ERROR_RC;
 
 	if ((vp = rc_avpair_get(data->send_pairs, PW_SERVICE_TYPE, 0)) && \
-	    (vp->lvalue == PW_ADMINISTRATIVE)) 
+	    (vp->lvalue == PW_ADMINISTRATIVE))
 	{
 		strcpy(secret, MGMT_POLL_SECRET);
 		if ((auth_ipaddr = rc_get_ipaddr(server_name)) == 0)
 			return ERROR_RC;
-	} 
-	else 
+	}
+	else
 	{
 		if (rc_find_server (rh, server_name, &auth_ipaddr, secret) != 0)
 		{
@@ -236,7 +236,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		rc_log(LOG_ERR, "rc_send_server: bind: %s: %s", server_name, strerror(errno));
 		return ERROR_RC;
 	}
-	
+
 	retry_max = data->retries;	/* Max. numbers to try for reply */
 	retries = 0;			/* Init retry cnt for blocking call */
 
@@ -250,7 +250,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		total_length = rc_pack_list(data->send_pairs, secret, auth) + AUTH_HDR_LEN;
 
 		auth->length = htons ((unsigned short) total_length);
-		
+
 		memset((char *) auth->vector, 0, AUTH_VECTOR_LEN);
 		secretlen = strlen (secret);
 		memcpy ((char *) auth + total_length, secret, secretlen);
@@ -321,9 +321,9 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		memset (secret, '\0', sizeof (secret));
 		return ERROR_RC;
 	}
-	
+
 	recv_auth = (AUTH_HDR *)recv_buffer;
-	
+
 	result = rc_check_reply (recv_auth, BUFFER_LEN, secret, vector, data->seq_nbr);
 
 	data->receive_pairs = rc_avpair_gen(rh, recv_auth);
@@ -332,7 +332,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	memset (secret, '\0', sizeof (secret));
 
 	if (result != OK_RC) return result;
-	
+
 	*msg = '\0';
 	vp = data->receive_pairs;
 	while (vp)
@@ -344,7 +344,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 			vp = vp->next;
 		}
 	}
-	
+
 	if ((recv_auth->code == PW_ACCESS_ACCEPT) ||
 		(recv_auth->code == PW_PASSWORD_ACK) ||
 		(recv_auth->code == PW_ACCOUNTING_RESPONSE))
@@ -386,14 +386,14 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 	{
 		rc_log(LOG_ERR, "rc_check_reply: received RADIUS server response with invalid length");
 		return BADRESP_RC;
-	} 
+	}
 
 	/* Verify buffer space, should never trigger with current buffer size and check above */
 	if ((totallen + secretlen) > bufferlen)
 	{
 		rc_log(LOG_ERR, "rc_check_reply: not enough buffer space to verify RADIUS server response");
 		return BADRESP_RC;
-	} 
+	}
 
 	/* Verify that id (seq. number) matches what we sent */
 	if (auth->id != seq_nbr)
@@ -441,16 +441,16 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 #ifdef DIGEST_DEBUG
 	{
 		int i;
-		
+
 		fputs("reply_digest: ", stderr);
 		for (i = 0; i < AUTH_VECTOR_LEN; i++)
 		{
-			fprintf(stderr,"%.2x ", (int) reply_digest[i]);			
+			fprintf(stderr,"%.2x ", (int) reply_digest[i]);
 		}
 		fputs("\ncalc_digest:  ", stderr);
 		for (i = 0; i < AUTH_VECTOR_LEN; i++)
 		{
-			fprintf(stderr,"%.2x ", (int) calc_digest[i]);			
+			fprintf(stderr,"%.2x ", (int) calc_digest[i]);
 		}
 		fputs("\n", stderr);
 	}
@@ -466,7 +466,7 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 		   but couldn't find any bugs. any help to get this
 		   kludge out are welcome. preferably i want to
 		   reproduce the calculation bug here to be compatible
-		   to stock Livingston radiusd v1.16.	-lf, 03/14/96 
+		   to stock Livingston radiusd v1.16.	-lf, 03/14/96
 		 */
 		if (auth->code == PW_ACCOUNTING_RESPONSE)
 			return OK_RC;
@@ -476,11 +476,11 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 	}
 
 	return OK_RC;
-	
+
 }
 
 /*
- * Function: rc_random_vector 
+ * Function: rc_random_vector
  *
  * Purpose: generates a random vector of AUTH_VECTOR_LEN octets.
  *
@@ -498,12 +498,12 @@ static void rc_random_vector (unsigned char *vector)
 /* well, I added this to increase the security for user passwords.
    we use /dev/urandom here, as /dev/random might block and we don't
    need that much randomness. BTW, great idea, Ted!     -lf, 03/18/95	*/
-	
+
 	if ((fd = open(_PATH_DEV_URANDOM, O_RDONLY)) >= 0)
 	{
 		unsigned char *pos;
 		int readcount;
-	
+
 		i = AUTH_VECTOR_LEN;
 		pos = vector;
 		while (i > 0)
@@ -514,7 +514,7 @@ static void rc_random_vector (unsigned char *vector)
 		}
 
 		close(fd);
-		return;			
+		return;
 	} /* else fall through */
 #endif
 	srand (time (0) + getppid() + getpid()); /* random enough :) */
@@ -527,4 +527,4 @@ static void rc_random_vector (unsigned char *vector)
 	}
 
 	return;
-} 
+}

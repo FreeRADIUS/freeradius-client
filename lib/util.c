@@ -1,15 +1,15 @@
 /*
- * $Id: util.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: util.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.
  *
- * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan 
+ * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan
  * and Merit Network, Inc. All Rights Reserved
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
@@ -61,15 +61,15 @@ void rc_str2tm (char *valstr, struct tm *tm)
 
 char *rc_getifname(rc_handle *rh, char *tty)
 {
-#if defined(BSD4_4) || defined(linux)	
+#if defined(BSD4_4) || defined(linux)
 	int		fd;
 
 	if ((fd = open(tty, O_RDWR|O_NDELAY)) < 0) {
 		rc_log(LOG_ERR, "rc_getifname: can't open %s: %s", tty, strerror(errno));
 		return NULL;
 	}
-#endif	
-	
+#endif
+
 #ifdef BSD4_4
 	strcpy(rh->ifname,ttyname(fd));
 	if (strlen(rh->ifname) < 1) {
@@ -87,7 +87,7 @@ char *rc_getifname(rc_handle *rh, char *tty)
 	return NULL;
 #endif
 
-#if defined(BSD4_4) || defined(linux)	
+#if defined(BSD4_4) || defined(linux)
 	close(fd);
 	return rh->ifname;
 #endif
@@ -123,17 +123,17 @@ char *rc_getstr (rc_handle *rh, char *prompt, int do_echo)
 
 	if ((is_term = isatty(in)))
 	{
-	
+
 		(void) tcgetattr (in, &term_old);
 		term_new = term_old;
 		if (do_echo)
 			term_new.c_lflag |= ECHO;
-		else 
+		else
 			term_new.c_lflag &= ~ECHO;
-	
+
 		if (tcsetattr (in, TCSAFLUSH, &term_new) == 0)
 			flushed = 1;
-			
+
 	}
 	else
 	{
@@ -141,18 +141,18 @@ char *rc_getstr (rc_handle *rh, char *prompt, int do_echo)
 		if ((flags = fcntl(in, F_GETFL, 0)) >= 0) {
 			old_flags = flags;
 			flags |= O_NONBLOCK;
-			
+
 			fcntl(in, F_SETFL, flags);
-			
+
 			while (read(in, &c, 1) > 0)
 				/* nothing */;
-				
+
 			fcntl(in, F_SETFL, old_flags);
-			
+
 			flushed = 1;
-		}  
+		}
 	}
-		
+
 	write(out, prompt, strlen(prompt));
 
 	/* well, this looks ugly, but it handles the following end of line
@@ -163,7 +163,7 @@ char *rc_getstr (rc_handle *rh, char *prompt, int do_echo)
 	{
 		if (read(in, &c, 1) <= 0)
 			return NULL;
-		
+
 		if (!flushed && ((c == '\0') || (c == '\r') || (c == '\n'))) {
 			flushed = 1;
 			continue;
@@ -183,23 +183,23 @@ char *rc_getstr (rc_handle *rh, char *prompt, int do_echo)
 	}
 
 	*p = '\0';
-	
+
 	if (!do_echo || !is_term) write(out, "\r\n", 2);
-	
+
 	if (is_term)
 		tcsetattr (in, TCSAFLUSH, &term_old);
 	else {
 		if ((flags = fcntl(in, F_GETFL, 0)) >= 0) {
 			old_flags = flags;
 			flags |= O_NONBLOCK;
-			
+
 			fcntl(in, F_SETFL, flags);
-			
+
 			while (read(in, &c, 1) > 0)
 				/* nothing */;
-				
+
 			fcntl(in, F_SETFL, old_flags);
-		}  
+		}
 	}
 
 	(void) sigprocmask (SIG_SETMASK, &oldset, NULL);
@@ -210,7 +210,7 @@ char *rc_getstr (rc_handle *rh, char *prompt, int do_echo)
 void rc_mdelay(int msecs)
 {
 	struct timeval tv;
-	
+
 	tv.tv_sec = (int) msecs / 1000;
 	tv.tv_usec = (msecs % 1000) * 1000;
 

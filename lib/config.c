@@ -1,15 +1,15 @@
 /*
- * $Id: config.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: config.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.
  *
- * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan 
+ * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan
  * and Merit Network, Inc. All Rights Reserved
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
@@ -28,7 +28,7 @@ static int test_config(rc_handle *, char *);
  *
  * Returns: pointer to option on success, NULL otherwise
  */
- 
+
 static OPTION *find_option(rc_handle *rh, char *optname, unsigned int type)
 {
 	int i;
@@ -52,7 +52,7 @@ static OPTION *find_option(rc_handle *rh, char *optname, unsigned int type)
  */
 
 static int set_option_str(char *filename, int line, OPTION *option, char *p)
-{ 
+{
 	if (p)
 		option->val = (void *) strdup(p);
 	else
@@ -74,8 +74,8 @@ static int set_option_int(char *filename, int line, OPTION *option, char *p)
 		rc_log(LOG_CRIT, "read_config: out of memory");
 		return -1;
 	}
-	
-	*iptr = atoi(p);				
+
+	*iptr = atoi(p);
 	option->val = (void *) iptr;
 
 	return 0;
@@ -144,7 +144,7 @@ static int set_option_auo(char *filename, int line, OPTION *option, char *p)
 			rc_log(LOG_CRIT, "read_config: out of memory");
 			return -1;
 	}
-			
+
 	*iptr = 0;
 	p = strtok(p, ", \t");
 
@@ -154,19 +154,19 @@ static int set_option_auo(char *filename, int line, OPTION *option, char *p)
 			*iptr = AUTH_RADIUS_FST;
 	else {
 		rc_log(LOG_ERR,"%s: auth_order: unknown keyword: %s", filename, p);
-		return -1; 
+		return -1;
 	}
-			
+
 	p = strtok(NULL, ", \t");
-			
+
 	if (p && (*p != '\0')) {
 		if ((*iptr & AUTH_RADIUS_FST) && !strcmp(p, "local"))
 			*iptr = (*iptr) | AUTH_LOCAL_SND;
 		else if ((*iptr & AUTH_LOCAL_FST) && !strcmp(p, "radius"))
-			*iptr = (*iptr) | AUTH_RADIUS_SND;   
+			*iptr = (*iptr) | AUTH_RADIUS_SND;
 		else {
 			rc_log(LOG_ERR,"%s: auth_order: unknown or unexpected keyword: %s", filename, p);
-			return -1; 
+			return -1;
 		}
 	}
 
@@ -180,7 +180,7 @@ static int set_option_auo(char *filename, int line, OPTION *option, char *p)
  * Function: rc_read_config
  *
  * Purpose: read the global config file
- * 
+ *
  * Returns: new rc_handle on success, NULL when failure
  */
 
@@ -217,22 +217,22 @@ rc_read_config(char *filename)
 	{
 		line++;
 		p = buffer;
-		
+
 		if ((*p == '\n') || (*p == '#') || (*p == '\0'))
 			continue;
 
 		p[strlen(p)-1] = '\0';
-		
-		
+
+
 		if ((pos = strcspn(p, "\t ")) == 0) {
 			rc_log(LOG_ERR, "%s: line %d: bogus format: %s", filename, line, p);
 			fclose(configfd);
 			rc_destroy(rh);
 			return NULL;
-		} 
-		
+		}
+
 		p[pos] = '\0';
-		
+
 		if ((option = find_option(rh, p, OT_ANY)) == NULL) {
 			rc_log(LOG_ERR, "%s: line %d: unrecognized keyword: %s", filename, line, p);
 			fclose(configfd);
@@ -248,7 +248,7 @@ rc_read_config(char *filename)
 		}
 
 		p += pos+1;
-		while (isspace(*p)) 
+		while (isspace(*p))
 			p++;
 
 		switch (option->type) {
@@ -258,7 +258,7 @@ rc_read_config(char *filename)
 					rc_destroy(rh);
 				 	return NULL;
 				}
-				break;					
+				break;
 			case OT_INT:
 				if (set_option_int(filename, line, option, p) < 0) {
 					fclose(configfd);
@@ -298,7 +298,7 @@ rc_read_config(char *filename)
  * Function: rc_conf_str, rc_conf_int, rc_conf_src
  *
  * Purpose: get the value of a config option
- * 
+ *
  * Returns: config option value
  */
 
@@ -307,9 +307,9 @@ char *rc_conf_str(rc_handle *rh, char *optname)
 	OPTION *option;
 
 	option = find_option(rh, optname, OT_STR);
-	
+
 	if (option != NULL) {
-		return (char *)option->val;	
+		return (char *)option->val;
 	} else {
 		rc_log(LOG_CRIT, "rc_conf_str: unkown config option requested: %s", optname);
 		abort();
@@ -321,9 +321,9 @@ int rc_conf_int(rc_handle *rh, char *optname)
 	OPTION *option;
 
 	option = find_option(rh, optname, OT_INT|OT_AUO);
-	
+
 	if (option != NULL) {
-		return *((int *)option->val);	
+		return *((int *)option->val);
 	} else {
 		rc_log(LOG_CRIT, "rc_conf_int: unkown config option requested: %s", optname);
 		abort();
@@ -335,9 +335,9 @@ SERVER *rc_conf_srv(rc_handle *rh, char *optname)
 	OPTION *option;
 
 	option = find_option(rh, optname, OT_SRV);
-	
+
 	if (option != NULL) {
-		return (SERVER *)option->val;	
+		return (SERVER *)option->val;
 	} else {
 		rc_log(LOG_CRIT, "rc_conf_srv: unkown config option requested: %s", optname);
 		abort();
@@ -373,7 +373,7 @@ static int test_config(rc_handle *rh, char *filename)
 	{
 		rc_log(LOG_ERR,"%s: no servers file specified", filename);
 		return -1;
-	}                                                                         
+	}
 	if (!rc_conf_str(rh, "dictionary"))
 	{
 		rc_log(LOG_ERR,"%s: no dictionary specified", filename);
@@ -385,11 +385,11 @@ static int test_config(rc_handle *rh, char *filename)
 		rc_log(LOG_ERR,"%s: radius_timeout <= 0 is illegal", filename);
 		return -1;
 	}
-	if (rc_conf_int(rh, "radius_retries") <= 0) 
+	if (rc_conf_int(rh, "radius_retries") <= 0)
 	{
 		rc_log(LOG_ERR,"%s: radius_retries <= 0 is illegal", filename);
 		return -1;
-	}	
+	}
 
 #if 0
 	file = rc_conf_str(rh, "login_local");
@@ -415,32 +415,32 @@ static int test_config(rc_handle *rh, char *filename)
 		return -1;
 	}
 #endif
-	
+
 	if (rc_conf_int(rh, "login_tries") <= 0)
 	{
 		rc_log(LOG_ERR,"%s: login_tries <= 0 is illegal", filename);
 		return -1;
-	}	
+	}
 	if (rc_conf_str(rh, "seqfile") == NULL)
 	{
 		rc_log(LOG_ERR,"%s: seqfile not specified", filename);
 		return -1;
-	}	
+	}
 	if (rc_conf_int(rh, "login_timeout") <= 0)
 	{
 		rc_log(LOG_ERR,"%s: login_timeout <= 0 is illegal", filename);
 		return -1;
-	}	
+	}
 	if (rc_conf_str(rh, "mapfile") == NULL)
 	{
 		rc_log(LOG_ERR,"%s: mapfile not specified", filename);
 		return -1;
-	}	
+	}
 	if (rc_conf_str(rh, "nologin") == NULL)
 	{
 		rc_log(LOG_ERR,"%s: nologin not specified", filename);
 		return -1;
-	}	
+	}
 
 	return 0;
 }
@@ -483,7 +483,7 @@ static int find_match (UINT4 *ip_addr, char *hostname)
 		}
 	}
 	return -1;
-} 
+}
 
 /*
  * Function: rc_find_server
@@ -493,7 +493,7 @@ static int find_match (UINT4 *ip_addr, char *hostname)
  * Returns: 0 on success, -1 on failure
  *
  */
- 
+
 int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secret)
 {
 	UINT4    	myipaddr = 0;
@@ -515,7 +515,7 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 		rc_log(LOG_ERR, "rc_find_server: couldn't open file: %s: %s", strerror(errno), rc_conf_str(rh, "servers"));
 		return -1;
 	}
-	
+
 	if ((myipaddr = rc_own_ipaddress(rh)) == 0) {
 		fclose(clientfd);
 		return -1;
@@ -611,7 +611,7 @@ rc_config_free(rc_handle *rh)
 		return;
 
 	for (i = 0; i < NUM_OPTIONS; i++) {
-		if (rh->config_options[i].val == NULL) 
+		if (rh->config_options[i].val == NULL)
 			continue;
 		if (rh->config_options[i].type == OT_SRV) {
 		        serv = (SERVER *)rh->config_options[i].val;

@@ -1,10 +1,10 @@
 /*
- * $Id: radius.c,v 1.3 2004/01/13 00:17:01 sobomax Exp $
+ * $Id: radius.c,v 1.4 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
@@ -67,7 +67,7 @@ LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd
 				break;
 	}
 #else
-	service = PW_LOGIN;	
+	service = PW_LOGIN;
 	ftype = 0;
 	ctype = 0;
 #endif
@@ -76,12 +76,12 @@ LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd
 		return NULL;
 
 	/* Fill in Framed-Protocol, if neccessary */
-	
+
 	if (ftype != 0)
 	{
 		if (rc_avpair_add(rh, &send, PW_FRAMED_PROTOCOL, &ftype, -1, 0) == NULL)
-			return NULL;	
-	} 
+			return NULL;
+	}
 
 	/* Fill in Framed-Compression, if neccessary */
 
@@ -89,8 +89,8 @@ LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd
 	{
 		if (rc_avpair_add(rh, &send, PW_FRAMED_COMPRESSION, &ctype, -1, 0) == NULL)
 			return NULL;
-	} 
-	 
+	}
+
 	/*
 	 * Fill in User-Name
 	 */
@@ -105,50 +105,50 @@ LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd
 	 {
 		strncat(username_realm, "@", sizeof(username_realm));
 		strncat(username_realm, default_realm, sizeof(username_realm));
-	 } 
+	 }
 
 	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, -1, 0) == NULL)
 		return NULL;
-	
+
 	/*
 	 * Fill in User-Password
 	 */
-	 
-	if (rc_avpair_add(rh, &send, PW_USER_PASSWORD, passwd, -1, 0) == NULL) 	  
+
+	if (rc_avpair_add(rh, &send, PW_USER_PASSWORD, passwd, -1, 0) == NULL) 
 		return NULL;
-	
+
 	result = rc_auth(rh, client_port, send, &received, msg);
 
 	if (result == OK_RC)
 	{
 		/* Set up a running count of attributes saved. */
 		int acount[256], attr;
-		
+
 		memset(acount, 0, sizeof(acount));
 
 		rc_add_env(env, "RADIUS_USER_NAME", username);
-		
+
 		vp = received;
 
 		/* map-- keep track of the attributes so that we know
 		   when to add the delimiters. Note that we can only
 		   handle attributes < 256, which is the standard anyway. */
-		
+
 		while (vp)
 		{
 			strcpy(name, "RADIUS_");
 			if (rc_avpair_tostr(rh, vp, name+7, sizeof(name)-7, value, sizeof(value)) < 0) {
 				rc_avpair_free(send);
 				rc_avpair_free(received);
-				return NULL;			
+				return NULL;
 			}
-			
+
 			/* Translate "-" => "_" and uppercase*/
 			for(p = name; *p; p++) {
 				*p = toupper(*p);
 				if (*p == '-') *p = '_';
 			}
-		
+
 			/* Add to the attribute count and append the var
 			   if necessary. */
 			if ((attr = vp->attribute) < 256)
@@ -160,17 +160,17 @@ LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd
 					strcat(name,buf);
 				}
 			}
-			
+
 			if (rc_add_env(env, name, value) < 0)
 			{
 				rc_avpair_free(send);
 				rc_avpair_free(received);
-				return NULL;			
+				return NULL;
 			}
-					
+
 			vp = vp->next;
 		}
-		
+
 		service_str = "(unknown)";
 		ftype_str = NULL;
 
@@ -192,7 +192,7 @@ LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd
 			printf(SC_SERVER_REPLY, msg);
 		else
 			printf(SC_RADIUS_OK);
-		
+
 		rc_avpair_free(send);
 		rc_avpair_free(received);
 
@@ -200,18 +200,18 @@ LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd
 	}
 	else
 	{
-		rc_log(LOG_NOTICE, "authentication FAILED, type RADIUS, username %s", 
-			   username_realm);  
+		rc_log(LOG_NOTICE, "authentication FAILED, type RADIUS, username %s",
+			   username_realm);
 		if (msg && (*msg != '\0'))
 			printf(SC_SERVER_REPLY, msg);
 		else
 			printf(SC_RADIUS_FAILED);
 	}
-	
+
 	rc_avpair_free(send);
 	if (received)
 		rc_avpair_free(received);
-	
+
 	return NULL;
 }
 

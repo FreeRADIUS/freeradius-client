@@ -1,17 +1,17 @@
 /*
- * $Id: radexample.c,v 1.3 2004/01/13 00:17:01 sobomax Exp $
+ * $Id: radexample.c,v 1.4 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
 
 
 static char	rcsid[] =
-		"$Id: radexample.c,v 1.3 2004/01/13 00:17:01 sobomax Exp $";
+		"$Id: radexample.c,v 1.4 2004/02/23 20:10:39 sobomax Exp $";
 
 #include	<config.h>
 #include	<includes.h>
@@ -38,14 +38,14 @@ main (int argc, char **argv)
 
 	if ((rh = rc_read_config(RC_CONFIG_FILE)) == NULL)
 		return ERROR_RC;
-	
+
 	if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0)
 		return ERROR_RC;
 
 	default_realm = rc_conf_str(rh, "default_realm");
 
 	strncpy(username, rc_getstr (rh, "login: ",1), sizeof(username));
-	strncpy (passwd, rc_getstr(rh, "Password: ",0), sizeof (passwd));		
+	strncpy (passwd, rc_getstr(rh, "Password: ",0), sizeof (passwd));
 
 	send = NULL;
 
@@ -61,28 +61,28 @@ main (int argc, char **argv)
 	{
 		strncat(username_realm, "@", sizeof(username_realm));
 		strncat(username_realm, default_realm, sizeof(username_realm));
-	} 
+	}
 
 	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, -1, 0) == NULL)
 		return ERROR_RC;
-	
+
 	/*
 	 * Fill in User-Password
 	 */
-	 
+
 	if (rc_avpair_add(rh, &send, PW_USER_PASSWORD, passwd, -1, 0) == NULL)
 		return ERROR_RC;
 
 	/*
 	 * Fill in Service-Type
 	 */
-	
+
 	service = PW_AUTHENTICATE_ONLY;
 	if (rc_avpair_add(rh, &send, PW_SERVICE_TYPE, &service, -1, 0) == NULL)
-		return ERROR_RC;	
-	
+		return ERROR_RC;
+
 	result = rc_auth(rh, 0, send, &received, msg);
-	
+
 	if (result == OK_RC)
 	{
 		fprintf(stderr, "\"%s\" RADIUS Authentication OK\n", username);
@@ -91,6 +91,6 @@ main (int argc, char **argv)
 	{
 		fprintf(stderr, "\"%s\" RADIUS Authentication failure (RC=%i)\n", username, result);
 	}
-	
+
 	return result;
 }

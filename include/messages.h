@@ -1,15 +1,15 @@
 /*
- * $Id: messages.h,v 1.1 2003/12/02 10:39:17 sobomax Exp $
+ * $Id: messages.h,v 1.2 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.
  *
- * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan 
+ * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan
  * and Merit Network, Inc. All Rights Reserved
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */

@@ -1,10 +1,10 @@
 /*
- * $Id: options.h,v 1.3 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: options.h,v 1.4 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */

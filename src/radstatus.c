@@ -1,16 +1,16 @@
 /*
- * $Id: radstatus.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: radstatus.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
 
 static char	rcsid[] =
-		"$Id: radstatus.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $";
+		"$Id: radstatus.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $";
 
 #include <config.h>
 #include <includes.h>
@@ -43,7 +43,7 @@ void main (int argc, char **argv)
 	SERVER	*srv;
 	char	*path_radiusclient_conf = RC_CONFIG_FILE;
 	rc_handle *rh;
-	
+
 	extern int optind;
 
 	pname = (pname = strrchr(argv[0],'/'))?pname+1:argv[0];
@@ -73,7 +73,7 @@ void main (int argc, char **argv)
 
 	if ((rh = rc_read_config(path_radiusclient_conf)) == NULL)
 		exit(ERROR_RC);
-	
+
 	if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0)
 		exit (ERROR_RC);
 
@@ -103,7 +103,7 @@ void main (int argc, char **argv)
 			result = rc_check(rh, srv->name[i], srv->port[i], msg);
 			fputs(msg, stdout);
 		}
-		
+
 		srv = rc_conf_srv(rh, "acctserver");
 		for(i=0; i<srv->max ; i++)
 		{

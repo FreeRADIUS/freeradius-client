@@ -1,10 +1,10 @@
 /*
- * $Id: log.c,v 1.1 2003/12/02 10:39:20 sobomax Exp $
+ * $Id: log.c,v 1.2 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
@@ -44,10 +44,10 @@ void rc_log(int prio, const char *format, ...)
 {
 	char buff[1024];
 	va_list ap;
-                                    
+
 	va_start(ap,format);
     vsnprintf(buff, sizeof(buff), format, ap);
     va_end(ap);
-                                                            
+
 	syslog(prio, "%s", buff);
 }

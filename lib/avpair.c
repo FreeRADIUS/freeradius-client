@@ -1,15 +1,15 @@
 /*
- * $Id: avpair.c,v 1.6 2004/01/17 18:44:06 sobomax Exp $
+ * $Id: avpair.c,v 1.7 2004/02/23 20:10:39 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.
  *
- * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan 
+ * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan
  * and Merit Network, Inc. All Rights Reserved
  *
- * See the file COPYRIGHT for the respective terms and conditions. 
- * If the file is missing contact me at lf@elemental.net 
+ * See the file COPYRIGHT for the respective terms and conditions.
+ * If the file is missing contact me at lf@elemental.net
  * and I'll send you a copy.
  *
  */
@@ -42,7 +42,7 @@ VALUE_PAIR *rc_avpair_add (rc_handle *rh, VALUE_PAIR **list, int attrid, void *p
 
 	return vp;
 
-} 
+}
 
 /*
  * Function: rc_avpair_assign
@@ -67,7 +67,7 @@ int rc_avpair_assign (VALUE_PAIR *vp, void *pval, int len)
 		        	rc_log(LOG_ERR, "rc_avpair_assign: bad attribute length");
 		        	return result;
 		    }
-		
+
 			if (len >= 0) {
 				memcpy(vp->strvalue, (char *)pval, len);
 				vp->strvalue[len] = '\0';
@@ -76,16 +76,16 @@ int rc_avpair_assign (VALUE_PAIR *vp, void *pval, int len)
 		    	strncpy (vp->strvalue, (char *) pval, AUTH_STRING_LEN);
 		    	vp->lvalue = strlen((char *) pval);
 			}
-			
+
 			result = 0;
 			break;
 
 		case PW_TYPE_DATE:
 		case PW_TYPE_INTEGER:
 	        case PW_TYPE_IPADDR:
-	        
+
 			vp->lvalue = * (UINT4 *) pval;
-			
+
 			result = 0;
 			break;
 
@@ -266,7 +266,7 @@ VALUE_PAIR *rc_avpair_gen (rc_handle *rh, AUTH_HDR *auth)
 				strcat (buffer, hex);
 			}
 			if (VENDOR(attribute) == 0) {
-				rc_log(LOG_WARNING, "rc_avpair_gen: received unknown attribute %d of length %d: 0x%s", 
+				rc_log(LOG_WARNING, "rc_avpair_gen: received unknown attribute %d of length %d: 0x%s",
 					attribute, attrlen, buffer);
 			} else {
 				rc_log(LOG_WARNING, "rc_avpair_gen: received unknown VSA attribute %d, vendor %d of length %d: 0x%s",
@@ -334,7 +334,7 @@ VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, UINT4 attr, int vendorpec)
 		continue;
 	}
 	return vp;
-} 
+}
 
 /*
  * Function: rc_avpair_insert
@@ -409,7 +409,7 @@ void rc_avpair_free (VALUE_PAIR *pair)
 		free (pair);
 		pair = next;
 	}
-} 
+}
 
 /*
  * Function: rc_fieldcpy
@@ -418,7 +418,7 @@ void rc_avpair_free (VALUE_PAIR *pair)
  *          past the data field.
  *
  */
- 
+
 static void rc_fieldcpy (char *string, char **uptr)
 {
 	char           *ptr;
@@ -643,7 +643,7 @@ int rc_avpair_tostr (rc_handle *rh, VALUE_PAIR *pair, char *name, int ln, char *
 	*name = *value = '\0';
 
 	if (!pair || pair->name[0] == '\0') {
-		rc_log(LOG_ERR, "rc_avpair_tostr: pair is NULL or empty");		
+		rc_log(LOG_ERR, "rc_avpair_tostr: pair is NULL or empty");
 		return -1;
 	}
 
@@ -702,7 +702,7 @@ int rc_avpair_tostr (rc_handle *rh, VALUE_PAIR *pair, char *name, int ln, char *
 		return -1;
 		break;
 	}
-	
+
 	return 0;
 }
 
@@ -722,18 +722,18 @@ VALUE_PAIR *rc_avpair_readin(rc_handle *rh, FILE *input)
 	while (fgets(buffer, sizeof(buffer), input) != NULL)
 	{
 		q = buffer;
-		
+
 		while(*q && isspace(*q)) q++;
-	
+
 		if ((*q == '\n') || (*q == '#') || (*q == '\0'))
 			continue;
-	
+
 		if (rc_avpair_parse(rh, q, &vp) < 0) {
 			rc_log(LOG_ERR, "rc_avpair_readin: malformed attribute: %s", buffer);
 			rc_avpair_free(vp);
 			return NULL;
 		}
 	}
-	
+
 	return vp;
 }
