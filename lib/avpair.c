@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.4 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: avpair.c,v 1.5 2004/01/13 00:17:01 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -62,13 +62,13 @@ int rc_avpair_assign (VALUE_PAIR *vp, void *pval, int len)
 	{
 		case PW_TYPE_STRING:
 
-			if (((len == 0) && (strlen ((char *) pval)) > AUTH_STRING_LEN)
+			if (((len == -1) && (strlen ((char *) pval)) > AUTH_STRING_LEN)
 			    || (len > AUTH_STRING_LEN)) {
 		        	rc_log(LOG_ERR, "rc_avpair_assign: bad attribute length");
 		        	return result;
 		    }
 		
-			if (len > 0) {
+			if (len >= 0) {
 				memcpy(vp->strvalue, (char *)pval, len);
 				vp->strvalue[len] = '\0';
 				vp->lvalue = len;

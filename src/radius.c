@@ -1,5 +1,5 @@
 /*
- * $Id: radius.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: radius.c,v 1.3 2004/01/13 00:17:01 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
@@ -72,14 +72,14 @@ LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd
 	ctype = 0;
 #endif
 
-	if (rc_avpair_add(rh, &send, PW_SERVICE_TYPE, &service, 0, 0) == NULL)
+	if (rc_avpair_add(rh, &send, PW_SERVICE_TYPE, &service, -1, 0) == NULL)
 		return NULL;
 
 	/* Fill in Framed-Protocol, if neccessary */
 	
 	if (ftype != 0)
 	{
-		if (rc_avpair_add(rh, &send, PW_FRAMED_PROTOCOL, &ftype, 0, 0) == NULL)
+		if (rc_avpair_add(rh, &send, PW_FRAMED_PROTOCOL, &ftype, -1, 0) == NULL)
 			return NULL;	
 	} 
 
@@ -87,7 +87,7 @@ LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd
 
 	if (ctype != 0)
 	{
-		if (rc_avpair_add(rh, &send, PW_FRAMED_COMPRESSION, &ctype, 0, 0) == NULL)
+		if (rc_avpair_add(rh, &send, PW_FRAMED_COMPRESSION, &ctype, -1, 0) == NULL)
 			return NULL;
 	} 
 	 
@@ -107,14 +107,14 @@ LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd
 		strncat(username_realm, default_realm, sizeof(username_realm));
 	 } 
 
-	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, 0, 0) == NULL)
+	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, -1, 0) == NULL)
 		return NULL;
 	
 	/*
 	 * Fill in User-Password
 	 */
 	 
-	if (rc_avpair_add(rh, &send, PW_USER_PASSWORD, passwd, 0, 0) == NULL) 	  
+	if (rc_avpair_add(rh, &send, PW_USER_PASSWORD, passwd, -1, 0) == NULL) 	  
 		return NULL;
 	
 	result = rc_auth(rh, client_port, send, &received, msg);

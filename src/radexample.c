@@ -1,5 +1,5 @@
 /*
- * $Id: radexample.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
+ * $Id: radexample.c,v 1.3 2004/01/13 00:17:01 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -11,7 +11,7 @@
 
 
 static char	rcsid[] =
-		"$Id: radexample.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $";
+		"$Id: radexample.c,v 1.3 2004/01/13 00:17:01 sobomax Exp $";
 
 #include	<config.h>
 #include	<includes.h>
@@ -63,14 +63,14 @@ main (int argc, char **argv)
 		strncat(username_realm, default_realm, sizeof(username_realm));
 	} 
 
-	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, 0, 0) == NULL)
+	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, -1, 0) == NULL)
 		return ERROR_RC;
 	
 	/*
 	 * Fill in User-Password
 	 */
 	 
-	if (rc_avpair_add(rh, &send, PW_USER_PASSWORD, passwd, 0, 0) == NULL)
+	if (rc_avpair_add(rh, &send, PW_USER_PASSWORD, passwd, -1, 0) == NULL)
 		return ERROR_RC;
 
 	/*
@@ -78,7 +78,7 @@ main (int argc, char **argv)
 	 */
 	
 	service = PW_AUTHENTICATE_ONLY;
-	if (rc_avpair_add(rh, &send, PW_SERVICE_TYPE, &service, 0, 0) == NULL)
+	if (rc_avpair_add(rh, &send, PW_SERVICE_TYPE, &service, -1, 0) == NULL)
 		return ERROR_RC;	
 	
 	result = rc_auth(rh, 0, send, &received, msg);
