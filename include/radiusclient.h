@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient.h,v 1.8 2004/10/04 10:12:52 sobomax Exp $
+ * $Id: radiusclient.h,v 1.9 2004/10/05 09:57:22 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -44,7 +44,8 @@ typedef long 	      INT4;
 #define NAME_LENGTH		32
 #define	GETSTR_LENGTH		128	/* must be bigger than AUTH_PASS_LEN */
 
-#define	VENDOR(x)		((x >> 16) & 0xffff)
+#define	VENDOR(x)		(((x) >> 16) & 0xffff)
+#define	ATTRID(x)		((x) & 0xffff)
 
 /* codes for radius_buildreq, radius_getport, etc. */
 #define AUTH			0
@@ -399,7 +400,7 @@ VALUE_PAIR *rc_avpair_add(rc_handle *, VALUE_PAIR **, int, void *, int, int);
 int rc_avpair_assign(VALUE_PAIR *, void *, int);
 VALUE_PAIR *rc_avpair_new(rc_handle *, int, void *, int, int);
 VALUE_PAIR *rc_avpair_gen(rc_handle *, AUTH_HDR *);
-VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, UINT4, int);
+VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, int, int);
 void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
 void rc_avpair_free(VALUE_PAIR *);
 int rc_avpair_parse(rc_handle *, char *, VALUE_PAIR **);
