@@ -1,6 +1,6 @@
-diff -Naur radiusclient-ng/configure.in rad-renamed/configure.in
+diff -Naur radiusclient-ng/configure.in renamed/configure.in
 --- radiusclient-ng/configure.in	2004-11-17 14:18:10.000000000 +0100
-+++ rad-renamed/configure.in	2004-11-17 16:20:23.094450296 +0100
++++ renamed/configure.in	2004-11-17 16:26:59.000000000 +0100
 @@ -21,7 +21,7 @@
  	;;
  esac
@@ -10,517 +10,21 @@ diff -Naur radiusclient-ng/configure.in rad-renamed/configure.in
  
  LIBVERSION=2:0:0
  AC_SUBST(LIBVERSION)
-diff -Naur radiusclient-ng/include/Makefile.am rad-renamed/include/Makefile.am
+diff -Naur radiusclient-ng/include/Makefile.am renamed/include/Makefile.am
 --- radiusclient-ng/include/Makefile.am	2003-12-02 11:39:17.000000000 +0100
-+++ rad-renamed/include/Makefile.am	2004-11-17 16:20:23.095450144 +0100
++++ renamed/include/Makefile.am	2004-11-17 16:26:59.000000000 +0100
 @@ -12,4 +12,4 @@
  AUTOMAKE_OPTIONS = foreign
  
  noinst_HEADERS = pathnames.h messages.h includes.h
 -include_HEADERS = radiusclient.h
 +include_HEADERS = radiusclient-ng.h
-diff -Naur radiusclient-ng/include/radiusclient.h rad-renamed/include/radiusclient.h
---- radiusclient-ng/include/radiusclient.h	2004-10-24 10:48:29.000000000 +0200
-+++ rad-renamed/include/radiusclient.h	1970-01-01 01:00:00.000000000 +0100
-@@ -1,492 +0,0 @@
--/*
-- * $Id: rename.patch,v 1.2 2004/11/17 15:23:00 janakj Exp $
-- *
-- * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
-- *
-- * Copyright 1992 Livingston Enterprises, Inc.
-- *
-- * Copyright 1992,1993, 1994,1995 The Regents of the University of Michigan
-- * and Merit Network, Inc. All Rights Reserved
-- *
-- * See the file COPYRIGHT for the respective terms and conditions.
-- * If the file is missing contact me at lf@elemental.net
-- * and I'll send you a copy.
-- *
-- */
--
--#ifndef RADIUSCLIENT_H
--#define RADIUSCLIENT_H
--
--#include	<sys/types.h>
--#include	<stdio.h>
--#include	<time.h>
--
--#undef __BEGIN_DECLS
--#undef __END_DECLS
--#ifdef __cplusplus
--# define __BEGIN_DECLS extern "C" {
--# define __END_DECLS }
--#else
--# define __BEGIN_DECLS /* empty */
--# define __END_DECLS /* empty */
--#endif
--
--typedef unsigned long UINT4;
--typedef long 	      INT4;
--
--#define AUTH_VECTOR_LEN		16
--#define AUTH_PASS_LEN		(3 * 16) /* multiple of 16 */
--#define AUTH_ID_LEN		64
--#define AUTH_STRING_LEN		253	 /* maximum of 253 */
--
--#define	BUFFER_LEN		8192
--
--#define NAME_LENGTH		32
--#define	GETSTR_LENGTH		128	/* must be bigger than AUTH_PASS_LEN */
--
--#define	MAX_SECRET_LENGTH	(3 * 16) /* MUST be multiple of 16 */
--
--#define	VENDOR(x)		(((x) >> 16) & 0xffff)
--#define	ATTRID(x)		((x) & 0xffff)
--
--/* codes for radius_buildreq, radius_getport, etc. */
--#define AUTH			0
--#define ACCT			1
--
--/* defines for config.c */
--
--#define SERVER_MAX 8
--
--#define AUTH_LOCAL_FST	(1<<0)
--#define AUTH_RADIUS_FST (1<<1)
--#define AUTH_LOCAL_SND  (1<<2)
--#define AUTH_RADIUS_SND (1<<3)
--
--typedef struct server {
--	int max;
--	char *name[SERVER_MAX];
--	unsigned short port[SERVER_MAX];
--} SERVER;
--
--typedef struct pw_auth_hdr
--{
--	u_char          code;
--	u_char          id;
--	u_short         length;
--	u_char          vector[AUTH_VECTOR_LEN];
--	u_char          data[2];
--} AUTH_HDR;
--
--struct rc_conf
--{
--	struct _option		*config_options;
--	UINT4 			this_host_ipaddr;
--	UINT4			*this_host_bind_ipaddr;
--	struct map2id_s		*map2id_list;
--	struct dict_attr	*dictionary_attributes;
--	struct dict_value	*dictionary_values;
--	struct dict_vendor	*dictionary_vendors;
--	char			buf[GETSTR_LENGTH];
--	char			buf1[14];
--	char			ifname[512];
--	char			*ppbuf;
--};
--
--typedef struct rc_conf rc_handle;
--
--#define AUTH_HDR_LEN			20
--#define CHAP_VALUE_LENGTH		16
--
--#define PW_AUTH_UDP_PORT		1645
--#define PW_ACCT_UDP_PORT		1646
--
--#define PW_TYPE_STRING			0
--#define PW_TYPE_INTEGER			1
--#define PW_TYPE_IPADDR			2
--#define PW_TYPE_DATE			3
--
--/* standard RADIUS codes */
--
--#define	PW_ACCESS_REQUEST		1
--#define	PW_ACCESS_ACCEPT		2
--#define	PW_ACCESS_REJECT		3
--#define	PW_ACCOUNTING_REQUEST		4
--#define	PW_ACCOUNTING_RESPONSE		5
--#define	PW_ACCOUNTING_STATUS		6
--#define	PW_PASSWORD_REQUEST		7
--#define	PW_PASSWORD_ACK			8
--#define	PW_PASSWORD_REJECT		9
--#define	PW_ACCOUNTING_MESSAGE		10
--#define	PW_ACCESS_CHALLENGE		11
--#define	PW_STATUS_SERVER		12
--#define	PW_STATUS_CLIENT		13
--
--
--/* standard RADIUS attribute-value pairs */
--
--#define	PW_USER_NAME			1	/* string */
--#define	PW_USER_PASSWORD		2	/* string */
--#define	PW_CHAP_PASSWORD		3	/* string */
--#define	PW_NAS_IP_ADDRESS		4	/* ipaddr */
--#define	PW_NAS_PORT			5	/* integer */
--#define	PW_SERVICE_TYPE			6	/* integer */
--#define	PW_FRAMED_PROTOCOL		7	/* integer */
--#define	PW_FRAMED_IP_ADDRESS		8	/* ipaddr */
--#define	PW_FRAMED_IP_NETMASK		9	/* ipaddr */
--#define	PW_FRAMED_ROUTING		10	/* integer */
--#define	PW_FILTER_ID		        11	/* string */
--#define	PW_FRAMED_MTU			12	/* integer */
--#define	PW_FRAMED_COMPRESSION		13	/* integer */
--#define	PW_LOGIN_IP_HOST		14	/* ipaddr */
--#define	PW_LOGIN_SERVICE		15	/* integer */
--#define	PW_LOGIN_PORT			16	/* integer */
--#define	PW_OLD_PASSWORD			17	/* string */ /* deprecated */
--#define	PW_REPLY_MESSAGE		18	/* string */
--#define	PW_LOGIN_CALLBACK_NUMBER	19	/* string */
--#define	PW_FRAMED_CALLBACK_ID		20	/* string */
--#define	PW_EXPIRATION			21	/* date */ /* deprecated */
--#define	PW_FRAMED_ROUTE			22	/* string */
--#define	PW_FRAMED_IPX_NETWORK		23	/* integer */
--#define	PW_STATE			24	/* string */
--#define	PW_CLASS			25	/* string */
--#define	PW_VENDOR_SPECIFIC		26	/* string */
--#define	PW_SESSION_TIMEOUT		27	/* integer */
--#define	PW_IDLE_TIMEOUT			28	/* integer */
--#define	PW_TERMINATION_ACTION		29	/* integer */
--#define	PW_CALLED_STATION_ID            30      /* string */
--#define	PW_CALLING_STATION_ID           31      /* string */
--#define	PW_NAS_IDENTIFIER		32	/* string */
--#define	PW_PROXY_STATE			33	/* string */
--#define	PW_LOGIN_LAT_SERVICE		34	/* string */
--#define	PW_LOGIN_LAT_NODE		35	/* string */
--#define	PW_LOGIN_LAT_GROUP		36	/* string */
--#define	PW_FRAMED_APPLETALK_LINK	37	/* integer */
--#define	PW_FRAMED_APPLETALK_NETWORK	38	/* integer */
--#define	PW_FRAMED_APPLETALK_ZONE	39	/* string */
--#define	PW_EVENT_TIMESTAMP		55	/* integer */
--#define	PW_CHAP_CHALLENGE               60      /* string */
--#define	PW_NAS_PORT_TYPE                61      /* integer */
--#define	PW_PORT_LIMIT                   62      /* integer */
--#define PW_LOGIN_LAT_PORT               63      /* string */
--#define PW_CONNECT_INFO                 77      /* string */
--
--/* RFC3162 IPv6 attributes */
--
--#define PW_NAS_IPV6_ADDRESS             95      /* string */
--#define PW_FRAMED_INTERFACE_ID          96      /* string */
--#define PW_FRAMED_IPV6_PREFIX           97      /* string */
--#define PW_LOGIN_IPV6_HOST              98      /* string */
--#define PW_FRAMED_IPV6_ROUTE            99      /* string */
--#define PW_FRAMED_IPV6_POOL             100     /* string */
--
--/*	Accounting */
--
--#define	PW_ACCT_STATUS_TYPE		40	/* integer */
--#define	PW_ACCT_DELAY_TIME		41	/* integer */
--#define	PW_ACCT_INPUT_OCTETS		42	/* integer */
--#define	PW_ACCT_OUTPUT_OCTETS		43	/* integer */
--#define	PW_ACCT_SESSION_ID		44	/* string */
--#define	PW_ACCT_AUTHENTIC		45	/* integer */
--#define	PW_ACCT_SESSION_TIME		46	/* integer */
--#define	PW_ACCT_INPUT_PACKETS		47	/* integer */
--#define	PW_ACCT_OUTPUT_PACKETS		48	/* integer */
--#define PW_ACCT_TERMINATE_CAUSE		49	/* integer */
--#define PW_ACCT_MULTI_SESSION_ID	50	/* string */
--#define PW_ACCT_LINK_COUNT		51	/* integer */
--
--/* 	Experimental SIP-specific attributes (draft-sterman-aaa-sip-00.txt etc) */
--
--#define	PW_DIGEST_RESPONSE		206	/* string */
--#define	PW_DIGEST_ATTRIBUTES		207	/* string */
--#define	PW_DIGEST_REALM			1063	/* string */
--#define	PW_DIGEST_NONCE			1064	/* string */
--#define	PW_DIGEST_METHOD		1065	/* string */
--#define	PW_DIGEST_URI			1066	/* string */
--#define	PW_DIGEST_QOP			1067	/* string */
--#define	PW_DIGEST_ALGORITHM		1068	/* string */
--#define	PW_DIGEST_BODY_DIGEST		1069	/* string */
--#define	PW_DIGEST_CNONCE		1070	/* string */
--#define	PW_DIGEST_NONCE_COUNT		1071	/* string */
--#define	PW_DIGEST_USER_NAME		1072	/* string */
--
--/*	Merit Experimental Extensions */
--
--#define PW_USER_ID                      222     /* string */
--#define PW_USER_REALM                   223     /* string */
--
--/*	Integer Translations */
--
--/*	SERVICE TYPES	*/
--
--#define	PW_LOGIN			1
--#define	PW_FRAMED			2
--#define	PW_CALLBACK_LOGIN		3
--#define	PW_CALLBACK_FRAMED		4
--#define	PW_OUTBOUND			5
--#define	PW_ADMINISTRATIVE		6
--#define PW_NAS_PROMPT                   7
--#define PW_AUTHENTICATE_ONLY		8
--#define PW_CALLBACK_NAS_PROMPT          9
--
--/*	FRAMED PROTOCOLS	*/
--
--#define	PW_PPP				1
--#define	PW_SLIP				2
--#define PW_ARA                          3
--#define PW_GANDALF                      4
--#define PW_XYLOGICS                     5
--
--/*	FRAMED ROUTING VALUES	*/
--
--#define	PW_NONE				0
--#define	PW_BROADCAST			1
--#define	PW_LISTEN			2
--#define	PW_BROADCAST_LISTEN		3
--
--/*	FRAMED COMPRESSION TYPES	*/
--
--#define	PW_VAN_JACOBSON_TCP_IP		1
--#define	PW_IPX_HEADER_COMPRESSION	2
--
--/*	LOGIN SERVICES	*/
--
--#define PW_TELNET                       0
--#define PW_RLOGIN                       1
--#define PW_TCP_CLEAR                    2
--#define PW_PORTMASTER                   3
--#define PW_LAT                          4
--#define PW_X25_PAD                      5
--#define PW_X25_T3POS                    6
--
--/*	TERMINATION ACTIONS	*/
--
--#define	PW_DEFAULT			0
--#define	PW_RADIUS_REQUEST		1
--
--/*	PROHIBIT PROTOCOL  */
--
--#define PW_DUMB		0	/* 1 and 2 are defined in FRAMED PROTOCOLS */
--#define PW_AUTH_ONLY	3
--#define PW_ALL		255
--
--/*	ACCOUNTING STATUS TYPES    */
--
--#define PW_STATUS_START		1
--#define PW_STATUS_STOP		2
--#define PW_STATUS_ALIVE		3
--#define PW_STATUS_MODEM_START	4
--#define PW_STATUS_MODEM_STOP	5
--#define PW_STATUS_CANCEL	6
--#define PW_ACCOUNTING_ON	7
--#define PW_ACCOUNTING_OFF	8
--
--/*      ACCOUNTING TERMINATION CAUSES   */
--
--#define PW_USER_REQUEST         1
--#define PW_LOST_CARRIER         2
--#define PW_LOST_SERVICE         3
--#define PW_ACCT_IDLE_TIMEOUT    4
--#define PW_ACCT_SESSION_TIMEOUT 5
--#define PW_ADMIN_RESET          6
--#define PW_ADMIN_REBOOT         7
--#define PW_PORT_ERROR           8
--#define PW_NAS_ERROR            9
--#define PW_NAS_REQUEST          10
--#define PW_NAS_REBOOT           11
--#define PW_PORT_UNNEEDED        12
--#define PW_PORT_PREEMPTED       13
--#define PW_PORT_SUSPENDED       14
--#define PW_SERVICE_UNAVAILABLE  15
--#define PW_CALLBACK             16
--#define PW_USER_ERROR           17
--#define PW_HOST_REQUEST         18
--
--/*     NAS PORT TYPES    */
--
--#define PW_ASYNC		0
--#define PW_SYNC			1
--#define PW_ISDN_SYNC		2
--#define PW_ISDN_SYNC_V120	3
--#define PW_ISDN_SYNC_V110	4
--#define PW_VIRTUAL		5
--
--/*	   AUTHENTIC TYPES */
--#define PW_RADIUS	1
--#define PW_LOCAL	2
--#define PW_REMOTE	3
--
--/* Server data structures */
--
--typedef struct dict_attr
--{
--	char              name[NAME_LENGTH + 1];	/* attribute name */
--	int               value;			/* attribute index */
--	int               type;				/* string, int, etc. */
--	struct dict_attr *next;
--} DICT_ATTR;
--
--typedef struct dict_value
--{
--	char               attrname[NAME_LENGTH +1];
--	char               name[NAME_LENGTH + 1];
--	int                value;
--	struct dict_value *next;
--} DICT_VALUE;
--
--typedef struct dict_vendor
--{
--	char		   vendorname[NAME_LENGTH +1];
--	int		   vendorpec;
--	struct dict_vendor *next;
--} DICT_VENDOR;
--
--typedef struct value_pair
--{
--	char               name[NAME_LENGTH + 1];
--	int                attribute;
--	int                type;
--	UINT4              lvalue;
--	char               strvalue[AUTH_STRING_LEN + 1];
--	struct value_pair *next;
--} VALUE_PAIR;
--
--/* don't change this, as it has to be the same as in the Merit radiusd code */
--#define MGMT_POLL_SECRET	"Hardlyasecret"
--
--/* 	Define return codes from "SendServer" utility */
--
--#define BADRESP_RC	-2
--#define ERROR_RC	-1
--#define OK_RC		0
--#define TIMEOUT_RC	1
--
--typedef struct send_data /* Used to pass information to sendserver() function */
--{
--	u_char          code;		/* RADIUS packet code */
--	u_char          seq_nbr;	/* Packet sequence number */
--	char           *server;		/* Name/addrress of RADIUS server */
--	int             svc_port;	/* RADIUS protocol destination port */
--	int             timeout;	/* Session timeout in seconds */
--	int		retries;
--	VALUE_PAIR     *send_pairs;     /* More a/v pairs to send */
--	VALUE_PAIR     *receive_pairs;  /* Where to place received a/v pairs */
--} SEND_DATA;
--
--#ifndef MIN
--#define MIN(a, b)     ((a) < (b) ? (a) : (b))
--#endif
--#ifndef MAX
--#define MAX(a, b)     ((a) > (b) ? (a) : (b))
--#endif
--
--#ifndef PATH_MAX
--#define PATH_MAX	1024
--#endif
--
--typedef struct env
--{
--	int maxsize, size;
--	char **env;
--} ENV;
--
--#define ENV_SIZE	128
--
--__BEGIN_DECLS
--
--/*	Function prototypes	*/
--
--/*	avpair.c		*/
--
--VALUE_PAIR *rc_avpair_add(rc_handle *, VALUE_PAIR **, int, void *, int, int);
--int rc_avpair_assign(VALUE_PAIR *, void *, int);
--VALUE_PAIR *rc_avpair_new(rc_handle *, int, void *, int, int);
--VALUE_PAIR *rc_avpair_gen(rc_handle *, AUTH_HDR *);
--VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, int, int);
--void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
--void rc_avpair_free(VALUE_PAIR *);
--int rc_avpair_parse(rc_handle *, char *, VALUE_PAIR **);
--int rc_avpair_tostr(rc_handle *, VALUE_PAIR *, char *, int, char *, int);
--char *rc_avpair_log(rc_handle *, VALUE_PAIR *);
--VALUE_PAIR *rc_avpair_readin(rc_handle *, FILE *);
--
--/*	buildreq.c		*/
--
--void rc_buildreq(rc_handle *, SEND_DATA *, int, char *, unsigned short, int, int);
--unsigned char rc_get_seqnbr(rc_handle *);
--int rc_auth(rc_handle *, UINT4, VALUE_PAIR *, VALUE_PAIR **, char *);
--int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
--int rc_acct(rc_handle *, UINT4, VALUE_PAIR *);
--int rc_acct_proxy(rc_handle *, VALUE_PAIR *);
--int rc_check(rc_handle *, char *, unsigned short, char *);
--
--/*	clientid.c		*/
--
--int rc_read_mapfile(rc_handle *, char *);
--UINT4 rc_map2id(rc_handle *, char *);
--void rc_map2id_free(rc_handle *);
--
--/*	config.c		*/
--
--rc_handle *rc_read_config(char *);
--char *rc_conf_str(rc_handle *, char *);
--int rc_conf_int(rc_handle *, char *);
--SERVER *rc_conf_srv(rc_handle *, char *);
--int rc_find_server(rc_handle *, char *, UINT4 *, char *);
--void rc_config_free(rc_handle *);
--
--/*	dict.c			*/
--
--int rc_read_dictionary(rc_handle *, const char *);
--DICT_ATTR *rc_dict_getattr(rc_handle *, int);
--DICT_ATTR *rc_dict_findattr(rc_handle *, const char *);
--DICT_VALUE *rc_dict_findval(rc_handle *, const char *);
--DICT_VENDOR *rc_dict_findvend(rc_handle *, const char *);
--DICT_VENDOR *rc_dict_getvend(rc_handle *, int);
--DICT_VALUE * rc_dict_getval(rc_handle *, UINT4, const char *);
--void rc_dict_free(rc_handle *);
--
--/*	ip_util.c		*/
--
--UINT4 rc_get_ipaddr(char *);
--int rc_good_ipaddr(char *);
--const char *rc_ip_hostname(UINT4);
--unsigned short rc_getport(int);
--int rc_own_hostname(char *, int);
--UINT4 rc_own_ipaddress(rc_handle *);
--UINT4 rc_own_bind_ipaddress(rc_handle *);
--
--
--/*	log.c			*/
--
--void rc_openlog(char *);
--void rc_log(int, const char *, ...);
--
--/*	sendserver.c		*/
--
--int rc_send_server(rc_handle *, SEND_DATA *, char *);
--
--/*	util.c			*/
--
--void rc_str2tm(char *, struct tm *);
--char *rc_getifname(rc_handle *, char *);
--char *rc_getstr(rc_handle *, char *, int);
--void rc_mdelay(int);
--char *rc_mksid(rc_handle *);
--rc_handle *rc_new(void);
--void rc_destroy(rc_handle *);
--char *rc_fgetln(FILE *, size_t *);
--
--/*	env.c			*/
--
--struct env *rc_new_env(int);
--void rc_free_env(struct env *);
--int rc_add_env(struct env *, char *, char *);
--int rc_import_env(struct env *, char **);
--
--/* md5.c			*/
--
--void rc_md5_calc(unsigned char *, unsigned char *, unsigned int);
--
--__END_DECLS
--
--#endif /* RADIUSCLIENT_H */
-diff -Naur radiusclient-ng/include/radiusclient-ng.h rad-renamed/include/radiusclient-ng.h
+diff -Naur radiusclient-ng/include/radiusclient-ng.h renamed/include/radiusclient-ng.h
 --- radiusclient-ng/include/radiusclient-ng.h	1970-01-01 01:00:00.000000000 +0100
-+++ rad-renamed/include/radiusclient-ng.h	2004-11-17 16:20:23.096449992 +0100
++++ renamed/include/radiusclient-ng.h	2004-11-17 16:27:02.000000000 +0100
 @@ -0,0 +1,492 @@
 +/*
-+ * $Id: rename.patch,v 1.2 2004/11/17 15:23:00 janakj Exp $
++ * $Id: rename.patch,v 1.3 2004/11/17 15:34:20 janakj Exp $
 + *
 + * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
 + *
@@ -1011,105 +515,9 @@ diff -Naur radiusclient-ng/include/radiusclient-ng.h rad-renamed/include/radiusc
 +__END_DECLS
 +
 +#endif /* RADIUSCLIENT_NG_H */
-diff -Naur radiusclient-ng/lib/avpair.c rad-renamed/lib/avpair.c
---- radiusclient-ng/lib/avpair.c	2004-10-24 10:52:41.000000000 +0200
-+++ rad-renamed/lib/avpair.c	2004-11-17 16:20:23.097449840 +0100
-@@ -16,7 +16,7 @@
- 
- #include <config.h>
- #include <includes.h>
--#include <radiusclient.h>
-+#include <radiusclient-ng.h>
- 
- /*
-  * Function: rc_avpair_add
-diff -Naur radiusclient-ng/lib/buildreq.c rad-renamed/lib/buildreq.c
---- radiusclient-ng/lib/buildreq.c	2004-10-24 11:15:18.000000000 +0200
-+++ rad-renamed/lib/buildreq.c	2004-11-17 16:20:23.098449688 +0100
-@@ -11,7 +11,7 @@
- 
- #include <config.h>
- #include <includes.h>
--#include <radiusclient.h>
-+#include <radiusclient-ng.h>
- 
- unsigned char rc_get_seqnbr(rc_handle *);
- 
-diff -Naur radiusclient-ng/lib/clientid.c rad-renamed/lib/clientid.c
---- radiusclient-ng/lib/clientid.c	2004-02-23 21:10:39.000000000 +0100
-+++ rad-renamed/lib/clientid.c	2004-11-17 16:20:23.098449688 +0100
-@@ -11,7 +11,7 @@
- 
- #include <config.h>
- #include <includes.h>
--#include <radiusclient.h>
-+#include <radiusclient-ng.h>
- 
- struct map2id_s {
- 	char *name;
-diff -Naur radiusclient-ng/lib/config.c rad-renamed/lib/config.c
---- radiusclient-ng/lib/config.c	2004-11-16 14:49:19.000000000 +0100
-+++ rad-renamed/lib/config.c	2004-11-17 16:20:23.099449536 +0100
-@@ -16,7 +16,7 @@
- 
- #include <config.h>
- #include <includes.h>
--#include <radiusclient.h>
-+#include <radiusclient-ng.h>
- #include <options.h>
- 
- static int test_config(rc_handle *, char *);
-diff -Naur radiusclient-ng/lib/dict.c rad-renamed/lib/dict.c
---- radiusclient-ng/lib/dict.c	2004-09-16 01:29:25.000000000 +0200
-+++ rad-renamed/lib/dict.c	2004-11-17 16:20:23.099449536 +0100
-@@ -16,7 +16,7 @@
- 
- #include <config.h>
- #include <includes.h>
--#include <radiusclient.h>
-+#include <radiusclient-ng.h>
- 
- /*
-  * Function: rc_read_dictionary
-diff -Naur radiusclient-ng/lib/env.c rad-renamed/lib/env.c
---- radiusclient-ng/lib/env.c	2004-02-23 21:10:39.000000000 +0100
-+++ rad-renamed/lib/env.c	2004-11-17 16:20:23.100449384 +0100
-@@ -11,7 +11,7 @@
- 
- #include <config.h>
- #include <includes.h>
--#include <radiusclient.h>
-+#include <radiusclient-ng.h>
- 
- /*
-  * Function: rc_new_env
-diff -Naur radiusclient-ng/lib/ip_util.c rad-renamed/lib/ip_util.c
---- radiusclient-ng/lib/ip_util.c	2004-04-14 20:45:03.000000000 +0200
-+++ rad-renamed/lib/ip_util.c	2004-11-17 16:20:23.100449384 +0100
-@@ -16,7 +16,7 @@
- 
- #include <config.h>
- #include <includes.h>
--#include <radiusclient.h>
-+#include <radiusclient-ng.h>
- 
- /*
-  * Function: rc_get_ipaddr
-diff -Naur radiusclient-ng/lib/log.c rad-renamed/lib/log.c
---- radiusclient-ng/lib/log.c	2004-02-23 21:10:39.000000000 +0100
-+++ rad-renamed/lib/log.c	2004-11-17 16:20:23.101449232 +0100
-@@ -11,7 +11,7 @@
- 
- #include <config.h>
- #include <includes.h>
--#include <radiusclient.h>
-+#include <radiusclient-ng.h>
- 
- /*
-  * Function: rc_openlog
-diff -Naur radiusclient-ng/lib/Makefile.am rad-renamed/lib/Makefile.am
+diff -Naur radiusclient-ng/lib/Makefile.am renamed/lib/Makefile.am
 --- radiusclient-ng/lib/Makefile.am	2003-12-02 15:19:08.000000000 +0100
-+++ rad-renamed/lib/Makefile.am	2004-11-17 16:20:23.097449840 +0100
++++ renamed/lib/Makefile.am	2004-11-17 16:27:02.000000000 +0100
 @@ -20,15 +20,15 @@
  
  noinst_HEADERS = options.h
@@ -1133,9 +541,105 @@ diff -Naur radiusclient-ng/lib/Makefile.am rad-renamed/lib/Makefile.am
 -#libradiusclient_la_LIBADD = @LTLIBOBJS@
 +libradiusclient_ng_la_LDFLAGS = -version-info $(LIBVERSION)
 +#libradiusclient_ng_la_LIBADD = @LTLIBOBJS@
-diff -Naur radiusclient-ng/lib/md5.c rad-renamed/lib/md5.c
+diff -Naur radiusclient-ng/lib/avpair.c renamed/lib/avpair.c
+--- radiusclient-ng/lib/avpair.c	2004-10-24 10:52:41.000000000 +0200
++++ renamed/lib/avpair.c	2004-11-17 16:27:02.000000000 +0100
+@@ -16,7 +16,7 @@
+ 
+ #include <config.h>
+ #include <includes.h>
+-#include <radiusclient.h>
++#include <radiusclient-ng.h>
+ 
+ /*
+  * Function: rc_avpair_add
+diff -Naur radiusclient-ng/lib/buildreq.c renamed/lib/buildreq.c
+--- radiusclient-ng/lib/buildreq.c	2004-10-24 11:15:18.000000000 +0200
++++ renamed/lib/buildreq.c	2004-11-17 16:27:02.000000000 +0100
+@@ -11,7 +11,7 @@
+ 
+ #include <config.h>
+ #include <includes.h>
+-#include <radiusclient.h>
++#include <radiusclient-ng.h>
+ 
+ unsigned char rc_get_seqnbr(rc_handle *);
+ 
+diff -Naur radiusclient-ng/lib/clientid.c renamed/lib/clientid.c
+--- radiusclient-ng/lib/clientid.c	2004-02-23 21:10:39.000000000 +0100
++++ renamed/lib/clientid.c	2004-11-17 16:27:02.000000000 +0100
+@@ -11,7 +11,7 @@
+ 
+ #include <config.h>
+ #include <includes.h>
+-#include <radiusclient.h>
++#include <radiusclient-ng.h>
+ 
+ struct map2id_s {
+ 	char *name;
+diff -Naur radiusclient-ng/lib/config.c renamed/lib/config.c
+--- radiusclient-ng/lib/config.c	2004-11-16 14:49:19.000000000 +0100
++++ renamed/lib/config.c	2004-11-17 16:27:02.000000000 +0100
+@@ -16,7 +16,7 @@
+ 
+ #include <config.h>
+ #include <includes.h>
+-#include <radiusclient.h>
++#include <radiusclient-ng.h>
+ #include <options.h>
+ 
+ static int test_config(rc_handle *, char *);
+diff -Naur radiusclient-ng/lib/dict.c renamed/lib/dict.c
+--- radiusclient-ng/lib/dict.c	2004-09-16 01:29:25.000000000 +0200
++++ renamed/lib/dict.c	2004-11-17 16:27:02.000000000 +0100
+@@ -16,7 +16,7 @@
+ 
+ #include <config.h>
+ #include <includes.h>
+-#include <radiusclient.h>
++#include <radiusclient-ng.h>
+ 
+ /*
+  * Function: rc_read_dictionary
+diff -Naur radiusclient-ng/lib/env.c renamed/lib/env.c
+--- radiusclient-ng/lib/env.c	2004-02-23 21:10:39.000000000 +0100
++++ renamed/lib/env.c	2004-11-17 16:27:02.000000000 +0100
+@@ -11,7 +11,7 @@
+ 
+ #include <config.h>
+ #include <includes.h>
+-#include <radiusclient.h>
++#include <radiusclient-ng.h>
+ 
+ /*
+  * Function: rc_new_env
+diff -Naur radiusclient-ng/lib/ip_util.c renamed/lib/ip_util.c
+--- radiusclient-ng/lib/ip_util.c	2004-04-14 20:45:03.000000000 +0200
++++ renamed/lib/ip_util.c	2004-11-17 16:27:02.000000000 +0100
+@@ -16,7 +16,7 @@
+ 
+ #include <config.h>
+ #include <includes.h>
+-#include <radiusclient.h>
++#include <radiusclient-ng.h>
+ 
+ /*
+  * Function: rc_get_ipaddr
+diff -Naur radiusclient-ng/lib/log.c renamed/lib/log.c
+--- radiusclient-ng/lib/log.c	2004-02-23 21:10:39.000000000 +0100
++++ renamed/lib/log.c	2004-11-17 16:27:02.000000000 +0100
+@@ -11,7 +11,7 @@
+ 
+ #include <config.h>
+ #include <includes.h>
+-#include <radiusclient.h>
++#include <radiusclient-ng.h>
+ 
+ /*
+  * Function: rc_openlog
+diff -Naur radiusclient-ng/lib/md5.c renamed/lib/md5.c
 --- radiusclient-ng/lib/md5.c	2003-12-02 11:39:20.000000000 +0100
-+++ rad-renamed/lib/md5.c	2004-11-17 16:20:23.101449232 +0100
++++ renamed/lib/md5.c	2004-11-17 16:27:02.000000000 +0100
 @@ -31,7 +31,7 @@
  
  #include <config.h>
@@ -1145,9 +649,9 @@ diff -Naur radiusclient-ng/lib/md5.c rad-renamed/lib/md5.c
  
  typedef unsigned char		*POINTER;
  
-diff -Naur radiusclient-ng/lib/sendserver.c rad-renamed/lib/sendserver.c
+diff -Naur radiusclient-ng/lib/sendserver.c renamed/lib/sendserver.c
 --- radiusclient-ng/lib/sendserver.c	2004-10-08 15:43:36.000000000 +0200
-+++ rad-renamed/lib/sendserver.c	2004-11-17 16:20:23.102449080 +0100
++++ renamed/lib/sendserver.c	2004-11-17 16:27:02.000000000 +0100
 @@ -16,7 +16,7 @@
  
  #include <config.h>
@@ -1157,9 +661,9 @@ diff -Naur radiusclient-ng/lib/sendserver.c rad-renamed/lib/sendserver.c
  #include <pathnames.h>
  
  static void rc_random_vector (unsigned char *);
-diff -Naur radiusclient-ng/lib/util.c rad-renamed/lib/util.c
+diff -Naur radiusclient-ng/lib/util.c renamed/lib/util.c
 --- radiusclient-ng/lib/util.c	2004-10-24 10:48:29.000000000 +0200
-+++ rad-renamed/lib/util.c	2004-11-17 16:20:23.102449080 +0100
++++ renamed/lib/util.c	2004-11-17 16:27:02.000000000 +0100
 @@ -18,7 +18,7 @@
  
  #include <config.h>
@@ -1169,9 +673,9 @@ diff -Naur radiusclient-ng/lib/util.c rad-renamed/lib/util.c
  
  #define	BUFSIZ	1024
  
-diff -Naur radiusclient-ng/login.radius/migs/ip-down rad-renamed/login.radius/migs/ip-down
+diff -Naur radiusclient-ng/login.radius/migs/ip-down renamed/login.radius/migs/ip-down
 --- radiusclient-ng/login.radius/migs/ip-down	2003-12-02 11:39:23.000000000 +0100
-+++ rad-renamed/login.radius/migs/ip-down	2004-11-17 16:20:23.102449080 +0100
++++ renamed/login.radius/migs/ip-down	2004-11-17 16:27:02.000000000 +0100
 @@ -22,7 +22,7 @@
  
  
@@ -1181,9 +685,9 @@ diff -Naur radiusclient-ng/login.radius/migs/ip-down rad-renamed/login.radius/mi
  
  # The session ID, username, raw port and ID are given to this script 
  # through the ipparam parameter of pppd 2.2.0e and above.
-diff -Naur radiusclient-ng/login.radius/migs/ip-up rad-renamed/login.radius/migs/ip-up
+diff -Naur radiusclient-ng/login.radius/migs/ip-up renamed/login.radius/migs/ip-up
 --- radiusclient-ng/login.radius/migs/ip-up	2003-12-02 11:39:23.000000000 +0100
-+++ rad-renamed/login.radius/migs/ip-up	2004-11-17 16:20:23.103448928 +0100
++++ renamed/login.radius/migs/ip-up	2004-11-17 16:27:02.000000000 +0100
 @@ -23,7 +23,7 @@
  
  
@@ -1193,9 +697,9 @@ diff -Naur radiusclient-ng/login.radius/migs/ip-up rad-renamed/login.radius/migs
  
  sub netmask 
  {
-diff -Naur radiusclient-ng/login.radius/migs/login.radius rad-renamed/login.radius/migs/login.radius
+diff -Naur radiusclient-ng/login.radius/migs/login.radius renamed/login.radius/migs/login.radius
 --- radiusclient-ng/login.radius/migs/login.radius	2003-12-02 11:39:23.000000000 +0100
-+++ rad-renamed/login.radius/migs/login.radius	2004-11-17 16:20:23.103448928 +0100
++++ renamed/login.radius/migs/login.radius	2004-11-17 16:27:02.000000000 +0100
 @@ -60,7 +60,7 @@
  
  # Programs and files.
@@ -1205,21 +709,9 @@ diff -Naur radiusclient-ng/login.radius/migs/login.radius rad-renamed/login.radi
  my $prog_rlogin   = "/usr/bin/rlogin";
  my $prog_telnet   = "/bin/telnet";
  my $prog_tcpclear = "/bin/telnet -e ''";
-diff -Naur radiusclient-ng/src/local.c rad-renamed/src/local.c
---- radiusclient-ng/src/local.c	2004-02-23 21:10:39.000000000 +0100
-+++ rad-renamed/src/local.c	2004-11-17 16:20:23.104448776 +0100
-@@ -11,7 +11,7 @@
- 
- #include <config.h>
- #include <includes.h>
--#include <radiusclient.h>
-+#include <radiusclient-ng.h>
- #include <messages.h>
- #include <radlogin.h>
- 
-diff -Naur radiusclient-ng/src/Makefile.am rad-renamed/src/Makefile.am
+diff -Naur radiusclient-ng/src/Makefile.am renamed/src/Makefile.am
 --- radiusclient-ng/src/Makefile.am	2004-10-04 12:15:20.000000000 +0200
-+++ rad-renamed/src/Makefile.am	2004-11-17 16:20:23.104448776 +0100
++++ renamed/src/Makefile.am	2004-11-17 16:27:02.000000000 +0100
 @@ -15,7 +15,7 @@
  DEFS = @DEFS@ -DRC_CONFIG_FILE=\"${pkgsysconfdir}/radiusclient.conf\" \
  	      -DRC_SECURE_PATH=\"@RC_SECURE_PATH@\"
@@ -1229,33 +721,9 @@ diff -Naur radiusclient-ng/src/Makefile.am rad-renamed/src/Makefile.am
  
  CLEANFILES = *~
  
-diff -Naur radiusclient-ng/src/radacct.c rad-renamed/src/radacct.c
---- radiusclient-ng/src/radacct.c	2004-02-23 21:10:39.000000000 +0100
-+++ rad-renamed/src/radacct.c	2004-11-17 16:20:23.104448776 +0100
-@@ -14,7 +14,7 @@
- 
- #include <config.h>
- #include <includes.h>
--#include <radiusclient.h>
-+#include <radiusclient-ng.h>
- #include <messages.h>
- #include <pathnames.h>
- 
-diff -Naur radiusclient-ng/src/radexample.c rad-renamed/src/radexample.c
---- radiusclient-ng/src/radexample.c	2004-02-23 21:10:39.000000000 +0100
-+++ rad-renamed/src/radexample.c	2004-11-17 16:20:23.105448624 +0100
-@@ -15,7 +15,7 @@
- 
- #include	<config.h>
- #include	<includes.h>
--#include	<radiusclient.h>
-+#include	<radiusclient-ng.h>
- #include	<pathnames.h>
- 
- static char *pname = NULL;
-diff -Naur radiusclient-ng/src/radius.c rad-renamed/src/radius.c
---- radiusclient-ng/src/radius.c	2004-02-23 21:14:10.000000000 +0100
-+++ rad-renamed/src/radius.c	2004-11-17 16:20:23.105448624 +0100
+diff -Naur radiusclient-ng/src/local.c renamed/src/local.c
+--- radiusclient-ng/src/local.c	2004-02-23 21:10:39.000000000 +0100
++++ renamed/src/local.c	2004-11-17 16:27:02.000000000 +0100
 @@ -11,7 +11,7 @@
  
  #include <config.h>
@@ -1265,9 +733,45 @@ diff -Naur radiusclient-ng/src/radius.c rad-renamed/src/radius.c
  #include <messages.h>
  #include <radlogin.h>
  
-diff -Naur radiusclient-ng/src/radiusclient.c rad-renamed/src/radiusclient.c
+diff -Naur radiusclient-ng/src/radacct.c renamed/src/radacct.c
+--- radiusclient-ng/src/radacct.c	2004-02-23 21:10:39.000000000 +0100
++++ renamed/src/radacct.c	2004-11-17 16:27:02.000000000 +0100
+@@ -14,7 +14,7 @@
+ 
+ #include <config.h>
+ #include <includes.h>
+-#include <radiusclient.h>
++#include <radiusclient-ng.h>
+ #include <messages.h>
+ #include <pathnames.h>
+ 
+diff -Naur radiusclient-ng/src/radexample.c renamed/src/radexample.c
+--- radiusclient-ng/src/radexample.c	2004-02-23 21:10:39.000000000 +0100
++++ renamed/src/radexample.c	2004-11-17 16:27:02.000000000 +0100
+@@ -15,7 +15,7 @@
+ 
+ #include	<config.h>
+ #include	<includes.h>
+-#include	<radiusclient.h>
++#include	<radiusclient-ng.h>
+ #include	<pathnames.h>
+ 
+ static char *pname = NULL;
+diff -Naur radiusclient-ng/src/radius.c renamed/src/radius.c
+--- radiusclient-ng/src/radius.c	2004-02-23 21:14:10.000000000 +0100
++++ renamed/src/radius.c	2004-11-17 16:27:02.000000000 +0100
+@@ -11,7 +11,7 @@
+ 
+ #include <config.h>
+ #include <includes.h>
+-#include <radiusclient.h>
++#include <radiusclient-ng.h>
+ #include <messages.h>
+ #include <radlogin.h>
+ 
+diff -Naur radiusclient-ng/src/radiusclient.c renamed/src/radiusclient.c
 --- radiusclient-ng/src/radiusclient.c	2004-10-24 10:48:29.000000000 +0200
-+++ rad-renamed/src/radiusclient.c	2004-11-17 16:20:23.106448472 +0100
++++ renamed/src/radiusclient.c	2004-11-17 16:27:02.000000000 +0100
 @@ -31,7 +31,7 @@
  #include <stdlib.h>
  #include <unistd.h>
@@ -1277,9 +781,9 @@ diff -Naur radiusclient-ng/src/radiusclient.c rad-renamed/src/radiusclient.c
  
  int process(void *, VALUE_PAIR *, int, int);
  
-diff -Naur radiusclient-ng/src/radlogin.c rad-renamed/src/radlogin.c
+diff -Naur radiusclient-ng/src/radlogin.c renamed/src/radlogin.c
 --- radiusclient-ng/src/radlogin.c	2004-02-23 21:14:10.000000000 +0100
-+++ rad-renamed/src/radlogin.c	2004-11-17 16:20:23.106448472 +0100
++++ renamed/src/radlogin.c	2004-11-17 16:27:02.000000000 +0100
 @@ -14,7 +14,7 @@
  
  #include	<config.h>
@@ -1289,9 +793,9 @@ diff -Naur radiusclient-ng/src/radlogin.c rad-renamed/src/radlogin.c
  #include	<messages.h>
  #include	<pathnames.h>
  #include	<radlogin.h>
-diff -Naur radiusclient-ng/src/radstatus.c rad-renamed/src/radstatus.c
+diff -Naur radiusclient-ng/src/radstatus.c renamed/src/radstatus.c
 --- radiusclient-ng/src/radstatus.c	2004-04-14 20:50:31.000000000 +0200
-+++ rad-renamed/src/radstatus.c	2004-11-17 16:20:23.107448320 +0100
++++ renamed/src/radstatus.c	2004-11-17 16:27:02.000000000 +0100
 @@ -14,7 +14,7 @@
  
  #include <config.h>
