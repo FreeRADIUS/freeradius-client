@@ -1,5 +1,7 @@
 /*
- * $Id: util.c,v 1.4 2004/04/14 18:45:03 sobomax Exp $
+ * $Id: util.c,v 1.5 2004/10/24 08:48:29 sobomax Exp $
+ *
+ * Copyright (c) 1998 The NetBSD Foundation, Inc.
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -17,6 +19,8 @@
 #include <config.h>
 #include <includes.h>
 #include <radiusclient.h>
+
+#define	BUFSIZ	1024
 
 /*
  * Function: rc_str2tm
@@ -273,4 +277,52 @@ rc_destroy(rc_handle *rh)
 	if (rh->ppbuf != NULL)
 		free(rh->ppbuf);
 	free(rh);
+}
+
+/*
+ * Function: rc_fgetln
+ *
+ * Purpose: Get next line from the stream.
+ *
+ */
+
+char *
+rc_fgetln(FILE *fp, size_t *len)
+{
+	static char *buf = NULL;
+	static size_t bufsiz = 0;
+	char *ptr;
+
+	if (buf == NULL) {
+		bufsiz = BUFSIZ;
+		if ((buf = malloc(bufsiz)) == NULL)
+			return NULL;
+	}
+
+	if (fgets(buf, bufsiz, fp) == NULL)
+		return NULL;
+	*len = 0;
+
+	while ((ptr = strchr(&buf[*len], '\n')) == NULL) {
+		size_t nbufsiz = bufsiz + BUFSIZ;
+		char *nbuf = realloc(buf, nbufsiz);
+
+		if (nbuf == NULL) {
+			int oerrno = errno;
+			free(buf);
+			errno = oerrno;
+			buf = NULL;
+			return NULL;
+		} else
+			buf = nbuf;
+
+		*len = bufsiz;
+		if (fgets(&buf[bufsiz], BUFSIZ, fp) == NULL)
+			return buf;
+
+		bufsiz = nbufsiz;
+	}
+
+	*len = (ptr - buf) + 1;
+	return buf;
 }

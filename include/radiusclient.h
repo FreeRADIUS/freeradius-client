@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient.h,v 1.10 2004/10/17 18:22:21 sobomax Exp $
+ * $Id: radiusclient.h,v 1.11 2004/10/24 08:48:29 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -474,6 +474,7 @@ void rc_mdelay(int);
 char *rc_mksid(rc_handle *);
 rc_handle *rc_new(void);
 void rc_destroy(rc_handle *);
+char *rc_fgetln(FILE *, size_t *);
 
 /*	env.c			*/
 

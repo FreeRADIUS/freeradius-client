@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: radiusclient.c,v 1.3 2004/10/17 18:25:27 sobomax Exp $
+ * $Id: radiusclient.c,v 1.4 2004/10/24 08:48:29 sobomax Exp $
  */
 
 #include <ctype.h>
@@ -115,7 +115,7 @@ main(int argc, char **argv)
         acct = 0;
         do {
             len = 0;
-            cp = fgetln(stdin, &len);
+            cp = rc_fgetln(stdin, &len);
             theend = 1;
             if (cp != NULL && len > 0) {
                 if (firstline != 0) {
