@@ -1,5 +1,5 @@
 /*
- * $Id: radstatus.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: radstatus.c,v 1.4 2004/04/14 18:50:31 sobomax Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
@@ -10,7 +10,7 @@
  */
 
 static char	rcsid[] =
-		"$Id: radstatus.c,v 1.3 2004/02/23 20:10:39 sobomax Exp $";
+		"$Id: radstatus.c,v 1.4 2004/04/14 18:50:31 sobomax Exp $";
 
 #include <config.h>
 #include <includes.h>
@@ -35,7 +35,7 @@ void version(void)
 	exit(ERROR_RC);
 }
 
-void main (int argc, char **argv)
+int main (int argc, char **argv)
 {
 	int	result = ERROR_RC;
    	int	c,i;
