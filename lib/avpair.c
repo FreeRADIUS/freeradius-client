@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.5 2004/01/13 00:17:01 sobomax Exp $
+ * $Id: avpair.c,v 1.6 2004/01/17 18:44:06 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -329,7 +329,7 @@ VALUE_PAIR *rc_avpair_gen (rc_handle *rh, AUTH_HDR *auth)
 
 VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, UINT4 attr, int vendorpec)
 {
-	for (; vp != NULL && vp->attribute != attr && VENDOR(vp->attribute) != vendorpec; vp = vp->next)
+	for (; vp != NULL && (vp->attribute != attr || VENDOR(vp->attribute) != vendorpec); vp = vp->next)
 	{
 		continue;
 	}
