@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.8 2004/04/14 19:46:59 sobomax Exp $
+ * $Id: avpair.c,v 1.9 2004/10/04 10:13:49 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -419,7 +419,7 @@ void rc_avpair_free (VALUE_PAIR *pair)
  *
  */
 
-static void rc_fieldcpy (char *string, char **uptr)
+static void rc_fieldcpy (char *string, char **uptr, const char *stopat)
 {
 	char           *ptr;
 
@@ -440,8 +440,7 @@ static void rc_fieldcpy (char *string, char **uptr)
 		return;
 	}
 
-	while (*ptr != ' ' && *ptr != '\t' && *ptr != '\0' && *ptr != '\n' &&
-			*ptr != '=' && *ptr != ',')
+	while (*ptr != '\0' && strchr(stopat, *ptr) == NULL)
 	{
 		*string++ = *ptr++;
 	}
@@ -490,7 +489,7 @@ int rc_avpair_parse (rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 		switch (mode)
 		{
 		    case PARSE_MODE_NAME:		/* Attribute Name */
-			rc_fieldcpy (attrstr, &buffer);
+			rc_fieldcpy (attrstr, &buffer, " \t\n=,");
 			if ((attr =
 				rc_dict_findattr (rh, attrstr)) == NULL)
 			{
@@ -522,7 +521,7 @@ int rc_avpair_parse (rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 			break;
 
 		    case PARSE_MODE_VALUE:		/* Value */
-			rc_fieldcpy (valstr, &buffer);
+			rc_fieldcpy (valstr, &buffer, " \t\n,");
 
 			if ((pair = malloc (sizeof (VALUE_PAIR))) == NULL)
 			{
@@ -597,6 +596,27 @@ int rc_avpair_parse (rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 				free (pair);
 				return -1;
 			}
+
+			/* XXX: Fix up Digest-Attributes */
+			switch (pair->attribute) {
+			case PW_DIGEST_REALM:
+			case PW_DIGEST_NONCE:
+			case PW_DIGEST_METHOD:
+			case PW_DIGEST_URI:
+			case PW_DIGEST_QOP:
+			case PW_DIGEST_ALGORITHM:
+			case PW_DIGEST_BODY_DIGEST:
+			case PW_DIGEST_CNONCE:
+			case PW_DIGEST_NONCE_COUNT:
+			case PW_DIGEST_USER_NAME:
+				/* overlapping! */
+				memmove(&pair->strvalue[2], &pair->strvalue[0], pair->lvalue);
+				pair->strvalue[0] = pair->attribute - PW_DIGEST_REALM + 1;
+				pair->lvalue += 2;
+				pair->strvalue[1] = pair->lvalue;
+				pair->attribute = PW_DIGEST_ATTRIBUTES;
+			}
+
 			pair->next = NULL;
 
 			if (*first_pair == NULL)
