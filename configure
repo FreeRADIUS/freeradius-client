@@ -1795,7 +1795,7 @@ fi
 
 # Define the identity of the package.
 PACKAGE=radiusclient
-VERSION=0.4.4
+VERSION=0.4.5
 
 cat >>confdefs.h <<_ACEOF
 #define PACKAGE "$PACKAGE"
