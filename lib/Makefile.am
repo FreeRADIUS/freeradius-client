@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.am,v 1.1 2003/12/02 10:39:17 sobomax Exp $
+# $Id: Makefile.am,v 1.2 2003/12/02 14:19:08 sobomax Exp $
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
@@ -31,4 +31,4 @@ lib_LTLIBRARIES = libradiusclient.la
 libradiusclient_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
 	avpair.c config.c dict.c ip_util.c log.c md5.c util.c lock.c
 libradiusclient_la_LDFLAGS = -version-info $(LIBVERSION)
-libradiusclient_la_LIBADD = @LTLIBOBJS@
+#libradiusclient_la_LIBADD = @LTLIBOBJS@

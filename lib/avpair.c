@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.1 2003/12/02 10:39:20 sobomax Exp $
+ * $Id: avpair.c,v 1.2 2003/12/02 14:19:08 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -124,6 +124,28 @@ VALUE_PAIR *rc_avpair_new (int attrid, void *pval, int len)
 			vp->type = pda->type;
 			if (rc_avpair_assign (vp, pval, len) == 0)
 			{
+				/* XXX: Fix up Digest-Attributes */
+				switch (vp->attribute) {
+				case PW_DIGEST_REALM:
+				case PW_DIGEST_NONCE:
+				case PW_DIGEST_METHOD:
+				case PW_DIGEST_URI:
+				case PW_DIGEST_QOP:
+				case PW_DIGEST_ALGORITHM:
+				case PW_DIGEST_BODY_DIGEST:
+				case PW_DIGEST_CNONCE:
+				case PW_DIGEST_NONCE_COUNT:
+				case PW_DIGEST_USER_NAME:
+					/* overlapping! */
+					memmove(&vp->strvalue[2], &vp->strvalue[0], vp->lvalue);
+					vp->strvalue[0] = vp->attribute - PW_DIGEST_REALM + 1;
+					vp->lvalue += 2;
+					vp->strvalue[1] = vp->lvalue;
+					vp->attribute = PW_DIGEST_ATTRIBUTES;
+				default:
+					break;
+				}
+
 				return vp;
 			}
 			free (vp);
