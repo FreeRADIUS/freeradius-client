@@ -1,5 +1,5 @@
 /*
- * $Id: options.h,v 1.4 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: options.h,v 1.5 2004/11/16 13:49:19 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
@@ -28,9 +28,6 @@ typedef struct _option {
 	void *val;		  /* pointer to option value */
 } OPTION;
 
-static SERVER acctserver = {0};
-static SERVER authserver = {0};
-
 static OPTION config_options_default[] = {
 /* internally used options */
 {"config_file",		OT_STR, ST_UNDEF, NULL},
@@ -41,8 +38,8 @@ static OPTION config_options_default[] = {
 {"nologin",		OT_STR, ST_UNDEF, NULL},
 {"issue",		OT_STR, ST_UNDEF, NULL},
 /* RADIUS specific options */
-{"authserver",		OT_SRV, ST_UNDEF, &authserver},
-{"acctserver",		OT_SRV, ST_UNDEF, &acctserver},
+{"authserver",		OT_SRV, ST_UNDEF, NULL},
+{"acctserver",		OT_SRV, ST_UNDEF, NULL},
 {"servers",		OT_STR, ST_UNDEF, NULL},
 {"dictionary",		OT_STR, ST_UNDEF, NULL},
 {"login_radius",	OT_STR, ST_UNDEF, NULL},

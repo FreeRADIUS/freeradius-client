@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.7 2004/11/16 13:33:50 sobomax Exp $
+ * $Id: config.c,v 1.8 2004/11/16 13:49:19 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -99,6 +99,13 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *p)
 	}
 
 	serv = (SERVER *) option->val;
+	if (serv == NULL) {
+		serv = malloc(sizeof(*serv));
+		if (serv == NULL) {
+			rc_log(LOG_CRIT, "read_config: out of memory");
+			return -1;
+		}
+	}
 
 	while ((p = strtok(p, ", \t")) != NULL) {
 
@@ -119,6 +126,8 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *p)
 					serv->port[serv->max] = ntohs ((unsigned int) svp->s_port);
 			else {
 				rc_log(LOG_ERR, "%s: line %d: no default port for %s", filename, line, option->name);
+				if (option->val == NULL)
+					free(serv);
 				return -1;
 			}
 		}
@@ -126,12 +135,16 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *p)
 		serv->name[serv->max] = strdup(p);
 		if (serv->name[serv->max] == NULL) {
 			rc_log(LOG_CRIT, "read_config: out of memory");
+			if (option->val == NULL)
+				free(serv);
 			return -1;
 		}
 		serv->max++;
 
 		p = NULL;
 	}
+	if (option->val == NULL)
+		option->val = (void *)serv;
 
 	return 0;
 }
@@ -622,7 +635,7 @@ rc_config_free(rc_handle *rh)
 		        serv = (SERVER *)rh->config_options[i].val;
 			for (j = 0; j < serv->max; j++)
 				free(serv->name[j]);
-			serv->max = 0;
+			free(serv);
 		} else {
 			free(rh->config_options[i].val);
 		}
