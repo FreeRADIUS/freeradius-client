@@ -1,5 +1,5 @@
 /*
- * $Id: clientid.c,v 1.1 2003/12/02 10:39:17 sobomax Exp $
+ * $Id: clientid.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -20,8 +20,6 @@ struct map2id_s {
 	struct map2id_s *next;
 };
 
-static struct map2id_s *map2id_list = NULL; 
-
 /*
  * Function: rc_read_mapfile
  *
@@ -32,7 +30,7 @@ static struct map2id_s *map2id_list = NULL;
  * Returns: zero on success, negative integer on failure 
  */
 
-int rc_read_mapfile(char *filename)
+int rc_read_mapfile(rc_handle *rh, char *filename)
 {
 	char buffer[1024];
 	FILE *mapfd;
@@ -43,7 +41,7 @@ int rc_read_mapfile(char *filename)
         if ((mapfd = fopen(filename,"r")) == NULL)
         {
 		rc_log(LOG_ERR,"rc_read_mapfile: can't read %s: %s", filename, strerror(errno));                                                        
-		return (-1);
+		return -1;
 	}
 	
 #define SKIP(p) while(*p && isspace(*p)) p++;
@@ -69,18 +67,20 @@ int rc_read_mapfile(char *filename)
 			
 			if ((p = (struct map2id_s *)malloc(sizeof(*p))) == NULL) {
 				rc_log(LOG_CRIT,"rc_read_mapfile: out of memory");
-				return (-1);
+				fclose(mapfd);
+				return -1;
 			}
 			
 			p->name = strdup(name);
 			p->id = atoi(id);
-			p->next = map2id_list;
-			map2id_list = p;			
+			p->next = rh->map2id_list;
+			rh->map2id_list = p;			
 		
 		} else {
 			
 			rc_log(LOG_ERR, "rc_read_mapfile: malformed line in %s, line %d", filename, lnr);  
-			return (-1);
+			fclose(mapfd);
+			return -1;
 
 		}
 	}
@@ -102,7 +102,7 @@ int rc_read_mapfile(char *filename)
  * Returns: port id, zero if no entry found
  */
 
-UINT4 rc_map2id(char *name)
+UINT4 rc_map2id(rc_handle *rh, char *name)
 {
 	struct map2id_s *p;
 	char ttyname[PATH_MAX];
@@ -113,10 +113,34 @@ UINT4 rc_map2id(char *name)
 		
 	strncat(ttyname, name, sizeof(ttyname));
 	
-	for(p = map2id_list; p; p = p->next)
+	for(p = rh->map2id_list; p; p = p->next)
 		if (!strcmp(ttyname, p->name)) return p->id;
 
 	rc_log(LOG_WARNING,"rc_map2id: can't find tty %s in map database", ttyname);
 	
 	return 0;
+}
+
+/*
+ * Function: rc_map2id_free
+ *
+ * Purpose: Free allocated map2id list
+ *
+ * Arguments: Radius Client handle
+ */
+
+void
+rc_map2id_free(rc_handle *rh)
+{
+	struct map2id_s *p, *np;
+
+	if (rh->map2id_list == NULL)
+		return;
+
+	for(p = rh->map2id_list; p != NULL; p = np) {
+		np = p->next;
+		free(p->name);
+		free(p);
+	}
+	rh->map2id_list = NULL;
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: strcasecmp.c,v 1.1 2003/12/02 10:39:17 sobomax Exp $
+ * $Id: strcasecmp.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg and Christian Graefe
  *
@@ -31,6 +31,6 @@ int strcasecmp(char *s1, char *s2)
     if (!*s1 && !*s2)
     	return 0;    
     else
-    	return (toupper(*s1) - toupper(*s2));                            
+    	return toupper(*s1) - toupper(*s2);                            
 }
 #endif

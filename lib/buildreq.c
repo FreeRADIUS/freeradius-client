@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.1 2003/12/02 10:39:17 sobomax Exp $
+ * $Id: buildreq.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -13,7 +13,7 @@
 #include <includes.h>
 #include <radiusclient.h>
 
-unsigned char rc_get_seqnbr(void);
+unsigned char rc_get_seqnbr(rc_handle *);
 
 /*
  * Function: rc_buildreq
@@ -23,12 +23,12 @@ unsigned char rc_get_seqnbr(void);
  *
  */
 
-void rc_buildreq(SEND_DATA *data, int code, char *server, unsigned short port,
+void rc_buildreq(rc_handle *rh, SEND_DATA *data, int code, char *server, unsigned short port,
 		 int timeout, int retries)
 {
 	data->server = server;
 	data->svc_port = port;
-	data->seq_nbr = rc_get_seqnbr();
+	data->seq_nbr = rc_get_seqnbr(rh);
 	data->timeout = timeout;
 	data->retries = retries;
 	data->code = code;
@@ -54,12 +54,12 @@ static unsigned char rc_guess_seqnbr(void)
  *
  */
 
-unsigned char rc_get_seqnbr(void)
+unsigned char rc_get_seqnbr(rc_handle *rh)
 {
 	FILE *sf;
 	int tries = 1;
 	int seq_nbr;
-	char *seqfile = rc_conf_str("seqfile");
+	char *seqfile = rc_conf_str(rh, "seqfile");
 	
 	if ((sf = fopen(seqfile, "a+")) == NULL)
 	{
@@ -119,16 +119,16 @@ unsigned char rc_get_seqnbr(void)
  *
  */
 
-int rc_auth(UINT4 client_port, VALUE_PAIR *send, VALUE_PAIR **received, 
+int rc_auth(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send, VALUE_PAIR **received, 
 	    char *msg)
 {
 	SEND_DATA       data;
 	UINT4		client_id;
 	int		result;
 	int		i;
-	SERVER		*authserver = rc_conf_srv("authserver");
-	int		timeout = rc_conf_int("radius_timeout");
-	int		retries = rc_conf_int("radius_retries");	
+	SERVER		*authserver = rc_conf_srv(rh, "authserver");
+	int		timeout = rc_conf_int(rh, "radius_timeout");
+	int		retries = rc_conf_int(rh, "radius_retries");	
 
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
@@ -137,18 +137,18 @@ int rc_auth(UINT4 client_port, VALUE_PAIR *send, VALUE_PAIR **received,
 	 * Fill in NAS-IP-Address
 	 */
 	 
-	if ((client_id = rc_own_ipaddress()) == 0)
-		return (ERROR_RC);
+	if ((client_id = rc_own_ipaddress(rh)) == 0)
+		return ERROR_RC;
  
-	if (rc_avpair_add(&(data.send_pairs), PW_NAS_IP_ADDRESS, &client_id, 0) == NULL)
-		return (ERROR_RC);
+	if (rc_avpair_add(rh, &(data.send_pairs), PW_NAS_IP_ADDRESS, &client_id, 0, 0) == NULL)
+		return ERROR_RC;
 
 	/*
 	 * Fill in NAS-Port
 	 */
 	
-	if (rc_avpair_add(&(data.send_pairs), PW_NAS_PORT, &client_port, 0) == NULL)
-		return (ERROR_RC);
+	if (rc_avpair_add(rh, &(data.send_pairs), PW_NAS_PORT, &client_port, 0, 0) == NULL)
+		return ERROR_RC;
 
 	result = ERROR_RC;
 	for(i=0; (i<authserver->max) && (result != OK_RC) && (result != BADRESP_RC)
@@ -158,10 +158,10 @@ int rc_auth(UINT4 client_port, VALUE_PAIR *send, VALUE_PAIR **received,
 			rc_avpair_free(data.receive_pairs);
 			data.receive_pairs = NULL;
 		}
-		rc_buildreq(&data, PW_ACCESS_REQUEST, authserver->name[i], 
+		rc_buildreq(rh, &data, PW_ACCESS_REQUEST, authserver->name[i], 
 			    authserver->port[i], timeout, retries);
 			    
-		result = rc_send_server (&data, msg);
+		result = rc_send_server (rh, &data, msg);
 	}
 
 	*received = data.receive_pairs;
@@ -182,14 +182,14 @@ int rc_auth(UINT4 client_port, VALUE_PAIR *send, VALUE_PAIR **received,
  *
  */
 
-int rc_auth_proxy(VALUE_PAIR *send, VALUE_PAIR **received, char *msg)
+int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *msg)
 {
 	SEND_DATA       data;
 	int		result;
 	int		i;
-	SERVER		*authserver = rc_conf_srv("authserver");
-	int		timeout = rc_conf_int("radius_timeout");
-	int		retries = rc_conf_int("radius_retries");	
+	SERVER		*authserver = rc_conf_srv(rh, "authserver");
+	int		timeout = rc_conf_int(rh, "radius_timeout");
+	int		retries = rc_conf_int(rh, "radius_retries");	
 
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
@@ -202,10 +202,10 @@ int rc_auth_proxy(VALUE_PAIR *send, VALUE_PAIR **received, char *msg)
 			rc_avpair_free(data.receive_pairs);
 			data.receive_pairs = NULL;
 		}
-		rc_buildreq(&data, PW_ACCESS_REQUEST, authserver->name[i], 
+		rc_buildreq(rh, &data, PW_ACCESS_REQUEST, authserver->name[i], 
 			    authserver->port[i], timeout, retries);
 			    
-		result = rc_send_server (&data, msg);
+		result = rc_send_server (rh, &data, msg);
 	}
 
 	*received = data.receive_pairs;
@@ -224,7 +224,7 @@ int rc_auth_proxy(VALUE_PAIR *send, VALUE_PAIR **received, char *msg)
  *	    in by this function, the rest has to be supplied.
  */
 
-int rc_acct(UINT4 client_port, VALUE_PAIR *send)
+int rc_acct(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send)
 {
 	SEND_DATA       data;
 	VALUE_PAIR	*adt_vp;
@@ -233,9 +233,9 @@ int rc_acct(UINT4 client_port, VALUE_PAIR *send)
 	time_t		start_time, dtime;
 	char		msg[4096];
 	int		i;
-	SERVER		*acctserver = rc_conf_srv("acctserver");
-	int		timeout = rc_conf_int("radius_timeout");
-	int		retries = rc_conf_int("radius_retries");
+	SERVER		*acctserver = rc_conf_srv(rh, "acctserver");
+	int		timeout = rc_conf_int(rh, "radius_timeout");
+	int		retries = rc_conf_int(rh, "radius_retries");
 	
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
@@ -244,26 +244,26 @@ int rc_acct(UINT4 client_port, VALUE_PAIR *send)
 	 * Fill in NAS-IP-Address
 	 */
 	 
-	if ((client_id = rc_own_ipaddress()) == 0)
-		return (ERROR_RC);
+	if ((client_id = rc_own_ipaddress(rh)) == 0)
+		return ERROR_RC;
  
-	if (rc_avpair_add(&(data.send_pairs), PW_NAS_IP_ADDRESS, &client_id, 0) == NULL)
-		return (ERROR_RC);
+	if (rc_avpair_add(rh, &(data.send_pairs), PW_NAS_IP_ADDRESS, &client_id, 0, 0) == NULL)
+		return ERROR_RC;
 
 	/*
 	 * Fill in NAS-Port
 	 */
 			  
-	if (rc_avpair_add(&(data.send_pairs), PW_NAS_PORT, &client_port, 0) == NULL)
-		return (ERROR_RC);
+	if (rc_avpair_add(rh, &(data.send_pairs), PW_NAS_PORT, &client_port, 0, 0) == NULL)
+		return ERROR_RC;
 
 	/*
 	 * Fill in Acct-Delay-Time
 	 */
 	
 	dtime = 0;
-	if ((adt_vp = rc_avpair_add(&(data.send_pairs), PW_ACCT_DELAY_TIME, &dtime, 0)) == NULL)
-		return (ERROR_RC);
+	if ((adt_vp = rc_avpair_add(rh, &(data.send_pairs), PW_ACCT_DELAY_TIME, &dtime, 0, 0)) == NULL)
+		return ERROR_RC;
 
 	start_time = time(NULL); 
 	result = ERROR_RC;
@@ -274,13 +274,13 @@ int rc_acct(UINT4 client_port, VALUE_PAIR *send)
 			rc_avpair_free(data.receive_pairs);
 			data.receive_pairs = NULL;
 		}
-		rc_buildreq(&data, PW_ACCOUNTING_REQUEST, acctserver->name[i], 
+		rc_buildreq(rh, &data, PW_ACCOUNTING_REQUEST, acctserver->name[i], 
 			    acctserver->port[i], timeout, retries);
 
 		dtime = time(NULL) - start_time;
 		rc_avpair_assign(adt_vp, &dtime, 0);
 		
-		result = rc_send_server (&data, msg);
+		result = rc_send_server (rh, &data, msg);
 	}
 
 	rc_avpair_free(data.receive_pairs);
@@ -295,15 +295,15 @@ int rc_acct(UINT4 client_port, VALUE_PAIR *send)
  *
  */
 
-int rc_acct_proxy(VALUE_PAIR *send)
+int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
 {
 	SEND_DATA       data;
 	int		result;
 	char		msg[4096];
 	int		i;
-	SERVER		*acctserver = rc_conf_srv("authserver");
-	int		timeout = rc_conf_int("radius_timeout");
-	int		retries = rc_conf_int("radius_retries");	
+	SERVER		*acctserver = rc_conf_srv(rh, "authserver");
+	int		timeout = rc_conf_int(rh, "radius_timeout");
+	int		retries = rc_conf_int(rh, "radius_retries");	
 	
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
@@ -316,10 +316,10 @@ int rc_acct_proxy(VALUE_PAIR *send)
 			rc_avpair_free(data.receive_pairs);
 			data.receive_pairs = NULL;
 		}
-		rc_buildreq(&data, PW_ACCOUNTING_REQUEST, acctserver->name[i], 
+		rc_buildreq(rh, &data, PW_ACCOUNTING_REQUEST, acctserver->name[i], 
 			    acctserver->port[i], timeout, retries);
 
-		result = rc_send_server (&data, msg);
+		result = rc_send_server (rh, &data, msg);
 	}
 
 	rc_avpair_free(data.receive_pairs);
@@ -335,13 +335,13 @@ int rc_acct_proxy(VALUE_PAIR *send)
  *
  */
 
-int rc_check(char *host, unsigned short port, char *msg)
+int rc_check(rc_handle *rh, char *host, unsigned short port, char *msg)
 {
 	SEND_DATA       data;
 	int		result;
 	UINT4		client_id, service_type;
-	int		timeout = rc_conf_int("radius_timeout");
-	int		retries = rc_conf_int("radius_retries");
+	int		timeout = rc_conf_int(rh, "radius_timeout");
+	int		retries = rc_conf_int(rh, "radius_retries");
 	
 	data.send_pairs = data.receive_pairs = NULL;
 
@@ -349,20 +349,20 @@ int rc_check(char *host, unsigned short port, char *msg)
 	 * Fill in NAS-IP-Address, although it isn't neccessary
 	 */
 	 
-	if ((client_id = rc_own_ipaddress()) == 0)
-		return (ERROR_RC);
+	if ((client_id = rc_own_ipaddress(rh)) == 0)
+		return ERROR_RC;
  
-	rc_avpair_add(&(data.send_pairs), PW_NAS_IP_ADDRESS, &client_id, 0); 	
+	rc_avpair_add(rh, &(data.send_pairs), PW_NAS_IP_ADDRESS, &client_id, 0, 0); 	
 
 	/*
 	 * Fill in Service-Type
 	 */
 	
 	service_type = PW_ADMINISTRATIVE;
-	rc_avpair_add(&(data.send_pairs), PW_SERVICE_TYPE, &service_type, 0); 	
+	rc_avpair_add(rh, &(data.send_pairs), PW_SERVICE_TYPE, &service_type, 0, 0); 	
 
-	rc_buildreq(&data, PW_STATUS_SERVER, host, port, timeout, retries);
-	result = rc_send_server (&data, msg);
+	rc_buildreq(rh, &data, PW_STATUS_SERVER, host, port, timeout, retries);
+	result = rc_send_server (rh, &data, msg);
 
 	rc_avpair_free(data.receive_pairs);
 	

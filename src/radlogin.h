@@ -1,5 +1,5 @@
 /*
- * $Id: radlogin.h,v 1.1 2003/12/02 10:39:22 sobomax Exp $
+ * $Id: radlogin.h,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
@@ -12,21 +12,14 @@
 #ifndef RADLOGIN_H
 #define RADLOGIN_H
 
-#undef __P
-#if defined (__STDC__) || defined (_AIX) || (defined (__mips) && defined (_SYSTYPE_SVR4)) || defined(WIN32) || defined(__cplusplus)
-# define __P(protos) protos
-#else
-# define __P(protos) ()
-#endif
-
-typedef void (*LFUNC)(char *);
+typedef void (*LFUNC)(rc_handle *, char *);
 
 /* radius.c */
-LFUNC auth_radius(UINT4, char *, char *);
-void radius_login(char *);
+LFUNC auth_radius(rc_handle *, UINT4, char *, char *);
+void radius_login(rc_handle *, char *);
 
 /* local.c */
-LFUNC auth_local __P((char *, char *));
-void local_login __P((char *));
+LFUNC auth_local(char *, char *);
+void local_login(rc_handle *, char *);
 
 #endif /* RADLOGIN_H */

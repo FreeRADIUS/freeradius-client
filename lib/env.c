@@ -1,5 +1,5 @@
 /*
- * $Id: env.c,v 1.1 2003/12/02 10:39:17 sobomax Exp $
+ * $Id: env.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -79,7 +79,7 @@ int rc_add_env(ENV *env, char *name, char *value)
 	if (env->env[i])
 	{
 		if ((new_env = realloc(env->env[i], strlen(name)+strlen(value)+2)) == NULL)
-			return (-1);
+			return -1;
 
 		env->env[i] = new_env;
 
@@ -87,12 +87,12 @@ int rc_add_env(ENV *env, char *name, char *value)
 	} else {
 		if (env->size == (env->maxsize-1)) {
 			rc_log(LOG_CRIT, "rc_add_env: not enough space for environment (increase ENV_SIZE)");
-			return (-1);
+			return -1;
 		}
 	
 		if ((env->env[env->size] = malloc(strlen(name)+strlen(value)+2)) == NULL) {
 			rc_log(LOG_CRIT, "rc_add_env: out of memory");
-			return (-1);
+			return -1;
 		}
 	
 		sprintf(env->env[env->size],"%s=%s", name, value);
@@ -132,7 +132,7 @@ int rc_import_env(ENV *env, char **import)
 		if (rc_add_env(env, *import, es+1) < 0)
 		{
 			*es = '=';
-			return (-1);
+			return -1;
 		}
 	
 		*es = '=';

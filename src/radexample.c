@@ -1,5 +1,5 @@
 /*
- * $Id: radexample.c,v 1.1 2003/12/02 10:39:22 sobomax Exp $
+ * $Id: radexample.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -11,7 +11,7 @@
 
 
 static char	rcsid[] =
-		"$Id: radexample.c,v 1.1 2003/12/02 10:39:22 sobomax Exp $";
+		"$Id: radexample.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $";
 
 #include	<config.h>
 #include	<includes.h>
@@ -29,20 +29,23 @@ main (int argc, char **argv)
 	VALUE_PAIR 	*send, *received;
 	UINT4		service;
 	char 		msg[4096], username_realm[256];
-	char		*default_realm = rc_conf_str("default_realm");
+	char		*default_realm;
+	rc_handle	*rh;
 
 	pname = (pname = strrchr(argv[0],'/'))?pname+1:argv[0];
 
 	rc_openlog(pname);
 
-	if (rc_read_config(RC_CONFIG_FILE) != 0)
-		return(ERROR_RC);
+	if ((rh = rc_read_config(RC_CONFIG_FILE)) == NULL)
+		return ERROR_RC;
 	
-	if (rc_read_dictionary(rc_conf_str("dictionary")) != 0)
-		return(ERROR_RC);
+	if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0)
+		return ERROR_RC;
 
-	strncpy(username, rc_getstr ("login: ",1), sizeof(username));
-	strncpy (passwd, rc_getstr("Password: ",0), sizeof (passwd));		
+	default_realm = rc_conf_str(rh, "default_realm");
+
+	strncpy(username, rc_getstr (rh, "login: ",1), sizeof(username));
+	strncpy (passwd, rc_getstr(rh, "Password: ",0), sizeof (passwd));		
 
 	send = NULL;
 
@@ -60,25 +63,25 @@ main (int argc, char **argv)
 		strncat(username_realm, default_realm, sizeof(username_realm));
 	} 
 
-	if (rc_avpair_add(&send, PW_USER_NAME, username_realm, 0) == NULL)
-		return(ERROR_RC);
+	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, 0, 0) == NULL)
+		return ERROR_RC;
 	
 	/*
 	 * Fill in User-Password
 	 */
 	 
-	if (rc_avpair_add(&send, PW_USER_PASSWORD, passwd, 0) == NULL)
-		return (ERROR_RC);
+	if (rc_avpair_add(rh, &send, PW_USER_PASSWORD, passwd, 0, 0) == NULL)
+		return ERROR_RC;
 
 	/*
 	 * Fill in Service-Type
 	 */
 	
 	service = PW_AUTHENTICATE_ONLY;
-	if (rc_avpair_add(&send, PW_SERVICE_TYPE, &service, 0) == NULL)
-		return (ERROR_RC);	
+	if (rc_avpair_add(rh, &send, PW_SERVICE_TYPE, &service, 0, 0) == NULL)
+		return ERROR_RC;	
 	
-	result = rc_auth(0, send, &received, msg);
+	result = rc_auth(rh, 0, send, &received, msg);
 	
 	if (result == OK_RC)
 	{

@@ -14,7 +14,7 @@
 @SET_MAKE@
 
 #
-# $Id: Makefile.in,v 1.5 2003/12/02 16:01:15 sobomax Exp $
+# $Id: Makefile.in,v 1.6 2003/12/21 17:32:23 sobomax Exp $
 #
 # Copyright (C) 1997,1998 Lars Fenneberg
 #
@@ -106,11 +106,13 @@ AUTOMAKE_OPTIONS = foreign
 
 CLEANFILES = *~ radiusclient.conf
 pkgsysconf_DATA = issue port-id-map radiusclient.conf \
-	dictionary dictionary.ascend dictionary.compat dictionary.merit
+	dictionary dictionary.ascend dictionary.compat dictionary.merit \
+	dictionary.sip
 
 
 EXTRA_DIST = issue port-id-map dictionary dictionary.ascend \
-	dictionary.compat dictionary.merit servers radiusclient.conf.in
+	dictionary.compat dictionary.merit servers radiusclient.conf.in \
+	dictionary.sip
 
 subdir = etc
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

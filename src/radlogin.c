@@ -1,5 +1,5 @@
 /*
- * $Id: radlogin.c,v 1.1 2003/12/02 10:39:22 sobomax Exp $
+ * $Id: radlogin.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
@@ -10,7 +10,7 @@
  */
 
 static char	rcsid[] =
-		"$Id: radlogin.c,v 1.1 2003/12/02 10:39:22 sobomax Exp $";
+		"$Id: radlogin.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $";
 
 #include	<config.h>
 #include	<includes.h>
@@ -21,11 +21,12 @@ static char	rcsid[] =
 
 ENV *env = NULL;
 static char *pname = NULL;
+static rc_handle *rh = NULL;
 
 static RETSIGTYPE
 alarm_handler(int sn)
 {
-	fprintf(stderr, SC_TIMEOUT, rc_conf_int("login_timeout"));
+	fprintf(stderr, SC_TIMEOUT, rc_conf_int(rh, "login_timeout"));
 	sleep(1);
 	exit(ERROR_RC);	
 }
@@ -37,10 +38,10 @@ login_allowed(char *tty)
 	char fname[PATH_MAX];
 	int c;
 
-	strcpy(fname, rc_conf_str("nologin"));
+	strcpy(fname, rc_conf_str(rh, "nologin"));
 	if (access(fname, F_OK) < 0) {
 		if (tty) {
-			sprintf(fname, "%s.%s", rc_conf_str("nologin"), tty);
+			sprintf(fname, "%s.%s", rc_conf_str(rh, "nologin"), tty);
 			if (access(fname, F_OK) < 0)
 				return 1;
 		} else {
@@ -61,7 +62,7 @@ login_allowed(char *tty)
 	} else {
 		printf(SC_NOLOGIN);
 	}
-	return (0);		
+	return 0;		
 }
 
 static char *
@@ -187,7 +188,7 @@ main (int argc, char **argv)
 	char		passwd[AUTH_PASS_LEN + 1];
 	int 		tries, remaining, c;
 	UINT4		client_port;
-	void 		(*login_func)(char *);	
+	void 		(*login_func)(rc_handle *, char *);	
 	FILE		*fp;
 	char 		buf[4096];
 	char		tty[1024], *p;
@@ -230,18 +231,18 @@ main (int argc, char **argv)
 		}
 	}
 
-	if (rc_read_config(path_radiusclient_conf) != 0)
+	if ((rh = rc_read_config(path_radiusclient_conf)) == NULL)
 		exit(ERROR_RC);
 	
-	if (rc_read_dictionary(rc_conf_str("dictionary")) != 0)
+	if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0)
 		exit (ERROR_RC);
 
-	if (rc_read_mapfile(rc_conf_str("mapfile")) != 0)
+	if (rc_read_mapfile(rh, rc_conf_str(rh, "mapfile")) != 0)
 		exit (ERROR_RC);
 
 	if (ttyn != NULL)
 	{
-		client_port = rc_map2id(ttyn);
+		client_port = rc_map2id(rh, ttyn);
 		
 		if ((p = strrchr(ttyn, '/')) == NULL)
 			strncpy(tty, ttyn, sizeof(tty));
@@ -258,7 +259,7 @@ main (int argc, char **argv)
 			else
 				strncpy(tty, p+1, sizeof(tty));
 
-			client_port = rc_map2id(ttyn);
+			client_port = rc_map2id(rh, ttyn);
 		}
 		else 
 		{
@@ -282,7 +283,7 @@ main (int argc, char **argv)
 		*username = '\0';
 		
 		if (!noissue) {
-			if (rc_conf_str("issue") && ((fp = fopen(rc_conf_str("issue"), "r")) != NULL))
+			if (rc_conf_str(rh, "issue") && ((fp = fopen(rc_conf_str(rh, "issue"), "r")) != NULL))
 			{
 				while (fgets(buf, sizeof(buf), fp) != NULL)
 					fputs(subst_placeholders(buf, tty), stdout);
@@ -315,10 +316,10 @@ main (int argc, char **argv)
 
 	signal(SIGALRM, alarm_handler);
 
-	remaining = rc_conf_int("login_timeout");
+	remaining = rc_conf_int(rh, "login_timeout");
 	
 	if (!maxtries)
-		maxtries = rc_conf_int("login_tries");
+		maxtries = rc_conf_int(rh, "login_tries");
 		
 	tries = 1;
 	while (tries <= maxtries)
@@ -326,13 +327,13 @@ main (int argc, char **argv)
 	 alarm(remaining);
 
 	 while (!*username) {
-	 	p = rc_getstr (SC_LOGIN, 1);
+	 	p = rc_getstr (rh, SC_LOGIN, 1);
 	 	if (p)
 	 		strncpy(username, p, sizeof(username));
 	 	else
 	 		exit (ERROR_RC);
 	 }
-	 p = rc_getstr(SC_PASSWORD,0);
+	 p = rc_getstr(rh, SC_PASSWORD,0);
 	 if (p) 
 	 	strncpy (passwd, p, sizeof (passwd));		
 	 else 
@@ -342,19 +343,19 @@ main (int argc, char **argv)
 	 
 	 login_func = NULL;
 
- 	 if (rc_conf_int("auth_order") & AUTH_LOCAL_FST)
+ 	 if (rc_conf_int(rh, "auth_order") & AUTH_LOCAL_FST)
  	 {
  	 	login_func = auth_local(username, passwd);
  	 		
  	 	if (!login_func)
- 	 		if (rc_conf_int("auth_order") & AUTH_RADIUS_SND)
- 	 			login_func = auth_radius(client_port, username, passwd);
+ 	 		if (rc_conf_int(rh, "auth_order") & AUTH_RADIUS_SND)
+ 	 			login_func = auth_radius(rh, client_port, username, passwd);
  	 }
  	 else
  	 {
-		login_func = auth_radius(client_port, username, passwd);
+		login_func = auth_radius(rh, client_port, username, passwd);
  	 	if (!login_func)
- 	 		if (rc_conf_int("auth_order") & AUTH_LOCAL_SND)
+ 	 		if (rc_conf_int(rh, "auth_order") & AUTH_LOCAL_SND)
  	 			login_func = auth_local(username, passwd);
  	 }
 
@@ -362,7 +363,7 @@ main (int argc, char **argv)
 
 	 if (login_func != NULL)
 	 	if (login_allowed(tty)) {
-	 		(*login_func)(username);
+	 		(*login_func)(rh, username);
 		} else {
 			sleep(1);
 			exit (ERROR_RC);

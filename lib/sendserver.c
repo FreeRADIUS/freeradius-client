@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.2 2003/12/02 13:30:55 sobomax Exp $
+ * $Id: sendserver.c,v 1.3 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -38,15 +38,24 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 	UINT4           lvalue;
 	unsigned char   passbuf[MAX(AUTH_PASS_LEN, CHAP_VALUE_LENGTH)];
 	unsigned char   md5buf[256];
-	unsigned char   *buf, *vector;
+	unsigned char   *buf, *vector, *vsa_length_ptr;
 	
 	buf = auth->data;
 
-	while (vp != (VALUE_PAIR *) NULL)
+	while (vp != NULL)
 	{
-		*buf++ = vp->attribute;
+		vsa_length_ptr = NULL;
+		if (VENDOR(vp->attribute) != 0) {
+			*buf++ = PW_VENDOR_SPECIFIC;
+			vsa_length_ptr = buf;
+			*buf++ = 6;
+			*(UINT4 *)buf = htonl(VENDOR(vp->attribute));
+			buf += 4;
+			total_length += 6;
+		}
+		*buf++ = (vp->attribute & 0xff);
 
-		switch (vp->attribute)
+		switch (vp->attribute & 0xffff)
 		{
 		 case PW_USER_PASSWORD:
 
@@ -62,6 +71,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 
 		  /* Record the attribute length */		
 		  *buf++ = padded_length + 2;
+		  if (vsa_length_ptr != NULL) *vsa_length_ptr += padded_length + 2;
 		  
 		  /* Pad the password with zeros */
 		  memset ((char *) passbuf, '\0', AUTH_PASS_LEN);
@@ -94,6 +104,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		 case PW_CHAP_PASSWORD:
 
 		  *buf++ = CHAP_VALUE_LENGTH + 2;
+		  if (vsa_length_ptr != NULL) *vsa_length_ptr += CHAP_VALUE_LENGTH + 2;
 
 		  /* Encrypt the Password */
 		  length = vp->lvalue;
@@ -126,6 +137,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		    case PW_TYPE_STRING:
 			length = vp->lvalue;
 			*buf++ = length + 2;
+			if (vsa_length_ptr != NULL) *vsa_length_ptr += length + 2;
 			memcpy (buf, vp->strvalue, (size_t) length);
 			buf += length;
 			total_length += length + 2;
@@ -134,6 +146,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		    case PW_TYPE_INTEGER:
 		    case PW_TYPE_IPADDR:
 			*buf++ = sizeof (UINT4) + 2;
+			if (vsa_length_ptr != NULL) *vsa_length_ptr += (UINT4) + 2;
 			lvalue = htonl (vp->lvalue);
 			memcpy (buf, (char *) &lvalue, sizeof (UINT4));
 			buf += sizeof (UINT4);
@@ -157,7 +170,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
  *
  */
 
-int rc_send_server (SEND_DATA *data, char *msg)
+int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 {
 	int             sockfd;
 	struct sockaddr salocal;
@@ -182,21 +195,21 @@ int rc_send_server (SEND_DATA *data, char *msg)
 	VALUE_PAIR 	*vp;
 
 	server_name = data->server;
-	if (server_name == (char *) NULL || server_name[0] == '\0')
-		return (ERROR_RC);
+	if (server_name == NULL || server_name[0] == '\0')
+		return ERROR_RC;
 
-	if ((vp = rc_avpair_get(data->send_pairs, PW_SERVICE_TYPE)) && \
+	if ((vp = rc_avpair_get(data->send_pairs, PW_SERVICE_TYPE, 0)) && \
 	    (vp->lvalue == PW_ADMINISTRATIVE)) 
 	{
 		strcpy(secret, MGMT_POLL_SECRET);
 		if ((auth_ipaddr = rc_get_ipaddr(server_name)) == 0)
-			return (ERROR_RC);
+			return ERROR_RC;
 	} 
 	else 
 	{
-		if (rc_find_server (server_name, &auth_ipaddr, secret) != 0)
+		if (rc_find_server (rh, server_name, &auth_ipaddr, secret) != 0)
 		{
-			return (ERROR_RC);
+			return ERROR_RC;
 		}
 	}
 
@@ -205,14 +218,14 @@ int rc_send_server (SEND_DATA *data, char *msg)
 	{
 		memset (secret, '\0', sizeof (secret));
 		rc_log(LOG_ERR, "rc_send_server: socket: %s", strerror(errno));
-		return (ERROR_RC);
+		return ERROR_RC;
 	}
 
 	length = sizeof (salocal);
 	sin = (struct sockaddr_in *) & salocal;
 	memset ((char *) sin, '\0', (size_t) length);
 	sin->sin_family = AF_INET;
-	own_ipaddr = rc_own_ipaddress();
+	own_ipaddr = rc_own_ipaddress(rh);
 	sin->sin_addr.s_addr = htonl(own_ipaddr != 0 ? own_ipaddr : INADDR_ANY);
 	sin->sin_port = htons ((unsigned short) 0);
 	if (bind (sockfd, (struct sockaddr *) sin, length) < 0 ||
@@ -221,7 +234,7 @@ int rc_send_server (SEND_DATA *data, char *msg)
 		close (sockfd);
 		memset (secret, '\0', sizeof (secret));
 		rc_log(LOG_ERR, "rc_send_server: bind: %s: %s", server_name, strerror(errno));
-		return (ERROR_RC);
+		return ERROR_RC;
 	}
 	
 	retry_max = data->retries;	/* Max. numbers to try for reply */
@@ -276,7 +289,7 @@ int rc_send_server (SEND_DATA *data, char *msg)
 			rc_log(LOG_ERR, "rc_send_server: select: %s", strerror(errno));
 			memset (secret, '\0', sizeof (secret));
 			close (sockfd);
-			return (ERROR_RC);
+			return ERROR_RC;
 		}
 		if (FD_ISSET (sockfd, &readfds))
 			break;
@@ -292,7 +305,7 @@ int rc_send_server (SEND_DATA *data, char *msg)
 				 rc_ip_hostname (auth_ipaddr), data->svc_port);
 			close (sockfd);
 			memset (secret, '\0', sizeof (secret));
-			return (TIMEOUT_RC);
+			return TIMEOUT_RC;
 		}
 	}
 	salen = sizeof (saremote);
@@ -306,25 +319,25 @@ int rc_send_server (SEND_DATA *data, char *msg)
 			 data->svc_port, strerror(errno));
 		close (sockfd);
 		memset (secret, '\0', sizeof (secret));
-		return (ERROR_RC);
+		return ERROR_RC;
 	}
 	
 	recv_auth = (AUTH_HDR *)recv_buffer;
 	
 	result = rc_check_reply (recv_auth, BUFFER_LEN, secret, vector, data->seq_nbr);
 
-	data->receive_pairs = rc_avpair_gen(recv_auth);
+	data->receive_pairs = rc_avpair_gen(rh, recv_auth);
 
 	close (sockfd);
 	memset (secret, '\0', sizeof (secret));
 
-	if (result != OK_RC) return (result);
+	if (result != OK_RC) return result;
 	
 	*msg = '\0';
 	vp = data->receive_pairs;
 	while (vp)
 	{
-		if ((vp = rc_avpair_get(vp, PW_REPLY_MESSAGE)))
+		if ((vp = rc_avpair_get(vp, PW_REPLY_MESSAGE, 0)))
 		{
 			strcat(msg, vp->strvalue);
 			strcat(msg, "\n");
@@ -343,7 +356,7 @@ int rc_send_server (SEND_DATA *data, char *msg)
 		result = BADRESP_RC;
 	}
 
-	return (result);
+	return result;
 }
 
 /*
@@ -371,21 +384,21 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 	if ((totallen < 20) || (totallen > 4096))
 	{
 		rc_log(LOG_ERR, "rc_check_reply: received RADIUS server response with invalid length");
-		return (BADRESP_RC);
+		return BADRESP_RC;
 	} 
 
 	/* Verify buffer space, should never trigger with current buffer size and check above */
 	if ((totallen + secretlen) > bufferlen)
 	{
 		rc_log(LOG_ERR, "rc_check_reply: not enough buffer space to verify RADIUS server response");
-		return (BADRESP_RC);
+		return BADRESP_RC;
 	} 
 
 	/* Verify that id (seq. number) matches what we sent */
 	if (auth->id != seq_nbr)
 	{
 		rc_log(LOG_ERR, "rc_check_reply: received non-matching id in RADIUS server response");
-		return (BADRESP_RC);
+		return BADRESP_RC;
 	}
 
 	/* Verify the reply digest */
@@ -425,13 +438,13 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 		   to stock Livingston radiusd v1.16.	-lf, 03/14/96 
 		 */
 		if (auth->code == PW_ACCOUNTING_RESPONSE)
-			return (OK_RC);
+			return OK_RC;
 #endif
 		rc_log(LOG_ERR, "rc_check_reply: received invalid reply digest from RADIUS server");
-		return (BADRESP_RC);
+		return BADRESP_RC;
 	}
 
-	return (OK_RC);
+	return OK_RC;
 	
 }
 

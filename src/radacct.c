@@ -1,5 +1,5 @@
 /*
- * $Id: radacct.c,v 1.1 2003/12/02 10:39:22 sobomax Exp $
+ * $Id: radacct.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
@@ -10,7 +10,7 @@
  */
 
 static char	rcsid[] =
-		"$Id: radacct.c,v 1.1 2003/12/02 10:39:22 sobomax Exp $";
+		"$Id: radacct.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $";
 
 #include <config.h>
 #include <includes.h>
@@ -48,6 +48,7 @@ main (int argc, char **argv)
 	char *username, *service, *fproto, *type;
 	char *path_radiusclient_conf = RC_CONFIG_FILE;
 	char *ttyn = NULL;
+	rc_handle *rh;
 
 	extern char *optarg;
 
@@ -77,18 +78,18 @@ main (int argc, char **argv)
 		}
 	}
 
-	if (rc_read_config(path_radiusclient_conf) != 0)
+	if ((rh = rc_read_config(path_radiusclient_conf)) == NULL)
 		exit(ERROR_RC);
 	
-	if (rc_read_dictionary(rc_conf_str("dictionary")) != 0)
+	if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0)
 		exit (ERROR_RC);
 
-	if (rc_read_mapfile(rc_conf_str("mapfile")) != 0)
+	if (rc_read_mapfile(rh, rc_conf_str(rh, "mapfile")) != 0)
 		exit (ERROR_RC);
 
 	if (ttyn != NULL)
 	{
-		client_port = rc_map2id(ttyn);
+		client_port = rc_map2id(rh, ttyn);
 	}
 	else
 	{	
@@ -97,7 +98,7 @@ main (int argc, char **argv)
 	 	 */
 	 	if ((ttyn = ttyname(1)) != NULL)
 	 	{
-			client_port = rc_map2id(ttyn);
+			client_port = rc_map2id(rh, ttyn);
 		}
 		else
 		{
@@ -105,31 +106,31 @@ main (int argc, char **argv)
 		}
 	}
 
-	if ((send = rc_avpair_readin(stdin))) {
+	if ((send = rc_avpair_readin(rh, stdin))) {
 
 		username = service = type = "(unknown)";
 		fproto = NULL;
 	
-		if ((vp = rc_avpair_get(send, PW_ACCT_STATUS_TYPE)) != NULL)
-				if ((dval = rc_dict_getval(vp->lvalue, vp->name)) != NULL) {
+		if ((vp = rc_avpair_get(send, PW_ACCT_STATUS_TYPE, 0)) != NULL)
+				if ((dval = rc_dict_getval(rh, vp->lvalue, vp->name)) != NULL) {
 					type = dval->name;
 				}
 
-		if ((vp = rc_avpair_get(send, PW_USER_NAME)) != NULL)
+		if ((vp = rc_avpair_get(send, PW_USER_NAME, 0)) != NULL)
 				username = vp->strvalue;
 
-		if ((vp = rc_avpair_get(send, PW_SERVICE_TYPE)) != NULL)
-				if ((dval = rc_dict_getval(vp->lvalue, vp->name)) != NULL) {
+		if ((vp = rc_avpair_get(send, PW_SERVICE_TYPE, 0)) != NULL)
+				if ((dval = rc_dict_getval(rh, vp->lvalue, vp->name)) != NULL) {
 					service = dval->name;
 				}
 
 		if (vp && (vp->lvalue == PW_FRAMED) &&
-			((vp = rc_avpair_get(send, PW_FRAMED_PROTOCOL)) != NULL))
-				if ((dval = rc_dict_getval(vp->lvalue, vp->name)) != NULL) {
+			((vp = rc_avpair_get(send, PW_FRAMED_PROTOCOL, 0)) != NULL))
+				if ((dval = rc_dict_getval(rh, vp->lvalue, vp->name)) != NULL) {
 					fproto = dval->name;
 				}
 
-		result = rc_acct(client_port, send);
+		result = rc_acct(rh, client_port, send);
 		if (result == OK_RC)
 		{
 			fprintf(stderr, SC_ACCT_OK);

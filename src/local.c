@@ -1,5 +1,5 @@
 /*
- * $Id: local.c,v 1.1 2003/12/02 10:39:22 sobomax Exp $
+ * $Id: local.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
@@ -62,9 +62,9 @@ LFUNC auth_local(char *username, char *passwd)
 }
 
 void
-local_login(char *username)
+local_login(rc_handle *rh, char *username)
 {
-	char *login_local = rc_conf_str("login_local");
+	char *login_local = rc_conf_str(rh, "login_local");
 
 	/* login should spot this... but who knows what old /bin/logins
 	 * may be still around

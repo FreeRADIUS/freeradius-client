@@ -1,5 +1,5 @@
 /*
- * $Id: radius.c,v 1.1 2003/12/02 10:39:22 sobomax Exp $
+ * $Id: radius.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
@@ -17,7 +17,7 @@
 
 extern ENV *env;
 
-LFUNC auth_radius(UINT4 client_port, char *username, char *passwd)
+LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd)
 {
 
 	VALUE_PAIR 	*send, *received, *vp, *service_vp;
@@ -72,23 +72,23 @@ LFUNC auth_radius(UINT4 client_port, char *username, char *passwd)
 	ctype = 0;
 #endif
 
-	if (rc_avpair_add(&send, PW_SERVICE_TYPE, &service, 0) == NULL)
-		return (LFUNC) NULL;
+	if (rc_avpair_add(rh, &send, PW_SERVICE_TYPE, &service, 0, 0) == NULL)
+		return NULL;
 
 	/* Fill in Framed-Protocol, if neccessary */
 	
 	if (ftype != 0)
 	{
-		if (rc_avpair_add(&send, PW_FRAMED_PROTOCOL, &ftype, 0) == NULL)
-			return (LFUNC) NULL;	
+		if (rc_avpair_add(rh, &send, PW_FRAMED_PROTOCOL, &ftype, 0, 0) == NULL)
+			return NULL;	
 	} 
 
 	/* Fill in Framed-Compression, if neccessary */
 
 	if (ctype != 0)
 	{
-		if (rc_avpair_add(&send, PW_FRAMED_COMPRESSION, &ctype, 0) == NULL)
-			return (LFUNC) NULL;
+		if (rc_avpair_add(rh, &send, PW_FRAMED_COMPRESSION, &ctype, 0, 0) == NULL)
+			return NULL;
 	} 
 	 
 	/*
@@ -98,7 +98,7 @@ LFUNC auth_radius(UINT4 client_port, char *username, char *passwd)
 	 strncpy(username_realm, username, sizeof(username_realm));
 
 	 /* Append default realm */
-	 default_realm = rc_conf_str("default_realm");
+	 default_realm = rc_conf_str(rh, "default_realm");
 
 	 if ((strchr(username_realm, '@') == NULL) && default_realm &&
 	     ((*default_realm) != '\0'))
@@ -107,17 +107,17 @@ LFUNC auth_radius(UINT4 client_port, char *username, char *passwd)
 		strncat(username_realm, default_realm, sizeof(username_realm));
 	 } 
 
-	if (rc_avpair_add(&send, PW_USER_NAME, username_realm, 0) == NULL)
-		return (LFUNC) NULL;
+	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, 0, 0) == NULL)
+		return NULL;
 	
 	/*
 	 * Fill in User-Password
 	 */
 	 
-	if (rc_avpair_add(&send, PW_USER_PASSWORD, passwd, 0) == NULL) 	  
-		return (LFUNC) NULL;
+	if (rc_avpair_add(rh, &send, PW_USER_PASSWORD, passwd, 0, 0) == NULL) 	  
+		return NULL;
 	
-	result = rc_auth(client_port, send, &received, msg);
+	result = rc_auth(rh, client_port, send, &received, msg);
 
 	if (result == OK_RC)
 	{
@@ -137,10 +137,10 @@ LFUNC auth_radius(UINT4 client_port, char *username, char *passwd)
 		while (vp)
 		{
 			strcpy(name, "RADIUS_");
-			if (rc_avpair_tostr(vp, name+7, sizeof(name)-7, value, sizeof(value)) < 0) {
+			if (rc_avpair_tostr(rh, vp, name+7, sizeof(name)-7, value, sizeof(value)) < 0) {
 				rc_avpair_free(send);
 				rc_avpair_free(received);
-				return (LFUNC) NULL;			
+				return NULL;			
 			}
 			
 			/* Translate "-" => "_" and uppercase*/
@@ -165,7 +165,7 @@ LFUNC auth_radius(UINT4 client_port, char *username, char *passwd)
 			{
 				rc_avpair_free(send);
 				rc_avpair_free(received);
-				return (LFUNC) NULL;			
+				return NULL;			
 			}
 					
 			vp = vp->next;
@@ -174,14 +174,14 @@ LFUNC auth_radius(UINT4 client_port, char *username, char *passwd)
 		service_str = "(unknown)";
 		ftype_str = NULL;
 
-		if ((service_vp = rc_avpair_get(received, PW_SERVICE_TYPE)) != NULL)
-				if ((dval = rc_dict_getval(service_vp->lvalue, service_vp->name)) != NULL) {
+		if ((service_vp = rc_avpair_get(received, PW_SERVICE_TYPE, 0)) != NULL)
+				if ((dval = rc_dict_getval(rh, service_vp->lvalue, service_vp->name)) != NULL) {
 					service_str = dval->name;
 				}
 
 		if (service_vp && (service_vp->lvalue == PW_FRAMED) &&
-			((vp = rc_avpair_get(received, PW_FRAMED_PROTOCOL)) != NULL))
-				if ((dval = rc_dict_getval(vp->lvalue, vp->name)) != NULL) {
+			((vp = rc_avpair_get(received, PW_FRAMED_PROTOCOL, 0)) != NULL))
+				if ((dval = rc_dict_getval(rh, vp->lvalue, vp->name)) != NULL) {
 					ftype_str = dval->name;
 				}
 
@@ -212,13 +212,13 @@ LFUNC auth_radius(UINT4 client_port, char *username, char *passwd)
 	if (received)
 		rc_avpair_free(received);
 	
-	return (LFUNC) NULL;
+	return NULL;
 }
 
 void
-radius_login(char *username)
+radius_login(rc_handle *rh, char *username)
 {
-	char *login_radius = rc_conf_str("login_radius");
+	char *login_radius = rc_conf_str(rh, "login_radius");
 
 	execle(login_radius, login_radius, NULL, env->env);
 

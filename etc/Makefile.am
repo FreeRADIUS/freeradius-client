@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.am,v 1.1 2003/12/02 10:39:22 sobomax Exp $
+# $Id: Makefile.am,v 1.2 2003/12/21 17:32:23 sobomax Exp $
 #
 # Copyright (C) 1997,1998 Lars Fenneberg
 #
@@ -15,10 +15,12 @@ CLEANFILES = *~ radiusclient.conf
 sbindir = @sbindir@
 pkgsysconfdir = @pkgsysconfdir@
 pkgsysconf_DATA = issue port-id-map radiusclient.conf \
-	dictionary dictionary.ascend dictionary.compat dictionary.merit
+	dictionary dictionary.ascend dictionary.compat dictionary.merit \
+	dictionary.sip
 
 EXTRA_DIST = issue port-id-map dictionary dictionary.ascend \
-	dictionary.compat dictionary.merit servers radiusclient.conf.in
+	dictionary.compat dictionary.merit servers radiusclient.conf.in \
+	dictionary.sip
 
 radiusclient.conf: radiusclient.conf.in
 	sed -e 's|@sbin''dir@|$(sbindir)|g' \

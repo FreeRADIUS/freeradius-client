@@ -1,5 +1,5 @@
 /*
- * $Id: ip_util.c,v 1.2 2003/12/02 13:30:55 sobomax Exp $
+ * $Id: ip_util.c,v 1.3 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -35,10 +35,10 @@ UINT4 rc_get_ipaddr (char *host)
 	{
 		return ntohl(inet_addr (host));
 	}
-	else if ((hp = gethostbyname (host)) == (struct hostent *) NULL)
+	else if ((hp = gethostbyname (host)) == NULL)
 	{
 		rc_log(LOG_ERR,"rc_get_ipaddr: couldn't resolve hostname: %s", host);
-		return ((UINT4) 0);
+		return (UINT4)0;
 	}
 	return ntohl((*(UINT4 *) hp->h_addr));
 } 
@@ -58,7 +58,7 @@ int rc_good_ipaddr (char *addr)
 	int             digit_count;
 
 	if (addr == NULL)
-		return (-1);
+		return -1;
 
 	dot_count = 0;
 	digit_count = 0;
@@ -85,11 +85,11 @@ int rc_good_ipaddr (char *addr)
 	}
 	if (dot_count != 3)
 	{
-		return (-1);
+		return -1;
 	}
 	else
 	{
-		return (0);
+		return 0;
 	}
 }
 
@@ -111,7 +111,7 @@ const char *rc_ip_hostname (UINT4 h_ipaddr)
 		rc_log(LOG_ERR,"rc_ip_hostname: couldn't look up host by addr: %08lX", h_ipaddr);
 	}
 				  
-	return ((hp==NULL)?"unknown":hp->h_name);
+	return (hp == NULL) ? "unknown" : hp->h_name;
 } 
 
 /*
@@ -127,7 +127,7 @@ unsigned short rc_getport(int type)
 
 	if ((svp = getservbyname ((type==AUTH)?"radius":"radacct", "udp")) == NULL)
 	{
-		return ((type==AUTH)?PW_AUTH_UDP_PORT:PW_ACCT_UDP_PORT);
+		return (type==AUTH) ? PW_AUTH_UDP_PORT : PW_ACCT_UDP_PORT;
 	} else {
 		return ntohs ((unsigned short) svp->s_port);
 	}
@@ -184,24 +184,23 @@ rc_own_hostname(char *hostname, int len)
  *
  */
 
-UINT4 rc_own_ipaddress(void)
+UINT4 rc_own_ipaddress(rc_handle *rh)
 {
-	static UINT4 this_host_ipaddr = 0;
 	char hostname[256];
 
-	if (!this_host_ipaddr) {
-		if (rc_conf_str("bindaddr") == NULL) {
+	if (!rh->this_host_ipaddr) {
+		if (rc_conf_str(rh, "bindaddr") == NULL) {
 			if (rc_own_hostname(hostname, sizeof(hostname)) < 0)
 				return 0;
 		} else {
-			strncpy(hostname, rc_conf_str("bindaddr"), sizeof(hostname));
+			strncpy(hostname, rc_conf_str(rh, "bindaddr"), sizeof(hostname));
 			hostname[sizeof(hostname) - 1] = '\0';
 		}
-		if ((this_host_ipaddr = rc_get_ipaddr (hostname)) == 0) {
+		if ((rh->this_host_ipaddr = rc_get_ipaddr (hostname)) == 0) {
 			rc_log(LOG_ERR, "rc_own_ipaddress: couldn't get own IP address");
 			return 0;
 		}
 	} 
 	
-	return this_host_ipaddr;
+	return rh->this_host_ipaddr;
 }

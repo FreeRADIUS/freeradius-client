@@ -1795,7 +1795,7 @@ fi
 
 # Define the identity of the package.
 PACKAGE=radiusclient
-VERSION=0.3.3
+VERSION=0.4.0
 
 cat >>confdefs.h <<_ACEOF
 #define PACKAGE "$PACKAGE"
@@ -1846,7 +1846,7 @@ INSTALL_STRIP_PROGRAM="\${SHELL} \$(install_sh) -c -s"
 # some platforms.
 
 
-LIBVERSION=0:1:0
+LIBVERSION=1:0:0
 
 
 pkgsysconfdir=${sysconfdir}/$PACKAGE

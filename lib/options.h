@@ -1,5 +1,5 @@
 /*
- * $Id: options.h,v 1.2 2003/12/02 13:30:55 sobomax Exp $
+ * $Id: options.h,v 1.3 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
@@ -31,7 +31,7 @@ typedef struct _option {
 static SERVER acctserver = {0};
 static SERVER authserver = {0};
 
-static OPTION config_options[] = {
+static OPTION config_options_default[] = {
 /* internally used options */
 {"config_file",		OT_STR, ST_UNDEF, NULL},
 /* General options */
@@ -56,4 +56,4 @@ static OPTION config_options[] = {
 {"login_local",		OT_STR, ST_UNDEF, NULL},
 };
 
-static int num_options = ((sizeof(config_options))/(sizeof(config_options[0])));
+#define	NUM_OPTIONS	((sizeof(config_options_default))/(sizeof(config_options_default[0])))

@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient.h,v 1.3 2003/12/02 16:34:30 sobomax Exp $
+ * $Id: radiusclient.h,v 1.4 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -31,13 +31,6 @@
 # define __END_DECLS /* empty */
 #endif
 
-#undef __P
-#if defined (__STDC__) || defined (_AIX) || (defined (__mips) && defined (_SYSTYPE_SVR4)) || defined(WIN32) || defined(__cplusplus)
-# define __P(protos) protos
-#else
-# define __P(protos) ()
-#endif
-
 typedef unsigned long UINT4;
 typedef long 	      INT4;
 
@@ -50,6 +43,8 @@ typedef long 	      INT4;
 
 #define NAME_LENGTH		32
 #define	GETSTR_LENGTH		128	/* must be bigger than AUTH_PASS_LEN */
+
+#define	VENDOR(x)		((x >> 16) & 0xffff)
 
 /* codes for radius_buildreq, radius_getport, etc. */
 #define AUTH			0
@@ -78,6 +73,21 @@ typedef struct pw_auth_hdr
 	u_char          vector[AUTH_VECTOR_LEN];
 	u_char          data[2];
 } AUTH_HDR;
+
+struct rc_conf
+{
+	struct _option		*config_options;
+	UINT4 			this_host_ipaddr;
+	struct map2id_s		*map2id_list;
+	struct dict_attr	*dictionary_attributes;
+	struct dict_value	*dictionary_values;
+	struct dict_vendor	*dictionary_vendors;
+	char			buf[GETSTR_LENGTH];
+	char			buf1[14];
+	char			ifname[512];
+};
+
+typedef struct rc_conf rc_handle;
 
 #define AUTH_HDR_LEN			20
 #define MAX_SECRET_LENGTH		(3 * 16) /* MUST be multiple of 16 */
@@ -170,31 +180,8 @@ typedef struct pw_auth_hdr
 #define PW_ACCT_MULTI_SESSION_ID	50	/* string */
 #define PW_ACCT_LINK_COUNT		51	/* integer */
 
-/*	Experimental SIP-specific attributes (draft-sterman-aaa-sip-00.txt etc) */
+/* 	Experimental SIP-specific attributes (draft-sterman-aaa-sip-00.txt etc) */
 
-#define	PW_SIP_METHOD			101	/* integer */
-#define	PW_SIP_RESPONSE_CODE		102	/* integer */
-#define	PW_SIP_CSEQ			103	/* string */
-#define	PW_SIP_TO_TAG			104	/* string */
-#define	PW_SIP_FROM_TAG			105	/* string */
-#define	PW_SIP_BRANCH_ID		106	/* string */
-#define	PW_SIP_TRANSLATED_REQUEST_URI	107	/* string */
-#define	PW_SIP_SOURCE_IP_ADDRESS	108	/* ipaddr */
-#define	PW_SIP_SOURCE_PORT		109	/* integer */
-#define	PW_SIP_USER_ID			110	/* string */
-#define	PW_SIP_USER_REALM		111	/* string */
-#define	PW_SIP_USER_NONCE		112	/* string */
-#define	PW_SIP_USER_METHOD		113	/* string */
-#define	PW_SIP_USER_DIGEST_URI		114	/* string */
-#define	PW_SIP_USER_NONCE_COUNT		115	/* string */
-#define	PW_SIP_USER_QOP			116	/* string */
-#define	PW_SIP_USER_OPAQUE		117	/* string */
-#define	PW_SIP_USER_RESPONSE		118	/* string */
-#define	PW_SIP_USER_CNONCE		119	/* string */
-#define	PW_SIP_URI_USER			208	/* string */
-#define	PW_SIP_REQ_URI			210	/* string */
-#define	PW_SIP_CC			212	/* string */
-#define	PW_SIP_RPID			213	/* string */
 #define	PW_DIGEST_RESPONSE		206	/* string */
 #define	PW_DIGEST_ATTRIBUTES		207	/* string */
 #define	PW_DIGEST_REALM			1063	/* string */
@@ -332,6 +319,13 @@ typedef struct dict_value
 	struct dict_value *next;
 } DICT_VALUE;
 
+typedef struct dict_vendor
+{
+	char		   vendorname[NAME_LENGTH +1];
+	int		   vendorpec;
+	struct dict_vendor *next;
+} DICT_VENDOR;
+
 typedef struct value_pair
 {
 	char               name[NAME_LENGTH + 1];
@@ -389,86 +383,92 @@ __BEGIN_DECLS
 
 /*	avpair.c		*/
 
-VALUE_PAIR *rc_avpair_add __P((VALUE_PAIR **, int, void *, int));
-int rc_avpair_assign __P((VALUE_PAIR *, void *, int));
-VALUE_PAIR *rc_avpair_new __P((int, void *, int));
-VALUE_PAIR *rc_avpair_gen __P((AUTH_HDR *));
-VALUE_PAIR *rc_avpair_get __P((VALUE_PAIR *, UINT4));
-void rc_avpair_insert __P((VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *));
-void rc_avpair_free __P((VALUE_PAIR *));
-int rc_avpair_parse __P((char *, VALUE_PAIR **));
-int rc_avpair_tostr __P((VALUE_PAIR *, char *, int, char *, int));
-VALUE_PAIR *rc_avpair_readin __P((FILE *));
+VALUE_PAIR *rc_avpair_add(rc_handle *, VALUE_PAIR **, int, void *, int, int);
+int rc_avpair_assign(VALUE_PAIR *, void *, int);
+VALUE_PAIR *rc_avpair_new(rc_handle *, int, void *, int, int);
+VALUE_PAIR *rc_avpair_gen(rc_handle *, AUTH_HDR *);
+VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, UINT4, int);
+void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
+void rc_avpair_free(VALUE_PAIR *);
+int rc_avpair_parse(rc_handle *, char *, VALUE_PAIR **);
+int rc_avpair_tostr(rc_handle *, VALUE_PAIR *, char *, int, char *, int);
+VALUE_PAIR *rc_avpair_readin(rc_handle *, FILE *);
 
 /*	buildreq.c		*/
 
-void rc_buildreq __P((SEND_DATA *, int, char *, unsigned short, int, int));
-unsigned char rc_get_seqnbr __P((void));
-int rc_auth __P((UINT4, VALUE_PAIR *, VALUE_PAIR **, char *));
-int rc_auth_proxy __P((VALUE_PAIR *, VALUE_PAIR **, char *));
-int rc_acct __P((UINT4, VALUE_PAIR *));
-int rc_acct_proxy __P((VALUE_PAIR *));
-int rc_check __P((char *, unsigned short, char *));
+void rc_buildreq(rc_handle *, SEND_DATA *, int, char *, unsigned short, int, int);
+unsigned char rc_get_seqnbr(rc_handle *);
+int rc_auth(rc_handle *, UINT4, VALUE_PAIR *, VALUE_PAIR **, char *);
+int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
+int rc_acct(rc_handle *, UINT4, VALUE_PAIR *);
+int rc_acct_proxy(rc_handle *, VALUE_PAIR *);
+int rc_check(rc_handle *, char *, unsigned short, char *);
 
 /*	clientid.c		*/
 
-int rc_read_mapfile __P((char *));
-UINT4 rc_map2id __P((char *));
+int rc_read_mapfile(rc_handle *, char *);
+UINT4 rc_map2id(rc_handle *, char *);
+void rc_map2id_free(rc_handle *);
 
 /*	config.c		*/
 
-int rc_read_config __P((char *));
-char *rc_conf_str __P((char *));
-int rc_conf_int __P((char *));
-SERVER *rc_conf_srv __P((char *));
-int rc_find_server __P((char *, UINT4 *, char *));
+rc_handle *rc_read_config(char *);
+char *rc_conf_str(rc_handle *, char *);
+int rc_conf_int(rc_handle *, char *);
+SERVER *rc_conf_srv(rc_handle *, char *);
+int rc_find_server(rc_handle *, char *, UINT4 *, char *);
+void rc_config_free(rc_handle *);
 
 /*	dict.c			*/
 
-int rc_read_dictionary __P((char *));
-DICT_ATTR *rc_dict_getattr __P((int));
-DICT_ATTR *rc_dict_findattr __P((char *));
-DICT_VALUE *rc_dict_findval __P((char *));
-DICT_VALUE * rc_dict_getval __P((UINT4, char *));
+int rc_read_dictionary(rc_handle *, const char *);
+DICT_ATTR *rc_dict_getattr(rc_handle *, int);
+DICT_ATTR *rc_dict_findattr(rc_handle *, const char *);
+DICT_VALUE *rc_dict_findval(rc_handle *, const char *);
+DICT_VENDOR *rc_dict_findvend(rc_handle *, const char *);
+DICT_VENDOR *rc_dict_getvend(rc_handle *, int);
+DICT_VALUE * rc_dict_getval(rc_handle *, UINT4, const char *);
+void rc_dict_free(rc_handle *);
 
 /*	ip_util.c		*/
 
-UINT4 rc_get_ipaddr __P((char *));
-int rc_good_ipaddr __P((char *));
-const char *rc_ip_hostname __P((UINT4));
-unsigned short rc_getport __P((int));
-int rc_own_hostname __P((char *, int));
-UINT4 rc_own_ipaddress __P((void));
+UINT4 rc_get_ipaddr(char *);
+int rc_good_ipaddr(char *);
+const char *rc_ip_hostname(UINT4);
+unsigned short rc_getport(int);
+int rc_own_hostname(char *, int);
+UINT4 rc_own_ipaddress(rc_handle *);
 
 
 /*	log.c			*/
 
-void rc_openlog __P((char *));
-void rc_log __P((int, const char *, ...));
+void rc_openlog(char *);
+void rc_log(int, const char *, ...);
 
 /*	sendserver.c		*/
 
-int rc_send_server __P((SEND_DATA *, char *));
+int rc_send_server(rc_handle *, SEND_DATA *, char *);
 
 /*	util.c			*/
 
-void rc_str2tm __P((char *, struct tm *));
-char *rc_mksid __P((void));
-char *rc_getifname __P((char *));
-char *rc_getstr __P((char *, int));
-void rc_mdelay __P((int));
-char *rc_mksid __P((void));
+void rc_str2tm(char *, struct tm *);
+char *rc_getifname(rc_handle *, char *);
+char *rc_getstr(rc_handle *, char *, int);
+void rc_mdelay(int);
+char *rc_mksid(rc_handle *);
+rc_handle *rc_new(void);
+void rc_destroy(rc_handle *);
 
 /*	env.c			*/
 
-struct env *rc_new_env __P((int));
-void rc_free_env __P((struct env *));
-int rc_add_env __P((struct env *, char *, char *));
-int rc_import_env __P((struct env *, char **));
+struct env *rc_new_env(int);
+void rc_free_env(struct env *);
+int rc_add_env(struct env *, char *, char *);
+int rc_import_env(struct env *, char **);
 
 /* md5.c			*/
 
-void rc_md5_calc __P((unsigned char *, unsigned char *, unsigned int));
+void rc_md5_calc(unsigned char *, unsigned char *, unsigned int);
 
 __END_DECLS
 

@@ -1,5 +1,5 @@
 /*
- * $Id: strdup.c,v 1.1 2003/12/02 10:39:17 sobomax Exp $
+ * $Id: strdup.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg and Christian Graefe
  *
@@ -26,7 +26,7 @@ char *strdup(char *str)
 	if (str == NULL)
 		return NULL;
 
-	if ((p = (char *)malloc(strlen(str)+1)) == NULL)
+	if ((p = malloc(strlen(str)+1)) == NULL)
 		return p;
 
 	return strcpy(p, str);	

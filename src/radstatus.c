@@ -1,5 +1,5 @@
 /*
- * $Id: radstatus.c,v 1.1 2003/12/02 10:39:22 sobomax Exp $
+ * $Id: radstatus.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
@@ -10,7 +10,7 @@
  */
 
 static char	rcsid[] =
-		"$Id: radstatus.c,v 1.1 2003/12/02 10:39:22 sobomax Exp $";
+		"$Id: radstatus.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $";
 
 #include <config.h>
 #include <includes.h>
@@ -42,6 +42,7 @@ void main (int argc, char **argv)
 	char	*p, msg[4096];
 	SERVER	*srv;
 	char	*path_radiusclient_conf = RC_CONFIG_FILE;
+	rc_handle *rh;
 	
 	extern int optind;
 
@@ -70,25 +71,25 @@ void main (int argc, char **argv)
 	argc -= optind;
 	argv += optind;
 
-	if (rc_read_config(path_radiusclient_conf) != 0)
+	if ((rh = rc_read_config(path_radiusclient_conf)) == NULL)
 		exit(ERROR_RC);
 	
-	if (rc_read_dictionary(rc_conf_str("dictionary")) != 0)
+	if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0)
 		exit (ERROR_RC);
 
 	if (argc > 0) {
 		for (i = 0; i < argc; i++) {
 			if ((p = strchr(argv[i], ':')) == NULL) {
-				result = rc_check(argv[i],rc_getport(AUTH), msg);
+				result = rc_check(rh, argv[i],rc_getport(AUTH), msg);
 			} else if (!strcmp(p+1, "auth")) {
 				*p = '\0';
-				result = rc_check(argv[i],rc_getport(AUTH), msg);
+				result = rc_check(rh, argv[i],rc_getport(AUTH), msg);
 			} else if (!strcmp(p+1, "acct")) {
 				*p = '\0';
-				result = rc_check(argv[i],rc_getport(ACCT), msg);
+				result = rc_check(rh, argv[i],rc_getport(ACCT), msg);
 			} else {
 				*p = '\0';
-				result = rc_check(argv[i], atoi(p+1), msg);
+				result = rc_check(rh, argv[i], atoi(p+1), msg);
 			}
 			if (result == OK_RC)
 				fputs(msg, stdout);
@@ -96,17 +97,17 @@ void main (int argc, char **argv)
 				printf(SC_STATUS_FAILED);
 		}
 	} else {
-		srv = rc_conf_srv("authserver");
+		srv = rc_conf_srv(rh, "authserver");
 		for(i=0; i<srv->max ; i++)
 		{
-			result = rc_check(srv->name[i], srv->port[i], msg);
+			result = rc_check(rh, srv->name[i], srv->port[i], msg);
 			fputs(msg, stdout);
 		}
 		
-		srv = rc_conf_srv("acctserver");
+		srv = rc_conf_srv(rh, "acctserver");
 		for(i=0; i<srv->max ; i++)
 		{
-			result = rc_check(srv->name[i], srv->port[i], msg);
+			result = rc_check(rh, srv->name[i], srv->port[i], msg);
 			fputs(msg, stdout);
 		}
 	}

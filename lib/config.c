@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.1 2003/12/02 10:39:20 sobomax Exp $
+ * $Id: config.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -19,7 +19,7 @@
 #include <radiusclient.h>
 #include <options.h>
 
-static int test_config(char *);
+static int test_config(rc_handle *, char *);
 
 /*
  * Function: find_option
@@ -29,15 +29,15 @@ static int test_config(char *);
  * Returns: pointer to option on success, NULL otherwise
  */
  
-static OPTION *find_option(char *optname, unsigned int type)
+static OPTION *find_option(rc_handle *rh, char *optname, unsigned int type)
 {
 	int i;
 
 	/* there're so few options that a binary search seems not necessary */
-	for (i = 0; i < num_options; i++) {
-		if (!strcmp(config_options[i].name, optname) &&
-		    (config_options[i].type & type))
-		    	return &config_options[i];
+	for (i = 0; i < NUM_OPTIONS; i++) {
+		if (!strcmp(rh->config_options[i].name, optname) &&
+		    (rh->config_options[i].type & type))
+		    	return &rh->config_options[i];
 	}
 
 	return NULL;
@@ -67,12 +67,12 @@ static int set_option_int(char *filename, int line, OPTION *option, char *p)
 
 	if (p == NULL) {
 		rc_log(LOG_ERR, "%s: line %d: bogus option value", filename, line);
-		return (-1);
+		return -1;
 	}
 
-	if ((iptr = (int *) malloc(sizeof(iptr))) == NULL) {
+	if ((iptr = malloc(sizeof(iptr))) == NULL) {
 		rc_log(LOG_CRIT, "read_config: out of memory");
-		return (-1);
+		return -1;
 	}
 	
 	*iptr = atoi(p);				
@@ -90,7 +90,7 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *p)
 
 	if (p == NULL) {
 		rc_log(LOG_ERR, "%s: line %d: bogus option value", filename, line);
-		return (-1);
+		return -1;
 	}
 
 	serv = (SERVER *) option->val;
@@ -119,7 +119,7 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *p)
 					serv->port[serv->max] = ntohs ((unsigned int) svp->s_port);
 			else {
 				rc_log(LOG_ERR, "%s: line %d: no default port for %s", filename, line, option->name);
-				return (-1);
+				return -1;
 			}
 		}
 
@@ -137,12 +137,12 @@ static int set_option_auo(char *filename, int line, OPTION *option, char *p)
 
 	if (p == NULL) {
 		rc_log(LOG_WARNING, "%s: line %d: bogus option value", filename, line);
-		return (-1);
+		return -1;
 	}
 
-	if ((iptr = (int *) malloc(sizeof(iptr))) == NULL) {
+	if ((iptr = malloc(sizeof(iptr))) == NULL) {
 			rc_log(LOG_CRIT, "read_config: out of memory");
-			return (-1);
+			return -1;
 	}
 			
 	*iptr = 0;
@@ -154,7 +154,7 @@ static int set_option_auo(char *filename, int line, OPTION *option, char *p)
 			*iptr = AUTH_RADIUS_FST;
 	else {
 		rc_log(LOG_ERR,"%s: auth_order: unknown keyword: %s", filename, p);
-		return (-1); 
+		return -1; 
 	}
 			
 	p = strtok(NULL, ", \t");
@@ -166,7 +166,7 @@ static int set_option_auo(char *filename, int line, OPTION *option, char *p)
 			*iptr = (*iptr) | AUTH_RADIUS_SND;   
 		else {
 			rc_log(LOG_ERR,"%s: auth_order: unknown or unexpected keyword: %s", filename, p);
-			return (-1); 
+			return -1; 
 		}
 	}
 
@@ -181,20 +181,35 @@ static int set_option_auo(char *filename, int line, OPTION *option, char *p)
  *
  * Purpose: read the global config file
  * 
- * Returns: 0 on success, -1 when failure
+ * Returns: new rc_handle on success, NULL when failure
  */
 
-int rc_read_config(char *filename)
+rc_handle *
+rc_read_config(char *filename)
 {
 	FILE *configfd;
 	char buffer[512], *p;
 	OPTION *option;
 	int line, pos;
+	rc_handle *rh;
+
+	rh = rc_new();
+	if (rh == NULL)
+		return NULL;
+
+        rh->config_options = malloc(sizeof(config_options_default));
+        if (rh->config_options == NULL) {
+                rc_log(LOG_CRIT, "rc_read_config: out of memory");
+		rc_destroy(rh);
+                return NULL;
+        }
+        memcpy(rh->config_options, &config_options_default, sizeof(config_options_default));
 
 	if ((configfd = fopen(filename,"r")) == NULL)
 	{
 		rc_log(LOG_ERR,"rc_read_config: can't open %s: %s", filename, strerror(errno));
-		return (-1);
+		rc_destroy(rh);
+		return NULL;
 	}
 
 	line = 0;
@@ -211,19 +226,25 @@ int rc_read_config(char *filename)
 		
 		if ((pos = strcspn(p, "\t ")) == 0) {
 			rc_log(LOG_ERR, "%s: line %d: bogus format: %s", filename, line, p);
-			return (-1);
+			fclose(configfd);
+			rc_destroy(rh);
+			return NULL;
 		} 
 		
 		p[pos] = '\0';
 		
-		if ((option = find_option(p, OT_ANY)) == NULL) {
+		if ((option = find_option(rh, p, OT_ANY)) == NULL) {
 			rc_log(LOG_ERR, "%s: line %d: unrecognized keyword: %s", filename, line, p);
-			return (-1);
+			fclose(configfd);
+			rc_destroy(rh);
+			return NULL;
 		}
 
 		if (option->status != ST_UNDEF) {
 			rc_log(LOG_ERR, "%s: line %d: duplicate option line: %s", filename, line, p);
-			return (-1);
+			fclose(configfd);
+			rc_destroy(rh);
+			return NULL;
 		}
 
 		p += pos+1;
@@ -232,20 +253,32 @@ int rc_read_config(char *filename)
 
 		switch (option->type) {
 			case OT_STR:
-				 if (set_option_str(filename, line, option, p) < 0)
-				 	return (-1);
+				if (set_option_str(filename, line, option, p) < 0) {
+					fclose(configfd);
+					rc_destroy(rh);
+				 	return NULL;
+				}
 				break;					
 			case OT_INT:
-				 if (set_option_int(filename, line, option, p) < 0)
-				 	return (-1);
+				if (set_option_int(filename, line, option, p) < 0) {
+					fclose(configfd);
+					rc_destroy(rh);
+				 	return NULL;
+				}
 				break;
 			case OT_SRV:
-				 if (set_option_srv(filename, line, option, p) < 0)
-				 	return (-1);
+				if (set_option_srv(filename, line, option, p) < 0) {
+					fclose(configfd);
+					rc_destroy(rh);
+				 	return NULL;
+				}
 				break;
 			case OT_AUO:
-				 if (set_option_auo(filename, line, option, p) < 0)
-				 	return (-1);
+				if (set_option_auo(filename, line, option, p) < 0) {
+					fclose(configfd);
+					rc_destroy(rh);
+				 	return NULL;
+				}
 				break;
 			default:
 				rc_log(LOG_CRIT, "rc_read_config: impossible case branch!");
@@ -254,7 +287,11 @@ int rc_read_config(char *filename)
 	}
 	fclose(configfd);
 
-	return test_config(filename);
+	if (test_config(rh, filename) == -1) {
+		rc_destroy(rh);
+		return NULL;
+	}
+	return rh;
 }
 
 /*
@@ -265,11 +302,11 @@ int rc_read_config(char *filename)
  * Returns: config option value
  */
 
-char *rc_conf_str(char *optname)
+char *rc_conf_str(rc_handle *rh, char *optname)
 {
 	OPTION *option;
 
-	option = find_option(optname, OT_STR);
+	option = find_option(rh, optname, OT_STR);
 	
 	if (option != NULL) {
 		return (char *)option->val;	
@@ -279,11 +316,11 @@ char *rc_conf_str(char *optname)
 	}
 }
 
-int rc_conf_int(char *optname)
+int rc_conf_int(rc_handle *rh, char *optname)
 {
 	OPTION *option;
 
-	option = find_option(optname, OT_INT|OT_AUO);
+	option = find_option(rh, optname, OT_INT|OT_AUO);
 	
 	if (option != NULL) {
 		return *((int *)option->val);	
@@ -293,11 +330,11 @@ int rc_conf_int(char *optname)
 	}
 }
 
-SERVER *rc_conf_srv(char *optname)
+SERVER *rc_conf_srv(rc_handle *rh, char *optname)
 {
 	OPTION *option;
 
-	option = find_option(optname, OT_SRV);
+	option = find_option(rh, optname, OT_SRV);
 	
 	if (option != NULL) {
 		return (SERVER *)option->val;	
@@ -315,94 +352,94 @@ SERVER *rc_conf_srv(char *optname)
  * Returns: 0 on success, -1 when failure
  */
 
-static int test_config(char *filename)
+static int test_config(rc_handle *rh, char *filename)
 {
 #if 0
 	struct stat st;
 	char	    *file;
 #endif
 
-	if (!(rc_conf_srv("authserver")->max))
+	if (!(rc_conf_srv(rh, "authserver")->max))
 	{
 		rc_log(LOG_ERR,"%s: no authserver specified", filename);
-		return (-1);
+		return -1;
 	}
-	if (!(rc_conf_srv("acctserver")->max))
+	if (!(rc_conf_srv(rh, "acctserver")->max))
 	{
 		rc_log(LOG_ERR,"%s: no acctserver specified", filename);
-		return (-1);
+		return -1;
 	}
-	if (!rc_conf_str("servers"))
+	if (!rc_conf_str(rh, "servers"))
 	{
 		rc_log(LOG_ERR,"%s: no servers file specified", filename);
-		return (-1);
+		return -1;
 	}                                                                         
-	if (!rc_conf_str("dictionary"))
+	if (!rc_conf_str(rh, "dictionary"))
 	{
 		rc_log(LOG_ERR,"%s: no dictionary specified", filename);
-		return (-1);
+		return -1;
 	}
 
-	if (rc_conf_int("radius_timeout") <= 0)
+	if (rc_conf_int(rh, "radius_timeout") <= 0)
 	{
 		rc_log(LOG_ERR,"%s: radius_timeout <= 0 is illegal", filename);
-		return (-1);
+		return -1;
 	}
-	if (rc_conf_int("radius_retries") <= 0) 
+	if (rc_conf_int(rh, "radius_retries") <= 0) 
 	{
 		rc_log(LOG_ERR,"%s: radius_retries <= 0 is illegal", filename);
-		return (-1);
+		return -1;
 	}	
 
 #if 0
-	file = rc_conf_str("login_local");
+	file = rc_conf_str(rh, "login_local");
 	if (stat(file, &st) == 0)
 	{
 		if (!S_ISREG(st.st_mode)) {
 			rc_log(LOG_ERR,"%s: not a regular file: %s", filename, file);
-			return (-1);
+			return -1;
 		}
 	} else {
 		rc_log(LOG_ERR,"%s: file not found: %s", filename, file);
-		return (-1);
+		return -1;
 	}
-	file = rc_conf_str("login_radius");
+	file = rc_conf_str(rh, "login_radius");
 	if (stat(file, &st) == 0)
 	{
 		if (!S_ISREG(st.st_mode)) {
 			rc_log(LOG_ERR,"%s: not a regular file: %s", filename, file);
-			return (-1);
+			return -1;
 		}
 	} else {
 		rc_log(LOG_ERR,"%s: file not found: %s", filename, file);
-		return (-1);
+		return -1;
 	}
 #endif
 	
-	if (rc_conf_int("login_tries") <= 0)
+	if (rc_conf_int(rh, "login_tries") <= 0)
 	{
 		rc_log(LOG_ERR,"%s: login_tries <= 0 is illegal", filename);
-		return (-1);
+		return -1;
 	}	
-	if (rc_conf_str("seqfile") == NULL)
+	if (rc_conf_str(rh, "seqfile") == NULL)
 	{
 		rc_log(LOG_ERR,"%s: seqfile not specified", filename);
-		return (-1);
+		return -1;
 	}	
-	if (rc_conf_int("login_timeout") <= 0)
+	if (rc_conf_int(rh, "login_timeout") <= 0)
 	{
 		rc_log(LOG_ERR,"%s: login_timeout <= 0 is illegal", filename);
-		return (-1);
+		return -1;
 	}	
-	if (rc_conf_str("mapfile") == NULL)
+	if (rc_conf_str(rh, "mapfile") == NULL)
 	{
 		rc_log(LOG_ERR,"%s: mapfile not specified", filename);
-		return (-1);
+		return -1;
 	}	
-	if (rc_conf_str("nologin") == NULL)
+	if (rc_conf_str(rh, "nologin") == NULL)
 	{
 		rc_log(LOG_ERR,"%s: nologin not specified", filename);
-		return (-1);
+		return -1;
 	}	
 
 	return 0;
@@ -427,25 +464,25 @@ static int find_match (UINT4 *ip_addr, char *hostname)
 	{
 		if (*ip_addr == ntohl(inet_addr (hostname)))
 		{
-			return (0);
+			return 0;
 		}
 	}
 	else
 	{
-		if ((hp = gethostbyname (hostname)) == (struct hostent *) NULL)
+		if ((hp = gethostbyname (hostname)) == NULL)
 		{
-			return (-1);
+			return -1;
 		}
 		for (paddr = hp->h_addr_list; *paddr; paddr++)
 		{
 			addr = ** (UINT4 **) paddr;
 			if (ntohl(addr) == *ip_addr)
 			{
-				return (0);
+				return 0;
 			}
 		}
 	}
-	return (-1);
+	return -1;
 } 
 
 /*
@@ -457,7 +494,7 @@ static int find_match (UINT4 *ip_addr, char *hostname)
  *
  */
  
-int rc_find_server (char *server_name, UINT4 *ip_addr, char *secret)
+int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secret)
 {
 	UINT4    	myipaddr = 0;
 	int             len;
@@ -471,19 +508,21 @@ int rc_find_server (char *server_name, UINT4 *ip_addr, char *secret)
 
 	/* Get the IP address of the authentication server */
 	if ((*ip_addr = rc_get_ipaddr (server_name)) == (UINT4) 0)
-		return (-1);
+		return -1;
 
-	if ((clientfd = fopen (rc_conf_str("servers"), "r")) == (FILE *) NULL)
+	if ((clientfd = fopen (rc_conf_str(rh, "servers"), "r")) == NULL)
 	{
-		rc_log(LOG_ERR, "rc_find_server: couldn't open file: %s: %s", strerror(errno), rc_conf_str("servers"));
-		return (-1);
+		rc_log(LOG_ERR, "rc_find_server: couldn't open file: %s: %s", strerror(errno), rc_conf_str(rh, "servers"));
+		return -1;
 	}
 	
-	if ((myipaddr = rc_own_ipaddress()) == 0)
-		return (-1);
+	if ((myipaddr = rc_own_ipaddress(rh)) == 0) {
+		fclose(clientfd);
+		return -1;
+	}
 
 	result = 0;
-	while (fgets (buffer, sizeof (buffer), clientfd) != (char *) NULL)
+	while (fgets (buffer, sizeof (buffer), clientfd) != NULL)
 	{
 		if (*buffer == '#')
 			continue;
@@ -548,8 +587,41 @@ int rc_find_server (char *server_name, UINT4 *ip_addr, char *secret)
 		memset (buffer, '\0', sizeof (buffer));
 		memset (secret, '\0', sizeof (secret));
 		rc_log(LOG_ERR, "rc_find_server: couldn't find RADIUS server %s in %s",
-			 server_name, rc_conf_str("servers"));
-		return (-1);
+			 server_name, rc_conf_str(rh, "servers"));
+		return -1;
 	}
 	return 0;
+}
+
+/*
+ * Function: rc_config_free
+ *
+ * Purpose: Free allocated config values
+ *
+ * Arguments: Radius Client handle
+ */
+
+void
+rc_config_free(rc_handle *rh)
+{
+	int i, j;
+	SERVER *serv;
+
+	if (rh->config_options == NULL)
+		return;
+
+	for (i = 0; i < NUM_OPTIONS; i++) {
+		if (rh->config_options[i].val == NULL) 
+			continue;
+		if (rh->config_options[i].type == OT_SRV) {
+		        serv = (SERVER *)rh->config_options[i].val;
+			for (j = 0; j < serv->max; j++)
+				free(serv->name[j]);
+			serv->max = 0;
+		} else {
+			free(rh->config_options[i].val);
+		}
+	}
+	free(rh->config_options);
+	rh->config_options = NULL;
 }

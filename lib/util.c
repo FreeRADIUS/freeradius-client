@@ -1,5 +1,5 @@
 /*
- * $Id: util.c,v 1.1 2003/12/02 10:39:20 sobomax Exp $
+ * $Id: util.c,v 1.2 2003/12/21 17:32:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -59,10 +59,9 @@ void rc_str2tm (char *valstr, struct tm *tm)
  *
  */
 
-char *rc_getifname(char *tty)
+char *rc_getifname(rc_handle *rh, char *tty)
 {
 #if defined(BSD4_4) || defined(linux)	
-	static char 	name[512];
 	int		fd;
 
 	if ((fd = open(tty, O_RDWR|O_NDELAY)) < 0) {
@@ -72,14 +71,14 @@ char *rc_getifname(char *tty)
 #endif	
 	
 #ifdef BSD4_4
-	strcpy(name,ttyname(fd));
-	if (strlen(name) < 1) {
+	strcpy(rh->ifname,ttyname(fd));
+	if (strlen(rh->ifname) < 1) {
 		rc_log(LOG_ERR, "rc_getifname: can't get attached interface of %s: %s", tty, strerror(errno));
 		close(fd);
 		return NULL;
 	}
 #elif linux
-	if (ioctl(fd, SIOCGIFNAME, name) < 0) {
+	if (ioctl(fd, SIOCGIFNAME, rh->ifname) < 0) {
 		rc_log(LOG_ERR, "rc_getifname: can't ioctl %s: %s", tty, strerror(errno));
 		close(fd);
 		return NULL;
@@ -90,7 +89,7 @@ char *rc_getifname(char *tty)
 
 #if defined(BSD4_4) || defined(linux)	
 	close(fd);
-	return name;
+	return rh->ifname;
 #endif
 }
 
@@ -101,14 +100,13 @@ char *rc_getifname(char *tty)
  *
  */
 
-char *rc_getstr (char *prompt, int do_echo)
+char *rc_getstr (rc_handle *rh, char *prompt, int do_echo)
 {
 	int             in, out;
 	char           *p;
 	sigset_t        newset;
 	sigset_t        oldset;
 	struct termios  term_old, term_new;
-	static char     buf[GETSTR_LENGTH];
 	int		is_term, flags, old_flags;
 	char		c;
 	int		flushed = 0;
@@ -160,7 +158,7 @@ char *rc_getstr (char *prompt, int do_echo)
 	/* well, this looks ugly, but it handles the following end of line
 	   markers: \r \r\0 \r\n \n \n\r, at least at a second pass */
 
-	p = buf;
+	p = rh->buf;
 	for (;;)
 	{
 		if (read(in, &c, 1) <= 0)
@@ -176,7 +174,7 @@ char *rc_getstr (char *prompt, int do_echo)
 
 		flushed = 1;
 
-		if (p < buf + GETSTR_LENGTH)
+		if (p < rh->buf + GETSTR_LENGTH)
 		{
 			if (do_echo && !is_term)
 				write(out, &c, 1);
@@ -206,7 +204,7 @@ char *rc_getstr (char *prompt, int do_echo)
 
 	(void) sigprocmask (SIG_SETMASK, &oldset, NULL);
 
-	return (buf);
+	return rh->buf;
 }
 
 void rc_mdelay(int msecs)
@@ -216,7 +214,7 @@ void rc_mdelay(int msecs)
 	tv.tv_sec = (int) msecs / 1000;
 	tv.tv_usec = (msecs % 1000) * 1000;
 
-	select(0,(fd_set *)NULL,(fd_set *)NULL,(fd_set *)NULL, &tv);
+	select(0, NULL, NULL, NULL, &tv);
 }
 
 /*
@@ -229,9 +227,46 @@ void rc_mdelay(int msecs)
  */
 
 char *
-rc_mksid (void)
+rc_mksid (rc_handle *rh)
 {
-  static char buf[14];
-  sprintf (buf, "%08lX%04X", (unsigned long int) time (NULL), (unsigned int) getpid ());
-  return buf;
+  sprintf (rh->buf1, "%08lX%04X", (unsigned long int) time (NULL), (unsigned int) getpid ());
+  return rh->buf1;
+}
+
+/*
+ * Function: rc_new
+ *
+ * Purpose: Initialises new Radius Client handle
+ *
+ */
+
+rc_handle *
+rc_new(void)
+{
+	rc_handle *rh;
+
+	rh = malloc(sizeof(*rh));
+	if (rh == NULL) {
+                rc_log(LOG_CRIT, "rc_new: out of memory");
+                return NULL;
+        }
+	memset(rh, 0, sizeof(*rh));
+	return rh;
+}
+
+/*
+ * Function: rc_destroy
+ *
+ * Purpose: Destroys Radius Client handle reclaiming all memory
+ *
+ */
+
+void
+rc_destroy(rc_handle *rh)
+{
+
+	rc_map2id_free(rh);
+	rc_dict_free(rh);
+	rc_config_free(rh);
+	free(rh);
 }
