@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.6 2004/11/16 13:25:03 sobomax Exp $
+ * $Id: config.c,v 1.7 2004/11/16 13:33:50 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -53,10 +53,15 @@ static OPTION *find_option(rc_handle *rh, char *optname, unsigned int type)
 
 static int set_option_str(char *filename, int line, OPTION *option, char *p)
 {
-	if (p)
+	if (p) {
 		option->val = (void *) strdup(p);
-	else
+		if (option->val == NULL) {
+			rc_log(LOG_CRIT, "read_config: out of memory");
+			return -1;
+		}
+	} else {
 		option->val = NULL;
+	}
 
 	return 0;
 }
@@ -118,7 +123,12 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *p)
 			}
 		}
 
-		serv->name[serv->max++] = strdup(p);
+		serv->name[serv->max] = strdup(p);
+		if (serv->name[serv->max] == NULL) {
+			rc_log(LOG_CRIT, "read_config: out of memory");
+			return -1;
+		}
+		serv->max++;
 
 		p = NULL;
 	}
