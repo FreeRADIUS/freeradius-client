@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient.h,v 1.1 2003/12/02 10:39:17 sobomax Exp $
+ * $Id: radiusclient.h,v 1.2 2003/12/02 12:30:55 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -149,6 +149,7 @@ typedef struct pw_auth_hdr
 #define	PW_FRAMED_APPLETALK_LINK	37	/* integer */
 #define	PW_FRAMED_APPLETALK_NETWORK	38	/* integer */
 #define	PW_FRAMED_APPLETALK_ZONE	39	/* string */
+#define	PW_EVENT_TIMESTAMP		55	/* integer */
 #define	PW_CHAP_CHALLENGE               60      /* string */
 #define	PW_NAS_PORT_TYPE                61      /* integer */
 #define	PW_PORT_LIMIT                   62      /* integer */
@@ -168,6 +169,23 @@ typedef struct pw_auth_hdr
 #define PW_ACCT_TERMINATE_CAUSE		49	/* integer */
 #define PW_ACCT_MULTI_SESSION_ID	50	/* string */
 #define PW_ACCT_LINK_COUNT		51	/* integer */
+
+/*	Experimental SIP-specific attributes (draft-sterman-aaa-sip-00.txt) */
+
+#define	PW_DIGEST_RESPONSE		206	/* string */
+#define	PW_DIGEST_ATTRIBUTES		207	/* string */
+#define	PW_SIP_URI_USER			208	/* string */
+#define	PW_SIP_RPID			213	/* string */
+#define	PW_DIGEST_REALM			1063	/* string */
+#define	PW_DIGEST_NONCE			1064	/* string */
+#define	PW_DIGEST_METHOD		1065	/* string */
+#define	PW_DIGEST_URI			1066	/* string */
+#define	PW_DIGEST_QOP			1067	/* string */
+#define	PW_DIGEST_ALGORITHM		1068	/* string */
+#define	PW_DIGEST_BODY_DIGEST		1069	/* string */
+#define	PW_DIGEST_CNONCE		1070	/* string */
+#define	PW_DIGEST_NONCE_COUNT		1071	/* string */
+#define	PW_DIGEST_USER_NAME		1072	/* string */
 
 /*	Merit Experimental Extensions */
 

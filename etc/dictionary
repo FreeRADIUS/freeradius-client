@@ -48,11 +48,21 @@ ATTRIBUTE	Callback-Id		20	string
 ATTRIBUTE	Framed-Route		22	string
 ATTRIBUTE	Framed-IPX-Network	23	ipaddr
 ATTRIBUTE	State			24	string
+ATTRIBUTE	Class			25	string
+ATTRIBUTE	Vendor-Specific		26	string
 ATTRIBUTE	Session-Timeout		27	integer
 ATTRIBUTE	Idle-Timeout		28	integer
 ATTRIBUTE	Termination-Action	29	integer
 ATTRIBUTE	Called-Station-Id	30	string
 ATTRIBUTE	Calling-Station-Id	31	string
+ATTRIBUTE	NAS-Identifier		32	string
+ATTRIBUTE	Proxy-State		33	string
+ATTRIBUTE	Login-LAT-Service	34	string
+ATTRIBUTE	Login-LAT-Node		35	string
+ATTRIBUTE	Login-LAT-Group		36	string
+ATTRIBUTE	Framed-AppleTalk-Link	37	integer
+ATTRIBUTE	Framed-AppleTalk-Network	38	integer
+ATTRIBUTE	Framed-AppleTalk-Zone	39	string
 ATTRIBUTE	Acct-Status-Type	40	integer
 ATTRIBUTE	Acct-Delay-Time		41	integer
 ATTRIBUTE	Acct-Input-Octets	42	integer
@@ -60,10 +70,35 @@ ATTRIBUTE	Acct-Output-Octets	43	integer
 ATTRIBUTE	Acct-Session-Id		44	string
 ATTRIBUTE	Acct-Authentic		45	integer
 ATTRIBUTE	Acct-Session-Time	46	integer
+ATTRIBUTE	Acct-Input-Packets	47	integer
+ATTRIBUTE	Acct-Output-Packets	48	integer
 ATTRIBUTE	Acct-Terminate-Cause	49	integer
+ATTRIBUTE	Acct-Multi-Session-Id	50	string
+ATTRIBUTE	Acct-Link-Count		51	integer
+ATTRIBUTE	Event-Timestamp		55	integer
+ATTRIBUTE	CHAP-Challenge		60	string
 ATTRIBUTE	NAS-Port-Type		61	integer
 ATTRIBUTE	Port-Limit		62	integer
+ATTRIBUTE	Login-LAT-Port		63	integer
 ATTRIBUTE	Connect-Info		77	string
+
+#
+#	Experimental SIP Attributes (draft-sterman-aaa-sip-00.txt)
+#
+ATTRIBUTE	Digest-Response		206	string
+ATTRIBUTE	Digest-Attributes	207	string
+ATTRIBUTE	Sip-URI-User		208	string
+ATTRIBUTE	Sip-RPId		213	string
+ATTRIBUTE	Digest-Realm		1063	string
+ATTRIBUTE	Digest-Nonce		1064	string
+ATTRIBUTE	Digest-Method		1065	string
+ATTRIBUTE	Digest-URI		1066	string
+ATTRIBUTE	Digest-QOP		1067	string
+ATTRIBUTE	Digest-Algorithm	1068	string
+ATTRIBUTE	Digest-Body-Digest	1069	string
+ATTRIBUTE	Digest-CNonce		1070	string
+ATTRIBUTE	Digest-Nonce-Count	1071	string
+ATTRIBUTE	Digest-User-Name	1072	string
 
 #
 #	Experimental Non Protocol Attributes used by Cistron-Radiusd
@@ -135,6 +170,7 @@ VALUE		Login-Service		PortMaster		3
 
 VALUE		Acct-Status-Type	Start			1
 VALUE		Acct-Status-Type	Stop			2
+VALUE		Acct-Status-Type	Alive			3
 VALUE		Acct-Status-Type	Accounting-On		7
 VALUE		Acct-Status-Type	Accounting-Off		8
 
@@ -192,7 +228,7 @@ VALUE		Auth-Type		Reject			4
 #	Cistron extensions
 #
 VALUE		Auth-Type		Pam			253
-VALUE		Auth-Type		None			254
+VALUE		Auth-Type		Accept			254
 
 #
 #	Experimental Non-Protocol Integer Translations for Cistron-Radiusd
