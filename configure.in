@@ -1,5 +1,5 @@
 # 
-#  $Id: configure.in,v 1.18 2005/03/01 14:58:44 janakj Exp $
+#  $Id: configure.in,v 1.19 2005/03/03 13:08:00 sobomax Exp $
 # 
 #  Copyright (C) 1996,1997 Lars Fenneberg
 # 
@@ -21,7 +21,7 @@ case "$target" in
 	;;
 esac
 
-AM_INIT_AUTOMAKE(radiusclient-ng, 0.4.8)
+AM_INIT_AUTOMAKE(radiusclient-ng, 0.5.0)
 
 LIBVERSION=2:0:0
 AC_SUBST(LIBVERSION)
