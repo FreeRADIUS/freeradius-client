@@ -1808,7 +1808,7 @@ fi
 
 PACKAGE=radiusclient
 
-VERSION=0.4.8
+VERSION=0.5.1
 
 if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
   { { echo "$as_me:1814: error: source directory already configured; run \"make distclean\" there first" >&5
