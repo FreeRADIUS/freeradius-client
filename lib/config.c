@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.10 2005/03/01 14:58:44 janakj Exp $
+ * $Id: config.c,v 1.11 2005/06/28 15:08:55 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -269,6 +269,10 @@ rc_read_config(char *filename)
 		p += pos+1;
 		while (isspace(*p))
 			p++;
+		pos = strlen(p) - 1;
+		while(pos >= 0 && isspace(p[pos]))
+			pos--;
+		p[pos + 1] = '\0';
 
 		switch (option->type) {
 			case OT_STR:
