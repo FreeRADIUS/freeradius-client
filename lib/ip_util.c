@@ -1,5 +1,5 @@
 /*
- * $Id: ip_util.c,v 1.6 2005/03/01 14:58:44 janakj Exp $
+ * $Id: ip_util.c,v 1.7 2005/07/21 08:01:07 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -17,6 +17,12 @@
 #include <config.h>
 #include <includes.h>
 #include <radiusclient-ng.h>
+
+#if !defined(SA_LEN)
+#define SA_LEN(sa) \
+  (((sa)->sa_family == AF_INET) ? \
+    sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6))
+#endif
 
 /*
  * Function: rc_get_ipaddr
@@ -242,4 +248,46 @@ UINT4 rc_own_bind_ipaddress(rc_handle *rh)
 		*rh->this_host_bind_ipaddr = rval;
 
 	return rval;
+}
+
+/*
+ * Function: rc_get_srcaddr
+ *
+ * Purpose: given remote address find local address which the
+ *          system will use as a source address for sending
+ *          datagrams to that remote address
+ *
+ * Returns: 0 in success, -1 on failure, address is filled into
+ *          the first argument.
+ *
+ */
+int
+rc_get_srcaddr(struct sockaddr *lia, struct sockaddr *ria)
+{
+	int temp_sock;
+	socklen_t namelen;
+
+	temp_sock = socket(ria->sa_family, SOCK_DGRAM, 0);
+	if (temp_sock == -1) {
+		rc_log(LOG_ERR, "rc_get_srcaddr: socket: %s", strerror(errno));
+		return -1;
+	}
+
+	if (connect(temp_sock, ria, SA_LEN(ria)) != 0) {
+		rc_log(LOG_ERR, "rc_get_srcaddr: connect: %s",
+		    strerror(errno));
+		close(temp_sock);
+		return -1;
+	}
+
+	namelen = SA_LEN(ria);
+	if (getsockname(temp_sock, lia, &namelen) != 0) {
+		rc_log(LOG_ERR, "rc_get_srcaddr: getsockname: %s",
+		    strerror(errno));
+		close(temp_sock);
+		return -1;
+	}
+
+	close(temp_sock);
+	return 0;
 }

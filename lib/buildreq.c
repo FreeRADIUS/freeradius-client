@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.8 2005/03/01 14:58:44 janakj Exp $
+ * $Id: buildreq.c,v 1.9 2005/07/21 08:01:07 sobomax Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -123,7 +123,6 @@ int rc_auth(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send, VALUE_PAIR **rec
 	    char *msg)
 {
 	SEND_DATA       data;
-	UINT4		client_id;
 	int		result;
 	int		i;
 	SERVER		*authserver = rc_conf_srv(rh, "authserver");
@@ -132,16 +131,6 @@ int rc_auth(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send, VALUE_PAIR **rec
 
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
-
-	/*
-	 * Fill in NAS-IP-Address
-	 */
-
-	if ((client_id = rc_own_ipaddress(rh)) == 0)
-		return ERROR_RC;
-
-	if (rc_avpair_add(rh, &(data.send_pairs), PW_NAS_IP_ADDRESS, &client_id, 0, 0) == NULL)
-		return ERROR_RC;
 
 	/*
 	 * Fill in NAS-Port
@@ -228,7 +217,6 @@ int rc_acct(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send)
 {
 	SEND_DATA       data;
 	VALUE_PAIR	*adt_vp;
-	UINT4		client_id;
 	int		result;
 	time_t		start_time, dtime;
 	char		msg[4096];
@@ -239,16 +227,6 @@ int rc_acct(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send)
 
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
-
-	/*
-	 * Fill in NAS-IP-Address
-	 */
-
-	if ((client_id = rc_own_ipaddress(rh)) == 0)
-		return ERROR_RC;
-
-	if (rc_avpair_add(rh, &(data.send_pairs), PW_NAS_IP_ADDRESS, &client_id, 0, 0) == NULL)
-		return ERROR_RC;
 
 	/*
 	 * Fill in NAS-Port
@@ -339,20 +317,11 @@ int rc_check(rc_handle *rh, char *host, unsigned short port, char *msg)
 {
 	SEND_DATA       data;
 	int		result;
-	UINT4		client_id, service_type;
+	UINT4		service_type;
 	int		timeout = rc_conf_int(rh, "radius_timeout");
 	int		retries = rc_conf_int(rh, "radius_retries");
 
 	data.send_pairs = data.receive_pairs = NULL;
-
-	/*
-	 * Fill in NAS-IP-Address, although it isn't neccessary
-	 */
-
-	if ((client_id = rc_own_ipaddress(rh)) == 0)
-		return ERROR_RC;
-
-	rc_avpair_add(rh, &(data.send_pairs), PW_NAS_IP_ADDRESS, &client_id, 0, 0);
 
 	/*
 	 * Fill in Service-Type

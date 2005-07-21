@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient-ng.h,v 1.2 2005/04/01 01:33:11 sobomax Exp $
+ * $Id: radiusclient-ng.h,v 1.3 2005/07/21 08:01:07 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -454,6 +454,8 @@ unsigned short rc_getport(int);
 int rc_own_hostname(char *, int);
 UINT4 rc_own_ipaddress(rc_handle *);
 UINT4 rc_own_bind_ipaddress(rc_handle *);
+struct sockaddr;
+int rc_get_srcaddr(struct sockaddr *, struct sockaddr *);
 
 
 /*	log.c			*/

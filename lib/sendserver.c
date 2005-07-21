@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.14 2005/04/01 01:33:10 sobomax Exp $
+ * $Id: sendserver.c,v 1.15 2005/07/21 08:01:07 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -18,6 +18,8 @@
 #include <includes.h>
 #include <radiusclient-ng.h>
 #include <pathnames.h>
+
+#define	SA(p)	((struct sockaddr *)(p))
 
 static void rc_random_vector (unsigned char *);
 static int rc_check_reply (AUTH_HDR *, int, char *, unsigned char *, unsigned char);
@@ -174,13 +176,12 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 {
 	int             sockfd;
-	struct sockaddr salocal;
-	struct sockaddr saremote;
-	struct sockaddr_in *sin;
+	struct sockaddr_in sinlocal;
+	struct sockaddr_in sinremote;
 	struct timeval  authtime;
 	fd_set          readfds;
 	AUTH_HDR       *auth, *recv_auth;
-	UINT4           auth_ipaddr;
+	UINT4           auth_ipaddr, nas_ipaddr;
 	char           *server_name;	/* Name of server to query */
 	int             salen;
 	int             result;
@@ -222,14 +223,11 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		return ERROR_RC;
 	}
 
-	length = sizeof (salocal);
-	sin = (struct sockaddr_in *) & salocal;
-	memset ((char *) sin, '\0', (size_t) length);
-	sin->sin_family = AF_INET;
-	sin->sin_addr.s_addr = htonl(rc_own_bind_ipaddress(rh));
-	sin->sin_port = htons ((unsigned short) 0);
-	if (bind (sockfd, (struct sockaddr *) sin, length) < 0 ||
-		   getsockname (sockfd, (struct sockaddr *) sin, &length) < 0)
+	memset((char *)&sinlocal, '\0', sizeof(sinlocal));
+	sinlocal.sin_family = AF_INET;
+	sinlocal.sin_addr.s_addr = htonl(rc_own_bind_ipaddress(rh));
+	sinlocal.sin_port = htons((unsigned short) 0);
+	if (bind(sockfd, SA(&sinlocal), sizeof(sinlocal)) < 0)
 	{
 		close (sockfd);
 		memset (secret, '\0', sizeof (secret));
@@ -239,6 +237,25 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 
 	retry_max = data->retries;	/* Max. numbers to try for reply */
 	retries = 0;			/* Init retry cnt for blocking call */
+
+	memset ((char *)&sinremote, '\0', sizeof(sinremote));
+	sinremote.sin_family = AF_INET;
+	sinremote.sin_addr.s_addr = htonl (auth_ipaddr);
+	sinremote.sin_port = htons ((unsigned short) data->svc_port);
+
+	/*
+	 * Fill in NAS-IP-Address
+	 */
+	if (sinlocal.sin_addr.s_addr == htonl(INADDR_ANY)) {
+		if (rc_get_srcaddr(SA(&sinlocal), SA(&sinremote)) != 0) {
+			close (sockfd);
+			memset (secret, '\0', sizeof (secret));
+			return ERROR_RC;
+		}
+	}
+	nas_ipaddr = ntohl(sinlocal.sin_addr.s_addr);
+	rc_avpair_add(rh, &(data->send_pairs), PW_NAS_IP_ADDRESS,
+	    &nas_ipaddr, 0, 0);
 
 	/* Build a request */
 	auth = (AUTH_HDR *) send_buffer;
@@ -267,16 +284,10 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		auth->length = htons ((unsigned short) total_length);
 	}
 
-	sin = (struct sockaddr_in *) & saremote;
-	memset ((char *) sin, '\0', sizeof (saremote));
-	sin->sin_family = AF_INET;
-	sin->sin_addr.s_addr = htonl (auth_ipaddr);
-	sin->sin_port = htons ((unsigned short) data->svc_port);
-
 	for (;;)
 	{
 		sendto (sockfd, (char *) auth, (unsigned int) total_length, (int) 0,
-			(struct sockaddr *) sin, sizeof (struct sockaddr_in));
+			SA(&sinremote), sizeof (struct sockaddr_in));
 
 		authtime.tv_usec = 0L;
 		authtime.tv_sec = (long) data->timeout;
@@ -308,10 +319,10 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 			return TIMEOUT_RC;
 		}
 	}
-	salen = sizeof (saremote);
+	salen = sizeof(sinremote);
 	length = recvfrom (sockfd, (char *) recv_buffer,
 			   (int) sizeof (recv_buffer),
-			   (int) 0, &saremote, &salen);
+			   (int) 0, SA(&sinremote), &salen);
 
 	if (length <= 0)
 	{
@@ -390,7 +401,6 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 	int             totallen;
 	unsigned char   calc_digest[AUTH_VECTOR_LEN];
 	unsigned char   reply_digest[AUTH_VECTOR_LEN];
-	unsigned char	*ptr;
 
 	totallen = ntohs (auth->length);
 	secretlen = strlen (secret);
