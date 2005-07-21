@@ -72,7 +72,7 @@ radius_timeout	10
 radius_retries	3
 
 # local address from which radius packets have to be sent
-bindaddr localhost
+bindaddr *
 
 # LOCAL settings
 
