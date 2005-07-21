@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.11 2005/06/28 15:08:55 sobomax Exp $
+ * $Id: config.c,v 1.12 2005/07/21 07:55:56 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -91,7 +91,6 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *p)
 	SERVER *serv;
 	char *q;
 	struct servent *svp;
-	int i;
 
 	if (p == NULL) {
 		rc_log(LOG_ERR, "%s: line %d: bogus option value", filename, line);
@@ -509,6 +508,69 @@ static int find_match (UINT4 *ip_addr, char *hostname)
 }
 
 /*
+ * Function: rc_ipaddr_local
+ *
+ * Purpose: checks if provided address is local address
+ *
+ * Returns: 0 if local, 1 if not local, -1 on failure
+ *
+ */
+
+static int
+rc_ipaddr_local(UINT4 ip_addr)
+{
+	int temp_sock, res, serrno;
+	struct sockaddr_in sin;
+
+	temp_sock = socket(AF_INET, SOCK_DGRAM, 0);
+	if (temp_sock == -1)
+		return -1;
+	memset(&sin, '\0', sizeof(sin));
+	sin.sin_family = AF_INET;
+	sin.sin_addr.s_addr = htonl(ip_addr);
+	sin.sin_port = htons(0);
+	res = bind(temp_sock, (struct sockaddr *)&sin, sizeof(sin));
+	serrno = errno;
+	close(temp_sock);
+	if (res == 0)
+		return 0;
+	if (serrno == EADDRNOTAVAIL)
+		return 1;
+	return -1;
+}
+
+/*
+ * Function: rc_is_myname
+ *
+ * Purpose: check if provided name refers to ourselves
+ *
+ * Returns: 0 if yes, 1 if no and -1 on failure
+ *
+ */
+
+static int
+rc_is_myname(char *hostname)
+{
+	UINT4 addr;
+	char **paddr;
+	struct hostent *hp;
+	int res;
+
+	if (rc_good_ipaddr(hostname) == 0)
+		return rc_ipaddr_local(ntohl(inet_addr(hostname)));
+
+	if ((hp = gethostbyname (hostname)) == NULL)
+		return -1;
+	for (paddr = hp->h_addr_list; *paddr; paddr++) {
+		addr = **(UINT4 **)paddr;
+		res = rc_ipaddr_local(ntohl(addr));
+		if (res == 0 || res == -1)
+			return res;
+	}
+	return 1;
+}
+
+/*
  * Function: rc_find_server
  *
  * Purpose: search a server in the servers file
@@ -519,7 +581,6 @@ static int find_match (UINT4 *ip_addr, char *hostname)
 
 int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secret)
 {
-	UINT4    	myipaddr = 0;
 	int             len;
 	int             result;
 	FILE           *clientfd;
@@ -536,11 +597,6 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 	if ((clientfd = fopen (rc_conf_str(rh, "servers"), "r")) == NULL)
 	{
 		rc_log(LOG_ERR, "rc_find_server: couldn't open file: %s: %s", strerror(errno), rc_conf_str(rh, "servers"));
-		return -1;
-	}
-
-	if ((myipaddr = rc_own_ipaddress(rh)) == 0) {
-		fclose(clientfd);
 		return -1;
 	}
 
@@ -585,7 +641,7 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 		else /* <name1>/<name2> "paired" form */
 		{
 			strtok (hostnm, "/");
-			if (find_match (&myipaddr, hostnm) == 0)
+			if (rc_is_myname(hostnm) == 0)
 			{	     /* If we're the 1st name, target is 2nd */
 				host2 = strtok (NULL, " ");
 				if (find_match (ip_addr, host2) == 0)
