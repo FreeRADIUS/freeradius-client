@@ -1,5 +1,5 @@
 /*
- * $Id: dict.c,v 1.6 2005/03/01 14:58:44 janakj Exp $
+ * $Id: dict.c,v 1.7 2005/07/21 07:29:47 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -260,7 +260,7 @@ int rc_read_dictionary (rc_handle *rh, const char *filename)
 		else if (strncmp (buffer, "VENDOR", 6) == 0)
 		{
 			/* Read the VALUE line */
-			if (sscanf (buffer, "%s%s%s%s", dummystr, attrstr, valstr) != 3)
+			if (sscanf (buffer, "%s%s%s", dummystr, attrstr, valstr) != 3)
 			{
 				rc_log(LOG_ERR,
 				 "rc_read_dictionary: invalid Vendor-Id on line %d of dictionary %s",
