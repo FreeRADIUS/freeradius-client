@@ -23895,8 +23895,8 @@ echo "${ECHO_T}LOG_DAEMON" >&6
 
 fi;
 
-echo "$as_me:$LINENO: checking whether to include Livingsto'n RADIUS server 1.16 kludge" >&5
-echo $ECHO_N "checking whether to include Livingsto'n RADIUS server 1.16 kludge... $ECHO_C" >&6
+echo "$as_me:$LINENO: checking whether to include Livingston's RADIUS server 1.16 kludge" >&5
+echo $ECHO_N "checking whether to include Livingston's RADIUS server 1.16 kludge... $ECHO_C" >&6
 # Check whether --enable-radius-116 or --disable-radius-116 was given.
 if test "${enable_radius_116+set}" = set; then
   enableval="$enable_radius_116"
