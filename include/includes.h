@@ -1,5 +1,5 @@
 /*
- * $Id: includes.h,v 1.2 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: includes.h,v 1.3 2005/11/07 22:41:42 sobomax Exp $
  *
  * Copyright (C) 1997 Lars Fenneberg
  *
@@ -15,6 +15,21 @@
  */
 
 #include "config.h"
+
+/* AIX requires this to be the first thing in the file.  */
+#ifndef __GNUC__
+# if HAVE_ALLOCA_H
+#  include <alloca.h>
+# else
+#  ifdef _AIX
+#   pragma alloca
+#  else
+#   ifndef alloca /* predefined by HP cc +Olibcalls */
+     char *alloca ();
+#   endif
+#  endif
+# endif
+#endif
 
 #include <sys/types.h>
 

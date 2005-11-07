@@ -1,5 +1,5 @@
 # 
-#  $Id: configure.in,v 1.20 2005/06/15 04:30:17 sobomax Exp $
+#  $Id: configure.in,v 1.21 2005/11/07 22:41:42 sobomax Exp $
 # 
 #  Copyright (C) 1996,1997 Lars Fenneberg
 # 
@@ -91,6 +91,7 @@ AC_FUNC_MEMCMP
 AC_FUNC_SETVBUF_REVERSED
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
+AC_FUNC_ALLOCA
 AC_REPLACE_FUNCS(strdup strerror strcasecmp)
 AC_CHECK_FUNCS(flock fcntl uname gethostname sysinfo getdomainname)
 AC_CHECK_FUNCS(stricmp random rand snprintf vsnprintf)
@@ -192,7 +193,7 @@ AH_OUTPUT([HAVE_STRUCT_UTSNAME_DOMAINNAME], [/*struct utsname has domainname fie
 #undef HAVE_STRUCT_UTSNAME_DOMAINNAME])
 AH_OUTPUT([NEED_SIG_PROTOTYPES], [/* do you need the sig* prototypes ? */
 #undef NEED_SIG_PROTOTYPES])
-AH_OUTPUT([RADIUS_116], [/* include code to kludge aroung Livingston's RADIUS server 1.16 */
+AH_OUTPUT([RADIUS_116], [/* include code to kludge aroung Livingston RADIUS server 1.16 */
 #undef RADIUS_116])
 AH_OUTPUT([SCP], [/* SCP support */
 #undef SCP])
