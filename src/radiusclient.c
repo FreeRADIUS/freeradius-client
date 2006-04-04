@@ -23,12 +23,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: radiusclient.c,v 1.5 2005/03/01 14:58:44 janakj Exp $
+ * $Id: radiusclient.c,v 1.6 2006/04/04 20:52:04 sobomax Exp $
  */
 
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 
 #include <radiusclient-ng.h>
@@ -46,8 +47,9 @@ usage(void)
 int
 main(int argc, char **argv)
 {
-    int i, nas_port, ch, acct, server, ecount, firstline, len, theend;
+    int i, nas_port, ch, acct, server, ecount, firstline, theend;
     void *rh;
+    size_t len;
     VALUE_PAIR *send, **vp;
     char *rc_conf, *cp;
     char lbuf[4096];

@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.15 2005/04/01 01:33:10 sobomax Exp $
+ * $Id: avpair.c,v 1.16 2006/04/04 20:52:04 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -673,7 +673,7 @@ int rc_avpair_tostr (rc_handle *rh, VALUE_PAIR *pair, char *name, int ln, char *
 			}
 			else
 			{
-				strncat(value, ptr, 1);
+				strncat(value, (char *)ptr, 1);
 				lv--;
 				if (lv < 0) break;
 			}

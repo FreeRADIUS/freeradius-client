@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.15 2005/07/21 08:01:07 sobomax Exp $
+ * $Id: sendserver.c,v 1.16 2006/04/04 20:52:04 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -81,7 +81,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		  memcpy ((char *) passbuf, vp->strvalue, (size_t) length);
 
 		  secretlen = strlen (secret);
-		  vector = (char *)auth->vector;
+		  vector = (unsigned char *)auth->vector;
 		  for(i = 0; i < padded_length; i += AUTH_VECTOR_LEN)
 		  {
 		  	/* Calculate the MD5 digest*/
@@ -183,7 +183,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	AUTH_HDR       *auth, *recv_auth;
 	UINT4           auth_ipaddr, nas_ipaddr;
 	char           *server_name;	/* Name of server to query */
-	int             salen;
+	socklen_t       salen;
 	int             result;
 	int             total_length;
 	int             length;
@@ -271,7 +271,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		memset((char *) auth->vector, 0, AUTH_VECTOR_LEN);
 		secretlen = strlen (secret);
 		memcpy ((char *) auth + total_length, secret, secretlen);
-		rc_md5_calc (vector, (char *) auth, total_length + secretlen);
+		rc_md5_calc (vector, (unsigned char *) auth, total_length + secretlen);
 		memcpy ((char *) auth->vector, (char *) vector, AUTH_VECTOR_LEN);
 	}
 	else
@@ -445,7 +445,7 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
                 rc_log(LOG_ERR, "  %s", buf);
         }
 #endif
-	rc_md5_calc (calc_digest, (char *) auth, totallen + secretlen);
+	rc_md5_calc (calc_digest, (unsigned char *) auth, totallen + secretlen);
 #ifdef DIGEST_DEBUG
 	rc_log(LOG_ERR, "Digest is:");
         for (ptr = (u_char *)calc_digest; ptr < ((u_char *)calc_digest) + 16; ptr += 32) {
