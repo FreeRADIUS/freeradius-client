@@ -1,5 +1,5 @@
 # 
-#  $Id: configure.in,v 1.24 2006/05/15 21:22:17 sobomax Exp $
+#  $Id: configure.in,v 1.25 2006/05/15 21:38:52 sobomax Exp $
 # 
 #  Copyright (C) 1996,1997 Lars Fenneberg
 # 
@@ -223,6 +223,7 @@ include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile
 doc/Makefile patches/Makefile
 login.radius/Makefile login.radius/migs/Makefile
 rpm/Makefile
+debian/Makefile
 ])
 AC_CONFIG_COMMANDS([default],[[test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h]],[[]])
 AC_OUTPUT
