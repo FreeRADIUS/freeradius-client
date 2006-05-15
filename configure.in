@@ -1,5 +1,5 @@
 # 
-#  $Id: configure.in,v 1.23 2006/03/14 17:14:28 janakj Exp $
+#  $Id: configure.in,v 1.24 2006/05/15 21:22:17 sobomax Exp $
 # 
 #  Copyright (C) 1996,1997 Lars Fenneberg
 # 
@@ -64,6 +64,14 @@ then
 	)
 fi
 AC_CHECK_LIB(crypt, crypt)
+
+dnl Checks for endianness
+AC_C_BIGENDIAN
+if test $ac_cv_c_bigendian = yes; then
+	AC_DEFINE(BIG_ENDIAN)
+else
+	AC_DEFINE(LITTLE_ENDIAN)
+fi
 
 dnl Checks for header files.
 AC_HEADER_DIRENT
@@ -185,6 +193,10 @@ AC_ARG_ENABLE(scp,
 AC_SUBST(RC_SECURE_PATH)
 AC_SUBST(RC_LOG_FACILITY)
 
+AH_OUTPUT([BIG_ENDIAN], [/* is big endian arch ? */
+#undef BIG_ENDIAN])
+AH_OUTPUT([LITTLE_ENDIAN], [/* is little endian arch ? */
+#undef LITTLE_ENDIAN])
 AH_OUTPUT([HAVE_DEV_URANDOM], [/* does /dev/urandom exist ? */
 #undef HAVE_DEV_URANDOM])
 AH_OUTPUT([HAVE_SHADOW_PASSWORDS], [/* shadow password support */
