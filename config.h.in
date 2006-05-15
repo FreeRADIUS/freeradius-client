@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
 
+/* is big endian arch ? */
+#undef BIG_ENDIAN
+
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
    systems. This function is required for `alloca.c' support on those systems.
    */
@@ -153,6 +156,9 @@
 /* Define to 1 if you have the `vsnprintf' function. */
 #undef HAVE_VSNPRINTF
 
+/* is little endian arch ? */
+#undef LITTLE_ENDIAN
+
 /* do you need the sig* prototypes ? */
 #undef NEED_SIG_PROTOTYPES
 
@@ -210,6 +216,10 @@
 
 
 #undef VERSION
+
+/* Define to 1 if your processor stores words with the most significant byte
+   first (like Motorola and SPARC, unlike Intel and VAX). */
+#undef WORDS_BIGENDIAN
 
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
