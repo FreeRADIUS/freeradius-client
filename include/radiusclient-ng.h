@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient-ng.h,v 1.3 2005/07/21 08:01:07 sobomax Exp $
+ * $Id: radiusclient-ng.h,v 1.4 2006/05/17 08:47:57 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -31,8 +31,8 @@
 # define __END_DECLS /* empty */
 #endif
 
-typedef unsigned long UINT4;
-typedef long 	      INT4;
+typedef uint32_t UINT4;
+typedef int32_t  INT4;
 
 #define AUTH_VECTOR_LEN		16
 #define AUTH_PASS_LEN		(3 * 16) /* multiple of 16 */
