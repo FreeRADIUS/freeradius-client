@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient-ng.h,v 1.4 2006/05/17 08:47:57 sobomax Exp $
+ * $Id: radiusclient-ng.h,v 1.5 2006/05/17 18:14:35 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -18,6 +18,7 @@
 #define RADIUSCLIENT_NG_H
 
 #include	<sys/types.h>
+#include	<stdint.h>
 #include	<stdio.h>
 #include	<time.h>
 
