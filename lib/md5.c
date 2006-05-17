@@ -1,5 +1,5 @@
 /*
- * $Id: md5.c,v 1.3 2006/05/15 21:22:17 sobomax Exp $
+ * $Id: md5.c,v 1.4 2006/05/17 02:31:28 sobomax Exp $
  */
 
 /*
@@ -63,7 +63,14 @@ static void MD5Transform(UINT4 state[4], const unsigned char block[64]);
 #if (BYTE_ORDER == LITTLE_ENDIAN)
 #define Encode memcpy
 #define Decode memcpy
-#else 
+#else
+#undef htole32
+#undef le32toh
+#define htole32		le32toh
+#define le32toh(x)	((((UINT4)(x) & 0xff000000) >> 24) | \
+			 (((UINT4)(x) & 0x00ff0000) >> 8)  | \
+			 (((UINT4)(x) & 0x0000ff00) << 8)  | \
+			 (((UINT4)(x) & 0x000000ff) << 24))
 
 /*
  * Encodes input (UINT4) into output (unsigned char). Assumes len is
