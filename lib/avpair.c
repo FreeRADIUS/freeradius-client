@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.16 2006/04/04 20:52:04 sobomax Exp $
+ * $Id: avpair.c,v 1.17 2006/05/30 19:18:03 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -130,10 +130,13 @@ VALUE_PAIR *rc_avpair_new (rc_handle *rh, int attrid, void *pval, int len, int v
 			case PW_DIGEST_NONCE_COUNT:
 			case PW_DIGEST_USER_NAME:
 				/* overlapping! */
+				if (vp->lvalue > AUTH_STRING_LEN - 2)
+					vp->lvalue = AUTH_STRING_LEN - 2;
 				memmove(&vp->strvalue[2], &vp->strvalue[0], vp->lvalue);
 				vp->strvalue[0] = vp->attribute - PW_DIGEST_REALM + 1;
 				vp->lvalue += 2;
 				vp->strvalue[1] = vp->lvalue;
+				vp->strvalue[vp->lvalue] = '\0';
 				vp->attribute = PW_DIGEST_ATTRIBUTES;
 			default:
 				break;
@@ -412,7 +415,8 @@ rc_fieldcpy(char *string, char **uptr, const char *stopat, size_t len)
 		while (*ptr != '"' && *ptr != '\0' && *ptr != '\n')
 		{
 			if (string < estring)
-				*string++ = *ptr++;
+				*string++ = *ptr;
+			ptr++;
 		}
 		if (*ptr == '"')
 		{
@@ -426,7 +430,8 @@ rc_fieldcpy(char *string, char **uptr, const char *stopat, size_t len)
 	while (*ptr != '\0' && strchr(stopat, *ptr) == NULL)
 	{
 		if (string < estring)
-			*string++ = *ptr++;
+			*string++ = *ptr;
+		ptr++;
 	}
 	*string = '\0';
 	*uptr = ptr;
@@ -453,7 +458,7 @@ int rc_avpair_parse (rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 {
 	int             mode;
 	char            attrstr[AUTH_ID_LEN];
-	char            valstr[AUTH_STRING_LEN];
+	char            valstr[AUTH_STRING_LEN + 1];
 	DICT_ATTR      *attr = NULL;
 	DICT_VALUE     *dval;
 	VALUE_PAIR     *pair;
@@ -594,10 +599,13 @@ int rc_avpair_parse (rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 			case PW_DIGEST_NONCE_COUNT:
 			case PW_DIGEST_USER_NAME:
 				/* overlapping! */
+				if (pair->lvalue > AUTH_STRING_LEN - 2)
+					pair->lvalue = AUTH_STRING_LEN - 2;
 				memmove(&pair->strvalue[2], &pair->strvalue[0], pair->lvalue);
 				pair->strvalue[0] = pair->attribute - PW_DIGEST_REALM + 1;
 				pair->lvalue += 2;
 				pair->strvalue[1] = pair->lvalue;
+				pair->strvalue[pair->lvalue] = '\0';
 				pair->attribute = PW_DIGEST_ATTRIBUTES;
 			}
 
