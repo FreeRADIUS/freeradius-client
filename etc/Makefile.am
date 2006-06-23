@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.am,v 1.3 2005/11/07 22:55:34 sobomax Exp $
+# $Id: Makefile.am,v 1.4 2006/06/23 05:57:59 sobomax Exp $
 #
 # Copyright (C) 1997,1998 Lars Fenneberg
 #
@@ -28,9 +28,9 @@ radiusclient.conf: radiusclient.conf.in
 	    <$(srcdir)/radiusclient.conf.in >radiusclient.conf
 
 install-data-local: servers
-	$(mkinstalldirs) $(pkgsysconfdir); \
-        echo " $(INSTALL) -m 600 $(srcdir)/servers $(pkgsysconfdir)/servers"; \
-        $(INSTALL) -m 600 $(srcdir)/servers $(pkgsysconfdir)/servers
+	$(mkinstalldirs) $(DESTDIR)$(pkgsysconfdir); \
+        echo " $(INSTALL) -m 600 $(srcdir)/servers $(DESTDIR)$(pkgsysconfdir)/servers"; \
+        $(INSTALL) -m 600 $(srcdir)/servers $(DESTDIR)$(pkgsysconfdir)/servers
 
 uninstall-local:
 	rm -f $(pkgsysconfdir)/servers
