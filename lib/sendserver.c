@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.16 2006/04/04 20:52:04 sobomax Exp $
+ * $Id: sendserver.c,v 1.17 2006/06/26 21:10:34 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -401,6 +401,9 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 	int             totallen;
 	unsigned char   calc_digest[AUTH_VECTOR_LEN];
 	unsigned char   reply_digest[AUTH_VECTOR_LEN];
+#ifdef DIGEST_DEBUG
+	u_char		*ptr;
+#endif
 
 	totallen = ntohs (auth->length);
 	secretlen = strlen (secret);
