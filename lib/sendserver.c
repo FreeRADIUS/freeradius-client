@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.17 2006/06/26 21:10:34 sobomax Exp $
+ * $Id: sendserver.c,v 1.18 2006/07/05 00:27:54 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -450,7 +450,7 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 #endif
 	rc_md5_calc (calc_digest, (unsigned char *) auth, totallen + secretlen);
 #ifdef DIGEST_DEBUG
-	rc_log(LOG_ERR, "Digest is:");
+	rc_log(LOG_ERR, "Calculated digest is:");
         for (ptr = (u_char *)calc_digest; ptr < ((u_char *)calc_digest) + 16; ptr += 32) {
                 char buf[65];
                 int i;
@@ -463,24 +463,19 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
                 }
                 rc_log(LOG_ERR, "  %s", buf);
         }
-#endif
+	rc_log(LOG_ERR, "Reply digest is:");
+        for (ptr = (u_char *)reply_digest; ptr < ((u_char *)reply_digest) + 16; ptr += 32) {
+                char buf[65];
+                int i;
 
-#ifdef DIGEST_DEBUG
-	{
-		int i;
-
-		fputs("reply_digest: ", stderr);
-		for (i = 0; i < AUTH_VECTOR_LEN; i++)
-		{
-			fprintf(stderr,"%.2x ", (int) reply_digest[i]);
-		}
-		fputs("\ncalc_digest:  ", stderr);
-		for (i = 0; i < AUTH_VECTOR_LEN; i++)
-		{
-			fprintf(stderr,"%.2x ", (int) calc_digest[i]);
-		}
-		fputs("\n", stderr);
-	}
+                buf[0] = '\0';
+                for (i = 0; i < 32; i++) {
+                        if (ptr + i >= ((u_char *)reply_digest) + 16)
+                                break;
+                        sprintf(buf + i * 2, "%.2X", ptr[i]);
+                }
+                rc_log(LOG_ERR, "  %s", buf);
+        }
 #endif
 
 	if (memcmp ((char *) reply_digest, (char *) calc_digest,
