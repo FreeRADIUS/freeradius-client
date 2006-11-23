@@ -1,5 +1,5 @@
 # 
-#  $Id: configure.in,v 1.25 2006/05/15 21:38:52 sobomax Exp $
+#  $Id: configure.in,v 1.26 2006/11/23 10:58:14 peternixon Exp $
 # 
 #  Copyright (C) 1996,1997 Lars Fenneberg
 # 
@@ -215,7 +215,7 @@ AH_OUTPUT([VERSION], [
 #undef VERSION])
 
 AM_CONFIG_HEADER(config.h)
-dnl LTLIBOBJS=`echo "$LIBOBJS" | sed 's/\.o/.lo/g'`
+dnl LTLIBOBJS=`echo "$LIB@&t@OBJS" | sed 's,\.[[^.]]* ,.lo ,g;s,\.[[^.]]*$,.lo,'`
 dnl AC_SUBST(LTLIBOBJS)
 AC_CONFIG_FILES([
 Makefile
