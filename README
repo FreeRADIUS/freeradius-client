@@ -1,4 +1,4 @@
-$Id: README,v 1.4 2007/01/06 01:10:33 pnixon Exp $
+$Id: README,v 1.5 2007/01/06 15:15:13 pnixon Exp $
 
 FreeRADIUS Client is a framework and library for writing RADIUS Clients
 which additionally includes radlogin, a flexible RADIUS aware login
@@ -13,7 +13,7 @@ The most current documentation is available online at:
 
 It is highly portable and runs on Linux, many BSD variants and Solaris.
 
-Currently radiusclient-ng is known to compile on the following platforms:
+FreeRADIUS Client is known to compile on the following platforms:
 
 	Compiled on:
 
