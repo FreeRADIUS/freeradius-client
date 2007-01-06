@@ -1,9 +1,19 @@
-$Id: README,v 1.3 2007/01/06 00:46:45 pnixon Exp $
+$Id: README,v 1.4 2007/01/06 01:10:33 pnixon Exp $
+
+FreeRADIUS Client is a framework and library for writing RADIUS Clients
+which additionally includes radlogin, a flexible RADIUS aware login
+replacement, a command line program to send RADIUS accounting records
+and a utility to query the status of a (Merit) RADIUS server.
+
+All these programs are based on a library which lets you develop a 
+RADIUS-aware application in less than 50 lines of C code.
 
 The most current documentation is available online at:
 	http://wiki.freeradius.org/Radiusclient
 
-Currently radiusclient-ng will compile on the following platforms:
+It is highly portable and runs on Linux, many BSD variants and Solaris.
+
+Currently radiusclient-ng is known to compile on the following platforms:
 
 	Compiled on:
 
@@ -13,5 +23,6 @@ Currently radiusclient-ng will compile on the following platforms:
 	
 	Compiled and tested on:
 
-		i486-pc-linux
+		x86 Linux
+		x86_64 Linux
 		sparc-sun-solaris2.5.1
