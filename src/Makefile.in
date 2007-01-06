@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 #
-# $Id: Makefile.in,v 1.14 2007/01/06 17:06:59 pnixon Exp $
+# $Id: Makefile.in,v 1.15 2007/01/06 20:15:35 pnixon Exp $
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
@@ -66,24 +66,24 @@ PROGRAMS = $(sbin_PROGRAMS)
 am_radacct_OBJECTS = radacct.$(OBJEXT)
 radacct_OBJECTS = $(am_radacct_OBJECTS)
 radacct_LDADD = $(LDADD)
-radacct_DEPENDENCIES = ../lib/libradiusclient-ng.la
+radacct_DEPENDENCIES = ../lib/libradiusclient.la
 am_radexample_OBJECTS = radexample.$(OBJEXT)
 radexample_OBJECTS = $(am_radexample_OBJECTS)
 radexample_LDADD = $(LDADD)
-radexample_DEPENDENCIES = ../lib/libradiusclient-ng.la
+radexample_DEPENDENCIES = ../lib/libradiusclient.la
 am_radiusclient_OBJECTS = radiusclient.$(OBJEXT)
 radiusclient_OBJECTS = $(am_radiusclient_OBJECTS)
 radiusclient_LDADD = $(LDADD)
-radiusclient_DEPENDENCIES = ../lib/libradiusclient-ng.la
+radiusclient_DEPENDENCIES = ../lib/libradiusclient.la
 am_radlogin_OBJECTS = radlogin.$(OBJEXT) radius.$(OBJEXT) \
 	local.$(OBJEXT)
 radlogin_OBJECTS = $(am_radlogin_OBJECTS)
 radlogin_LDADD = $(LDADD)
-radlogin_DEPENDENCIES = ../lib/libradiusclient-ng.la
+radlogin_DEPENDENCIES = ../lib/libradiusclient.la
 am_radstatus_OBJECTS = radstatus.$(OBJEXT)
 radstatus_OBJECTS = $(am_radstatus_OBJECTS)
 radstatus_LDADD = $(LDADD)
-radstatus_DEPENDENCIES = ../lib/libradiusclient-ng.la
+radstatus_DEPENDENCIES = ../lib/libradiusclient.la
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -222,7 +222,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 AUTOMAKE_OPTIONS = foreign
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir)
-LDADD = ../lib/libradiusclient-ng.la
+LDADD = ../lib/libradiusclient.la
 CLEANFILES = *~
 noinst_HEADERS = radlogin.h
 radlogin_SOURCES = radlogin.c radius.c local.c

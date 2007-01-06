@@ -1,5 +1,5 @@
 /*
- * $Id: dict.c,v 1.7 2005/07/21 07:29:47 sobomax Exp $
+ * $Id: dict.c,v 1.8 2007/01/06 20:15:32 pnixon Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -16,7 +16,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient-ng.h>
+#include <freeradius-client.h>
 
 /*
  * Function: rc_read_dictionary

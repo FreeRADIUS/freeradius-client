@@ -1,5 +1,5 @@
 # 
-#  $Id: Makefile.am,v 1.2 2005/03/01 14:58:44 janakj Exp $
+#  $Id: Makefile.am,v 1.3 2007/01/06 20:15:28 pnixon Exp $
 # 
 #  Copyright (C) 1997 Lars Fenneberg
 # 
@@ -12,4 +12,4 @@
 AUTOMAKE_OPTIONS = foreign
 
 noinst_HEADERS = pathnames.h messages.h includes.h
-include_HEADERS = radiusclient-ng.h
+include_HEADERS = freeradius-client.h

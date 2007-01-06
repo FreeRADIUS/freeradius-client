@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.am,v 1.4 2005/11/07 23:12:09 sobomax Exp $
+# $Id: Makefile.am,v 1.5 2007/01/06 20:15:30 pnixon Exp $
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
@@ -18,8 +18,8 @@ DEFS = @DEFS@ -DRC_LOG_FACILITY=$(RC_LOG_FACILITY)
 
 CLEANFILES = *~
 
-lib_LTLIBRARIES = libradiusclient-ng.la
-libradiusclient_ng_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
+lib_LTLIBRARIES =   libfreeradius-client.la
+libfreeradius_client_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
 	avpair.c config.c dict.c ip_util.c log.c md5.c util.c lock.c \
 	options.h
-libradiusclient_ng_la_LDFLAGS = -version-info $(LIBVERSION)
+libfreeradius_client_la_LDFLAGS = -version-info $(LIBVERSION)

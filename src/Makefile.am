@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.am,v 1.3 2005/03/01 14:58:44 janakj Exp $
+# $Id: Makefile.am,v 1.4 2007/01/06 20:15:35 pnixon Exp $
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
@@ -15,7 +15,7 @@ pkgsysconfdir=@pkgsysconfdir@
 DEFS = @DEFS@ -DRC_CONFIG_FILE=\"${pkgsysconfdir}/radiusclient.conf\" \
 	      -DRC_SECURE_PATH=\"@RC_SECURE_PATH@\"
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir)
-LDADD = ../lib/libradiusclient-ng.la
+LDADD = ../lib/libradiusclient.la
 
 CLEANFILES = *~
 

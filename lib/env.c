@@ -1,5 +1,5 @@
 /*
- * $Id: env.c,v 1.4 2005/03/01 14:58:44 janakj Exp $
+ * $Id: env.c,v 1.5 2007/01/06 20:15:33 pnixon Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -11,7 +11,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient-ng.h>
+#include <freeradius-client.h>
 
 /*
  * Function: rc_new_env

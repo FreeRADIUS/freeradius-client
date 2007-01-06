@@ -1,5 +1,5 @@
 /*
- * $Id: util.c,v 1.6 2005/03/01 14:58:44 janakj Exp $
+ * $Id: util.c,v 1.7 2007/01/06 20:15:33 pnixon Exp $
  *
  * Copyright (c) 1998 The NetBSD Foundation, Inc.
  *
@@ -18,7 +18,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient-ng.h>
+#include <freeradius-client.h>
 
 #define	BUFSIZ	1024
 

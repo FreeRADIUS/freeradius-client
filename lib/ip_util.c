@@ -1,5 +1,5 @@
 /*
- * $Id: ip_util.c,v 1.7 2005/07/21 08:01:07 sobomax Exp $
+ * $Id: ip_util.c,v 1.8 2007/01/06 20:15:33 pnixon Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -16,7 +16,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient-ng.h>
+#include <freeradius-client.h>
 
 #if !defined(SA_LEN)
 #define SA_LEN(sa) \

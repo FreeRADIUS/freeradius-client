@@ -1,5 +1,5 @@
 /*
- * $Id: md5.c,v 1.4 2006/05/17 02:31:28 sobomax Exp $
+ * $Id: md5.c,v 1.5 2007/01/06 20:15:33 pnixon Exp $
  */
 
 /*
@@ -38,7 +38,7 @@ __FBSDID("$FreeBSD: src/lib/libmd/md5c.c,v 1.17 2006/01/17 15:35:56 phk Exp $");
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient-ng.h>
+#include <freeradius-client.h>
 
 #define MD5_BLOCK_LENGTH                64
 #define MD5_DIGEST_LENGTH               16

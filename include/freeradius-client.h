@@ -1,5 +1,5 @@
 /*
- * $Id: radiusclient-ng.h,v 1.5 2006/05/17 18:14:35 sobomax Exp $
+ * $Id: freeradius-client.h,v 1.1 2007/01/06 20:15:29 pnixon Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *

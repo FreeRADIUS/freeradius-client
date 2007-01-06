@@ -1,5 +1,5 @@
 /*
- * $Id: radacct.c,v 1.4 2005/03/01 14:58:44 janakj Exp $
+ * $Id: radacct.c,v 1.5 2007/01/06 20:15:36 pnixon Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
@@ -10,11 +10,11 @@
  */
 
 static char	rcsid[] =
-		"$Id: radacct.c,v 1.4 2005/03/01 14:58:44 janakj Exp $";
+		"$Id: radacct.c,v 1.5 2007/01/06 20:15:36 pnixon Exp $";
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient-ng.h>
+#include <freeradius-client.h>
 #include <messages.h>
 #include <pathnames.h>
 

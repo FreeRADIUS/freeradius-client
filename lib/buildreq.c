@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.9 2005/07/21 08:01:07 sobomax Exp $
+ * $Id: buildreq.c,v 1.10 2007/01/06 20:15:31 pnixon Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -11,7 +11,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient-ng.h>
+#include <freeradius-client.h>
 
 unsigned char rc_get_seqnbr(rc_handle *);
 

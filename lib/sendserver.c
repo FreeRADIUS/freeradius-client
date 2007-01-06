@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.18 2006/07/05 00:27:54 sobomax Exp $
+ * $Id: sendserver.c,v 1.19 2007/01/06 20:15:33 pnixon Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -16,7 +16,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radiusclient-ng.h>
+#include <freeradius-client.h>
 #include <pathnames.h>
 
 #define	SA(p)	((struct sockaddr *)(p))

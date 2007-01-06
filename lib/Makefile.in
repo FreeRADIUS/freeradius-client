@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 #
-# $Id: Makefile.in,v 1.14 2007/01/06 17:06:58 pnixon Exp $
+# $Id: Makefile.in,v 1.15 2007/01/06 20:15:30 pnixon Exp $
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
@@ -65,11 +65,12 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
-libradiusclient_ng_la_LIBADD =
-am_libradiusclient_ng_la_OBJECTS = buildreq.lo clientid.lo env.lo \
+libfreeradius_client_la_LIBADD =
+am_libfreeradius_client_la_OBJECTS = buildreq.lo clientid.lo env.lo \
 	sendserver.lo avpair.lo config.lo dict.lo ip_util.lo log.lo \
 	md5.lo util.lo lock.lo
-libradiusclient_ng_la_OBJECTS = $(am_libradiusclient_ng_la_OBJECTS)
+libfreeradius_client_la_OBJECTS =  \
+	$(am_libfreeradius_client_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -81,8 +82,8 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libradiusclient_ng_la_SOURCES)
-DIST_SOURCES = $(libradiusclient_ng_la_SOURCES)
+SOURCES = $(libfreeradius_client_la_SOURCES)
+DIST_SOURCES = $(libfreeradius_client_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -202,12 +203,12 @@ target_vendor = @target_vendor@
 AUTOMAKE_OPTIONS = foreign
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir)
 CLEANFILES = *~
-lib_LTLIBRARIES = libradiusclient-ng.la
-libradiusclient_ng_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
+lib_LTLIBRARIES = libfreeradius-client.la
+libfreeradius_client_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
 	avpair.c config.c dict.c ip_util.c log.c md5.c util.c lock.c \
 	options.h
 
-libradiusclient_ng_la_LDFLAGS = -version-info $(LIBVERSION)
+libfreeradius_client_la_LDFLAGS = -version-info $(LIBVERSION)
 all: all-am
 
 .SUFFIXES:
@@ -268,8 +269,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libradiusclient-ng.la: $(libradiusclient_ng_la_OBJECTS) $(libradiusclient_ng_la_DEPENDENCIES) 
-	$(LINK) -rpath $(libdir) $(libradiusclient_ng_la_LDFLAGS) $(libradiusclient_ng_la_OBJECTS) $(libradiusclient_ng_la_LIBADD) $(LIBS)
+libfreeradius-client.la: $(libfreeradius_client_la_OBJECTS) $(libfreeradius_client_la_DEPENDENCIES) 
+	$(LINK) -rpath $(libdir) $(libfreeradius_client_la_LDFLAGS) $(libfreeradius_client_la_OBJECTS) $(libfreeradius_client_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 # 
-#  $Id: Makefile.in,v 1.7 2007/01/06 17:06:57 pnixon Exp $
+#  $Id: Makefile.in,v 1.8 2007/01/06 20:15:27 pnixon Exp $
 # 
 #  Copyright (C) 1997 Lars Fenneberg
 # 
