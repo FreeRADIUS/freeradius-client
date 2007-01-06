@@ -1,11 +1,9 @@
 # 
-#  $Id: configure.in,v 1.26 2006/11/23 10:58:14 peternixon Exp $
+#  $Id: configure.in,v 1.27 2007/01/06 17:06:57 pnixon Exp $
 # 
 #  Copyright (C) 1996,1997 Lars Fenneberg
 # 
 #  See the file COPYRIGHT for the respective terms and conditions. 
-#  If the file is missing contact me at lf@elemental.net 
-#  and I'll send you a copy.
 # 
 # 
 
@@ -21,7 +19,7 @@ case "$target" in
 	;;
 esac
 
-AM_INIT_AUTOMAKE(radiusclient-ng, 0.5.3)
+AM_INIT_AUTOMAKE(radiusclient, 1.1.4)
 
 LIBVERSION=2:0:0
 AC_SUBST(LIBVERSION)
@@ -167,7 +165,7 @@ AC_ARG_ENABLE(radius-116,
         AC_MSG_RESULT(yes)
 	AC_DEFINE(RADIUS_116)
 	AC_MSG_WARN([!! This is a bug in Livingston's RADIUS server v1.16. There])
-	AC_MSG_WARN([!! is a patch included with radiusclient-ng which fixes this])
+	AC_MSG_WARN([!! is a patch included with radiusclient which fixes this])
 	AC_MSG_WARN([!! problem. See patches/radiusd-1.16.accounting.diff. With])
 	AC_MSG_WARN([!! the patched RADIUS server you no longer need to activate])
 	AC_MSG_WARN([!! this hack.])
