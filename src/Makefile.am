@@ -1,11 +1,9 @@
 #
-# $Id: Makefile.am,v 1.4 2007/01/06 20:15:35 pnixon Exp $
+# $Id: Makefile.am,v 1.5 2007/01/06 20:46:31 pnixon Exp $
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
 # See the file COPYRIGHT for the respective terms and conditions. 
-# If the file is missing contact me at lf@elemental.net 
-# and I'll send you a copy.
 #
 
 AUTOMAKE_OPTIONS = foreign
@@ -15,7 +13,7 @@ pkgsysconfdir=@pkgsysconfdir@
 DEFS = @DEFS@ -DRC_CONFIG_FILE=\"${pkgsysconfdir}/radiusclient.conf\" \
 	      -DRC_SECURE_PATH=\"@RC_SECURE_PATH@\"
 INCLUDES = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir)
-LDADD = ../lib/libradiusclient.la
+LDADD = ../lib/libfreeradius-client.la
 
 CLEANFILES = *~
 
