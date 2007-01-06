@@ -1,16 +1,17 @@
 /*
- * $Id: radlogin.c,v 1.5 2005/03/01 14:58:44 janakj Exp $
+ * radlogin.c  RADIUS based /bin/login replacement
+ *
+ * Version:    $Id: radlogin.c,v 1.6 2007/01/06 01:29:40 pnixon Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
+ * Copyright (C) 2007 The FreeRADIUS Project
  *
  * See the file COPYRIGHT for the respective terms and conditions.
- * If the file is missing contact me at lf@elemental.net
- * and I'll send you a copy.
  *
  */
 
 static char	rcsid[] =
-		"$Id: radlogin.c,v 1.5 2005/03/01 14:58:44 janakj Exp $";
+		"$Id: radlogin.c,v 1.6 2007/01/06 01:29:40 pnixon Exp $";
 
 #include	<config.h>
 #include	<includes.h>
