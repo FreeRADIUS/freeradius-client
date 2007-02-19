@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.13 2007/01/06 20:15:31 pnixon Exp $
+ * $Id: config.c,v 1.14 2007/02/19 22:14:11 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -18,8 +18,6 @@
 #include <includes.h>
 #include <freeradius-client.h>
 #include <options.h>
-
-static int test_config(rc_handle *, char *);
 
 /*
  * Function: find_option
@@ -86,14 +84,18 @@ static int set_option_int(char *filename, int line, OPTION *option, char *p)
 	return 0;
 }
 
-static int set_option_srv(char *filename, int line, OPTION *option, char *p)
+static int set_option_srv(char *filename, int line, OPTION *option, char *const_p)
 {
 	SERVER *serv;
+	char *p;
 	char *q;
+	char *s;
 	struct servent *svp;
 
+	p = strdup(const_p);
+
 	if (p == NULL) {
-		rc_log(LOG_ERR, "%s: line %d: bogus option value", filename, line);
+		rc_log(LOG_ERR, "%s: line %d: Invalid optioin or memory failure", filename, line);
 		return -1;
 	}
 
@@ -102,47 +104,71 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *p)
 		serv = malloc(sizeof(*serv));
 		if (serv == NULL) {
 			rc_log(LOG_CRIT, "read_config: out of memory");
+			free(p);
 			return -1;
 		}
 		serv->max = 0;
 	}
 
-	while ((p = strtok(p, ", \t")) != NULL) {
+	if (strstr(p, ", \t"))
+		p = strtok(p, ", \t");
 
-		if ((q = strchr(p,':')) != NULL) {
-			*q = '\0';
-			q++;
-			serv->port[serv->max] = atoi(q);
-		} else {
-			if (!strcmp(option->name,"authserver"))
-				if ((svp = getservbyname ("radius", "udp")) == NULL)
-					serv->port[serv->max] = PW_AUTH_UDP_PORT;
-				else
-					serv->port[serv->max] = ntohs ((unsigned int) svp->s_port);
-			else if (!strcmp(option->name, "acctserver"))
-				if ((svp = getservbyname ("radacct", "udp")) == NULL)
-					serv->port[serv->max] = PW_ACCT_UDP_PORT;
-				else
-					serv->port[serv->max] = ntohs ((unsigned int) svp->s_port);
-			else {
-				rc_log(LOG_ERR, "%s: line %d: no default port for %s", filename, line, option->name);
-				if (option->val == NULL)
+	/* Check to see if we have 'servername:port' syntax */
+	if ((q = strchr(p,':')) != NULL) {
+		*q = '\0';
+		q++;
+		
+		/* Check to see if we have 'servername:port:secret' syntax */
+		if((s = strchr(q,':')) != NULL) {
+			*s = '\0';
+			s++;
+			serv->secret[serv->max] = strdup(s);			
+			if (serv->secret[serv->max] == NULL) {
+				rc_log(LOG_CRIT, "read_config: out of memory");
+				if (option->val == NULL) {
+					free(p);
 					free(serv);
+				}
 				return -1;
 			}
 		}
-
-		serv->name[serv->max] = strdup(p);
-		if (serv->name[serv->max] == NULL) {
-			rc_log(LOG_CRIT, "read_config: out of memory");
-			if (option->val == NULL)
+	}
+	if(strlen(q) > 0) {
+		serv->port[serv->max] = atoi(q);
+	} else {
+		if (!strcmp(option->name,"authserver"))
+			if ((svp = getservbyname ("radius", "udp")) == NULL)
+				serv->port[serv->max] = PW_AUTH_UDP_PORT;
+			else
+				serv->port[serv->max] = ntohs ((unsigned int) svp->s_port);
+		else if (!strcmp(option->name, "acctserver"))
+			if ((svp = getservbyname ("radacct", "udp")) == NULL)
+				serv->port[serv->max] = PW_ACCT_UDP_PORT;
+			else
+				serv->port[serv->max] = ntohs ((unsigned int) svp->s_port);
+		else {
+			rc_log(LOG_ERR, "%s: line %d: no default port for %s", filename, line, option->name);
+			if (option->val == NULL) {
+				free(p);
 				free(serv);
+			}
 			return -1;
 		}
-		serv->max++;
-
-		p = NULL;
 	}
+
+	serv->name[serv->max] = strdup(p);
+	if (serv->name[serv->max] == NULL) {
+		rc_log(LOG_CRIT, "read_config: out of memory");
+		if (option->val == NULL) {
+			free(p);
+			free(serv);
+		}
+		return -1;
+	}
+	free(p);
+
+	serv->max++;
+
 	if (option->val == NULL)
 		option->val = (void *)serv;
 
@@ -164,7 +190,9 @@ static int set_option_auo(char *filename, int line, OPTION *option, char *p)
 	}
 
 	*iptr = 0;
-	p = strtok(p, ", \t");
+	if(strstr(p,", \t") != NULL) {
+		p = strtok(p, ", \t");
+	}
 
 	if (!strncmp(p, "local", 5))
 			*iptr = AUTH_LOCAL_FST;
@@ -191,6 +219,80 @@ static int set_option_auo(char *filename, int line, OPTION *option, char *p)
 	option->val = (void *) iptr;
 
 	return 0;
+}
+
+
+/* Function: rc_add_config
+ * 
+ * Purpose: allow a config option to be added to rc_handle from inside a program
+ * 
+ * Returns: 0 on success, -1 on failure
+ */
+
+int rc_add_config(rc_handle *rh, char *option_name, char *option_val, char *source, int line)
+{
+	OPTION *option;
+
+	if ((option = find_option(rh, option_name, OT_ANY)) == NULL) 
+	{
+		rc_log(LOG_ERR, "ERROR: unrecognized option: %s", option_name);
+		return -1;
+	}
+
+	if (option->status != ST_UNDEF) 
+	{
+		rc_log(LOG_ERR, "ERROR: duplicate option: %s", option_name);
+		return -1;
+	}
+
+	switch (option->type) {
+		case OT_STR:
+			if (set_option_str(source, line, option, option_val) < 0) {
+				return -1;
+			}
+			break;
+		case OT_INT:
+			if (set_option_int(source, line, option, option_val) < 0) {
+				return -1;
+			}
+			break;
+		case OT_SRV:
+			if (set_option_srv(source, line, option, option_val) < 0) {
+				return -1;
+			}
+			break;
+		case OT_AUO:
+			if (set_option_auo(source, line, option, option_val) < 0) {
+				return -1;
+			}
+			break;
+		default:
+			rc_log(LOG_CRIT, "rc_read_config: impossible case branch!");
+			abort();
+	}
+	return 0;
+}
+
+/*
+ * Function: rc_config_init
+ * 
+ * Purpose: initialize the configuration structure from an external program.  For use when not
+ * running a standalone client that reads from a config file.
+ * 
+ * Returns: rc_handle on success, NULL on failure
+ */
+
+rc_handle *
+rc_config_init(rc_handle *rh)
+{
+        rh->config_options = malloc(sizeof(config_options_default));
+        if (rh->config_options == NULL) {
+                rc_log(LOG_CRIT, "rc_config_init: out of memory");
+		rc_destroy(rh);
+                return NULL;
+        }
+        memcpy(rh->config_options, &config_options_default, sizeof(config_options_default));
+	return rh;
 }
 
 
@@ -374,7 +476,7 @@ SERVER *rc_conf_srv(rc_handle *rh, char *optname)
  * Returns: 0 on success, -1 when failure
  */
 
-static int test_config(rc_handle *rh, char *filename)
+int test_config(rc_handle *rh, char *filename)
 {
 #if 0
 	struct stat st;
@@ -573,7 +675,7 @@ rc_is_myname(char *hostname)
 /*
  * Function: rc_find_server
  *
- * Purpose: search a server in the servers file
+ * Purpose: locate a server in the rh config or if not found, check for a servers file
  *
  * Returns: 0 on success, -1 on failure
  *
@@ -589,10 +691,18 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 	char           *host2;
 	char            buffer[128];
 	char            hostnm[AUTH_ID_LEN + 1];
+	char	       *conf_secret;
 
-	/* Get the IP address of the authentication server */
+	/* Lookup the IP address of the radius server */
 	if ((*ip_addr = rc_get_ipaddr (server_name)) == (UINT4) 0)
 		return -1;
+
+	/* Check to see if the server secret is defined in the rh config */
+	
+
+	/* We didn't find it in the rh_config or the servername is too long so look for a 
+	 * servers file to define the secret(s)
+	 */
 
 	if ((clientfd = fopen (rc_conf_str(rh, "servers"), "r")) == NULL)
 	{

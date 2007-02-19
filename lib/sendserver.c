@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.19 2007/01/06 20:15:33 pnixon Exp $
+ * $Id: sendserver.c,v 1.20 2007/02/19 22:14:11 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -209,9 +209,16 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	}
 	else
 	{
-		if (rc_find_server (rh, server_name, &auth_ipaddr, secret) != 0)
+		if(data->secret != NULL)
 		{
-			return ERROR_RC;
+			strncpy(secret, data->secret, MAX_SECRET_LENGTH);
+		}
+		else
+		{
+			if (rc_find_server (rh, server_name, &auth_ipaddr, secret) != 0)
+			{
+				return ERROR_RC;
+			}
 		}
 	}
 

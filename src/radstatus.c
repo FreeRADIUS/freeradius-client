@@ -1,5 +1,5 @@
 /*
- * $Id: radstatus.c,v 1.6 2007/01/06 20:15:37 pnixon Exp $
+ * $Id: radstatus.c,v 1.7 2007/02/19 22:14:11 cparker Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
@@ -9,8 +9,15 @@
  *
  */
 
+/* FIX ME FIX ME FIX ME
+ * This is broken, now that send_server requires the secret to be passed
+ * It will need to be collected as an additional argument on command line
+ */
+
+#define FIX_ME_SECRET "fixme"
+
 static char	rcsid[] =
-		"$Id: radstatus.c,v 1.6 2007/01/06 20:15:37 pnixon Exp $";
+		"$Id: radstatus.c,v 1.7 2007/02/19 22:14:11 cparker Exp $";
 
 #include <config.h>
 #include <includes.h>
@@ -20,9 +27,10 @@ static char	rcsid[] =
 
 static char *pname;
 
+
 void usage(void)
 {
-	fprintf(stderr,"Usage: %s [-Vh] [-f <config_file>] [server[:port]]...\n\n", pname);
+	fprintf(stderr,"Usage: %s [-Vh] [-f <config_file>] [server[:port[:secret]] ...\n\n", pname);
 	fprintf(stderr,"  -V            output version information\n");
 	fprintf(stderr,"  -h            output this text\n");
 	fprintf(stderr,"  -f		filename of alternate config file\n");
@@ -80,16 +88,16 @@ int main (int argc, char **argv)
 	if (argc > 0) {
 		for (i = 0; i < argc; i++) {
 			if ((p = strchr(argv[i], ':')) == NULL) {
-				result = rc_check(rh, argv[i],rc_getport(AUTH), msg);
+				result = rc_check(rh, argv[i],FIX_ME_SECRET,rc_getport(AUTH), msg);
 			} else if (!strcmp(p+1, "auth")) {
 				*p = '\0';
-				result = rc_check(rh, argv[i],rc_getport(AUTH), msg);
+				result = rc_check(rh, argv[i],FIX_ME_SECRET,rc_getport(AUTH), msg);
 			} else if (!strcmp(p+1, "acct")) {
 				*p = '\0';
-				result = rc_check(rh, argv[i],rc_getport(ACCT), msg);
+				result = rc_check(rh, argv[i],FIX_ME_SECRET,rc_getport(ACCT), msg);
 			} else {
 				*p = '\0';
-				result = rc_check(rh, argv[i], atoi(p+1), msg);
+				result = rc_check(rh, argv[i],FIX_ME_SECRET,atoi(p+1), msg);
 			}
 			if (result == OK_RC)
 				fputs(msg, stdout);
@@ -100,14 +108,14 @@ int main (int argc, char **argv)
 		srv = rc_conf_srv(rh, "authserver");
 		for(i=0; i<srv->max ; i++)
 		{
-			result = rc_check(rh, srv->name[i], srv->port[i], msg);
+			result = rc_check(rh, srv->name[i], srv->secret[i], srv->port[i], msg);
 			fputs(msg, stdout);
 		}
 
 		srv = rc_conf_srv(rh, "acctserver");
 		for(i=0; i<srv->max ; i++)
 		{
-			result = rc_check(rh, srv->name[i], srv->port[i], msg);
+			result = rc_check(rh, srv->name[i], srv->secret[i], srv->port[i], msg);
 			fputs(msg, stdout);
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.10 2007/01/06 20:15:31 pnixon Exp $
+ * $Id: buildreq.c,v 1.11 2007/02/19 22:14:11 cparker Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -23,10 +23,11 @@ unsigned char rc_get_seqnbr(rc_handle *);
  *
  */
 
-void rc_buildreq(rc_handle *rh, SEND_DATA *data, int code, char *server, unsigned short port,
-		 int timeout, int retries)
+void rc_buildreq(rc_handle *rh, SEND_DATA *data, int code, char *server, unsigned short port, 
+		 char *secret, int timeout, int retries)
 {
 	data->server = server;
+	data->secret = secret;
 	data->svc_port = port;
 	data->seq_nbr = rc_get_seqnbr(rh);
 	data->timeout = timeout;
@@ -132,6 +133,8 @@ int rc_auth(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send, VALUE_PAIR **rec
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
 
+	if (authserver == NULL)
+		return ERROR_RC;
 	/*
 	 * Fill in NAS-Port
 	 */
@@ -148,7 +151,7 @@ int rc_auth(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send, VALUE_PAIR **rec
 			data.receive_pairs = NULL;
 		}
 		rc_buildreq(rh, &data, PW_ACCESS_REQUEST, authserver->name[i],
-			    authserver->port[i], timeout, retries);
+			    authserver->port[i], authserver->secret[i], timeout, retries);
 
 		result = rc_send_server (rh, &data, msg);
 	}
@@ -183,6 +186,9 @@ int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
 
+	if(authserver == NULL) 
+		return ERROR_RC;
+
 	result = ERROR_RC;
 	for(i=0; (i<authserver->max) && (result != OK_RC) && (result != BADRESP_RC)
 		; i++)
@@ -192,7 +198,7 @@ int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *
 			data.receive_pairs = NULL;
 		}
 		rc_buildreq(rh, &data, PW_ACCESS_REQUEST, authserver->name[i],
-			    authserver->port[i], timeout, retries);
+			    authserver->port[i], authserver->secret[i], timeout, retries);
 
 		result = rc_send_server (rh, &data, msg);
 	}
@@ -228,6 +234,9 @@ int rc_acct(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send)
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
 
+	if(acctserver == NULL)
+		return ERROR_RC;
+
 	/*
 	 * Fill in NAS-Port
 	 */
@@ -252,8 +261,9 @@ int rc_acct(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send)
 			rc_avpair_free(data.receive_pairs);
 			data.receive_pairs = NULL;
 		}
+
 		rc_buildreq(rh, &data, PW_ACCOUNTING_REQUEST, acctserver->name[i],
-			    acctserver->port[i], timeout, retries);
+			    acctserver->port[i], acctserver->secret[i], timeout, retries);
 
 		dtime = time(NULL) - start_time;
 		rc_avpair_assign(adt_vp, &dtime, 0);
@@ -286,6 +296,9 @@ int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
 
+	if (acctserver == NULL)
+		return ERROR_RC;
+
 	result = ERROR_RC;
 	for(i=0; (i<acctserver->max) && (result != OK_RC) && (result != BADRESP_RC)
 		; i++)
@@ -295,7 +308,7 @@ int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
 			data.receive_pairs = NULL;
 		}
 		rc_buildreq(rh, &data, PW_ACCOUNTING_REQUEST, acctserver->name[i],
-			    acctserver->port[i], timeout, retries);
+			    acctserver->port[i], acctserver->secret[i], timeout, retries);
 
 		result = rc_send_server (rh, &data, msg);
 	}
@@ -313,7 +326,7 @@ int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
  *
  */
 
-int rc_check(rc_handle *rh, char *host, unsigned short port, char *msg)
+int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char *msg)
 {
 	SEND_DATA       data;
 	int		result;
@@ -330,7 +343,7 @@ int rc_check(rc_handle *rh, char *host, unsigned short port, char *msg)
 	service_type = PW_ADMINISTRATIVE;
 	rc_avpair_add(rh, &(data.send_pairs), PW_SERVICE_TYPE, &service_type, 0, 0);
 
-	rc_buildreq(rh, &data, PW_STATUS_SERVER, host, port, timeout, retries);
+	rc_buildreq(rh, &data, PW_STATUS_SERVER, host, port, secret, timeout, retries);
 	result = rc_send_server (rh, &data, msg);
 
 	rc_avpair_free(data.receive_pairs);

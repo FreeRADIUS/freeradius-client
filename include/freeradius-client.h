@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.1 2007/01/06 20:15:29 pnixon Exp $
+ * $Id: freeradius-client.h,v 1.2 2007/02/19 22:14:10 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -67,6 +67,7 @@ typedef struct server {
 	int max;
 	char *name[SERVER_MAX];
 	unsigned short port[SERVER_MAX];
+	char *secret[MAX_SECRET_LENGTH];
 } SERVER;
 
 typedef struct pw_auth_hdr
@@ -367,6 +368,7 @@ typedef struct send_data /* Used to pass information to sendserver() function */
 	u_char          seq_nbr;	/* Packet sequence number */
 	char           *server;		/* Name/addrress of RADIUS server */
 	int             svc_port;	/* RADIUS protocol destination port */
+	char	       *secret;		/* Shared secret of RADIUS server */	
 	int             timeout;	/* Session timeout in seconds */
 	int		retries;
 	VALUE_PAIR     *send_pairs;     /* More a/v pairs to send */
@@ -412,13 +414,13 @@ VALUE_PAIR *rc_avpair_readin(rc_handle *, FILE *);
 
 /*	buildreq.c		*/
 
-void rc_buildreq(rc_handle *, SEND_DATA *, int, char *, unsigned short, int, int);
+void rc_buildreq(rc_handle *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
 unsigned char rc_get_seqnbr(rc_handle *);
 int rc_auth(rc_handle *, UINT4, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_acct(rc_handle *, UINT4, VALUE_PAIR *);
 int rc_acct_proxy(rc_handle *, VALUE_PAIR *);
-int rc_check(rc_handle *, char *, unsigned short, char *);
+int rc_check(rc_handle *, char *, char *, unsigned short, char *);
 
 /*	clientid.c		*/
 
@@ -434,6 +436,9 @@ int rc_conf_int(rc_handle *, char *);
 SERVER *rc_conf_srv(rc_handle *, char *);
 int rc_find_server(rc_handle *, char *, UINT4 *, char *);
 void rc_config_free(rc_handle *);
+int rc_add_config(rc_handle *, char *, char *, char *, int);
+rc_handle *rc_config_init(rc_handle *);
+int test_config(rc_handle *, char *);
 
 /*	dict.c			*/
 
