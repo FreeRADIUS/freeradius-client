@@ -1,0 +1,10 @@
+Version - 1.1.5
+
+  o Fixed endian issues with MD5 functions
+  o Added library hooks to allow embedding of radius client functionality
+  o Added example embedded program 'radembedded' in /src
+  o Minor bugfixes to add better error checking/data validation
+
+Version - 1.1.4
+
+  o Initial packaging of 'radiusclient' under the FreeRADIUS project.

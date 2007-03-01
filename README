@@ -1,4 +1,4 @@
-$Id: README,v 1.5 2007/01/06 15:15:13 pnixon Exp $
+$Id: README,v 1.6 2007/03/01 15:13:46 cparker Exp $
 
 FreeRADIUS Client is a framework and library for writing RADIUS Clients
 which additionally includes radlogin, a flexible RADIUS aware login
@@ -26,3 +26,19 @@ FreeRADIUS Client is known to compile on the following platforms:
 		x86 Linux
 		x86_64 Linux
 		sparc-sun-solaris2.5.1
+
+********* SECURITY NOTE *********
+
+This code has not been fully audited by the FreeRADIUS project, as it
+has been adopted by the FreeRADIUS project to continue development and
+support.  Any security related issues should be reported to the project
+either via email, or via the FreeRADIUS bugtracker:
+
+http://bugs.freeradius.org/enter_bug.cgi?product=freeradius-client
+
+As is the case with any open-source project, patches in addition to
+bug reports are always welcome.
+
+********* END SECURITY NOTE *********
+
+
