@@ -1,5 +1,5 @@
 /*
- * $Id: radstatus.c,v 1.7 2007/02/19 22:14:11 cparker Exp $
+ * $Id: radstatus.c,v 1.8 2007/04/13 14:20:44 pnixon Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
@@ -17,7 +17,7 @@
 #define FIX_ME_SECRET "fixme"
 
 static char	rcsid[] =
-		"$Id: radstatus.c,v 1.7 2007/02/19 22:14:11 cparker Exp $";
+		"$Id: radstatus.c,v 1.8 2007/04/13 14:20:44 pnixon Exp $";
 
 #include <config.h>
 #include <includes.h>
@@ -119,4 +119,6 @@ int main (int argc, char **argv)
 			fputs(msg, stdout);
 		}
 	}
+
+	return 0;
 }
