@@ -1,5 +1,5 @@
 /*
- * $Id: clientid.c,v 1.5 2007/01/06 20:15:31 pnixon Exp $
+ * $Id: clientid.c,v 1.6 2007/04/13 14:20:16 pnixon Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -111,7 +111,7 @@ UINT4 rc_map2id(rc_handle *rh, char *name)
 	if (*name != '/')
 		strcpy(ttyname, "/dev/");
 
-	strncat(ttyname, name, sizeof(ttyname));
+	strncat(ttyname, name, sizeof(ttyname)-strlen(ttyname)-1);
 
 	for(p = rh->map2id_list; p; p = p->next)
 		if (!strcmp(ttyname, p->name)) return p->id;

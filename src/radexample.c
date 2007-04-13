@@ -1,5 +1,5 @@
 /*
- * $Id: radexample.c,v 1.6 2007/01/06 20:15:36 pnixon Exp $
+ * $Id: radexample.c,v 1.7 2007/04/13 14:20:16 pnixon Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -11,7 +11,7 @@
 
 
 static char	rcsid[] =
-		"$Id: radexample.c,v 1.6 2007/01/06 20:15:36 pnixon Exp $";
+		"$Id: radexample.c,v 1.7 2007/04/13 14:20:16 pnixon Exp $";
 
 #include	<config.h>
 #include	<includes.h>
@@ -59,8 +59,8 @@ main (int argc, char **argv)
 	if ((strchr(username_realm, '@') == NULL) && default_realm &&
 	    (*default_realm != '\0'))
 	{
-		strncat(username_realm, "@", sizeof(username_realm));
-		strncat(username_realm, default_realm, sizeof(username_realm));
+		strncat(username_realm, "@", sizeof(username_realm)-strlen(username_realm)-1);
+		strncat(username_realm, default_realm, sizeof(username_realm)-strlen(username_realm)-1);
 	}
 
 	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, -1, 0) == NULL)

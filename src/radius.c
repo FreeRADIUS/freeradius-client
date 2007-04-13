@@ -1,5 +1,5 @@
 /*
- * $Id: radius.c,v 1.7 2007/01/06 20:15:36 pnixon Exp $
+ * $Id: radius.c,v 1.8 2007/04/13 14:20:15 pnixon Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
@@ -103,8 +103,8 @@ LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd
 	 if ((strchr(username_realm, '@') == NULL) && default_realm &&
 	     ((*default_realm) != '\0'))
 	 {
-		strncat(username_realm, "@", sizeof(username_realm));
-		strncat(username_realm, default_realm, sizeof(username_realm));
+		strncat(username_realm, "@", sizeof(username_realm)-strlen(username_realm)-1);
+		strncat(username_realm, default_realm, sizeof(username_realm)-strlen(username_realm)-1);
 	 }
 
 	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, -1, 0) == NULL)
