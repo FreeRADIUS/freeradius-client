@@ -1,4 +1,4 @@
-# Version:      $Id: release-method.txt,v 1.1 2007/01/14 20:42:09 pnixon Exp $
+# Version:      $Id: release-method.txt,v 1.2 2007/04/14 23:40:35 pnixon Exp $
 #
 #  This is NOT a shell script!
 #
@@ -51,10 +51,12 @@ vi debian/changelog
 vi debian/rules
 
 #
-#  Re-build and commit the configure script
-#  Be sure this is autoconf 2.1x, not 2.5x
+#  Re-build and commit the configure scripts and other autofoo
+libtoolize --force
+aclocal
+automake -ac
 autoconf
-cvs commit configure configure.in redhat/freeradius-client.spec suse/freeradius-client.spec debian/changelog debian/rules
+cvs commit
 
 #
 #  tag the files for the release,
