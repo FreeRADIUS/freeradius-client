@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.14 2007/02/19 22:14:11 cparker Exp $
+ * $Id: config.c,v 1.15 2007/05/29 13:49:04 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -27,7 +27,7 @@
  * Returns: pointer to option on success, NULL otherwise
  */
 
-static OPTION *find_option(rc_handle *rh, char *optname, unsigned int type)
+static OPTION *find_option(rc_handle *rh, const char *optname, unsigned int type)
 {
 	int i;
 
@@ -49,7 +49,7 @@ static OPTION *find_option(rc_handle *rh, char *optname, unsigned int type)
  * Returns: 0 on success, -1 on failure
  */
 
-static int set_option_str(char *filename, int line, OPTION *option, char *p)
+static int set_option_str(const char *filename, int line, OPTION *option, const char *p)
 {
 	if (p) {
 		option->val = (void *) strdup(p);
@@ -64,7 +64,7 @@ static int set_option_str(char *filename, int line, OPTION *option, char *p)
 	return 0;
 }
 
-static int set_option_int(char *filename, int line, OPTION *option, char *p)
+static int set_option_int(const char *filename, int line, OPTION *option, const char *p)
 {
 	int *iptr;
 
@@ -84,17 +84,19 @@ static int set_option_int(char *filename, int line, OPTION *option, char *p)
 	return 0;
 }
 
-static int set_option_srv(char *filename, int line, OPTION *option, char *const_p)
+static int set_option_srv(const char *filename, int line, OPTION *option, const char *p)
 {
 	SERVER *serv;
-	char *p;
+	char *p_pointer;
+	char *p_dupe;
+	char *p_save;
 	char *q;
 	char *s;
 	struct servent *svp;
 
-	p = strdup(const_p);
+	p_dupe = strdup(p);
 
-	if (p == NULL) {
+	if (p_dupe == NULL) {
 		rc_log(LOG_ERR, "%s: line %d: Invalid optioin or memory failure", filename, line);
 		return -1;
 	}
@@ -110,11 +112,10 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *const_
 		serv->max = 0;
 	}
 
-	if (strstr(p, ", \t"))
-		p = strtok(p, ", \t");
+	p_pointer = strtok_r(p_dupe, ", \t", &p_save);
 
 	/* Check to see if we have 'servername:port' syntax */
-	if ((q = strchr(p,':')) != NULL) {
+	if ((q = strchr(p_pointer,':')) != NULL) {
 		*q = '\0';
 		q++;
 		
@@ -126,7 +127,7 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *const_
 			if (serv->secret[serv->max] == NULL) {
 				rc_log(LOG_CRIT, "read_config: out of memory");
 				if (option->val == NULL) {
-					free(p);
+					free(p_dupe);
 					free(serv);
 				}
 				return -1;
@@ -149,23 +150,23 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *const_
 		else {
 			rc_log(LOG_ERR, "%s: line %d: no default port for %s", filename, line, option->name);
 			if (option->val == NULL) {
-				free(p);
+				free(p_dupe);
 				free(serv);
 			}
 			return -1;
 		}
 	}
 
-	serv->name[serv->max] = strdup(p);
+	serv->name[serv->max] = strdup(p_pointer);
 	if (serv->name[serv->max] == NULL) {
 		rc_log(LOG_CRIT, "read_config: out of memory");
 		if (option->val == NULL) {
-			free(p);
+			free(p_dupe);
 			free(serv);
 		}
 		return -1;
 	}
-	free(p);
+	free(p_dupe);
 
 	serv->max++;
 
@@ -175,11 +176,16 @@ static int set_option_srv(char *filename, int line, OPTION *option, char *const_
 	return 0;
 }
 
-static int set_option_auo(char *filename, int line, OPTION *option, char *p)
+static int set_option_auo(const char *filename, int line, OPTION *option, const char *p)
 {
 	int *iptr;
+	char *p_dupe = NULL;
+	char *p_pointer = NULL;
+	char *p_save = NULL;
 
-	if (p == NULL) {
+	p_dupe = strdup(p);
+
+	if (p_dupe == NULL) {
 		rc_log(LOG_WARNING, "%s: line %d: bogus option value", filename, line);
 		return -1;
 	}
@@ -190,34 +196,37 @@ static int set_option_auo(char *filename, int line, OPTION *option, char *p)
 	}
 
 	*iptr = 0;
-	if(strstr(p,", \t") != NULL) {
-		p = strtok(p, ", \t");
-	}
+	/*if(strstr(p_dupe,", \t") != NULL) {*/
+		p_pointer = strtok_r(p_dupe, ", \t", &p_save);
+	/*}*/
 
-	if (!strncmp(p, "local", 5))
+	if (!strncmp(p_pointer, "local", 5))
 			*iptr = AUTH_LOCAL_FST;
-	else if (!strncmp(p, "radius", 6))
+	else if (!strncmp(p_pointer, "radius", 6))
 			*iptr = AUTH_RADIUS_FST;
 	else {
 		rc_log(LOG_ERR,"%s: auth_order: unknown keyword: %s", filename, p);
+		free(p_dupe);
 		return -1;
 	}
 
-	p = strtok(NULL, ", \t");
+	p_pointer = strtok_r(NULL, ", \t", &p_save);
 
-	if (p && (*p != '\0')) {
-		if ((*iptr & AUTH_RADIUS_FST) && !strcmp(p, "local"))
+	if (p_pointer && (*p_pointer != '\0')) {
+		if ((*iptr & AUTH_RADIUS_FST) && !strcmp(p_pointer, "local"))
 			*iptr = (*iptr) | AUTH_LOCAL_SND;
-		else if ((*iptr & AUTH_LOCAL_FST) && !strcmp(p, "radius"))
+		else if ((*iptr & AUTH_LOCAL_FST) && !strcmp(p_pointer, "radius"))
 			*iptr = (*iptr) | AUTH_RADIUS_SND;
 		else {
 			rc_log(LOG_ERR,"%s: auth_order: unknown or unexpected keyword: %s", filename, p);
+			free(p_dupe);
 			return -1;
 		}
 	}
 
 	option->val = (void *) iptr;
 
+	free(p_dupe);
 	return 0;
 }
 
@@ -229,7 +238,7 @@ static int set_option_auo(char *filename, int line, OPTION *option, char *p)
  * Returns: 0 on success, -1 on failure
  */
 
-int rc_add_config(rc_handle *rh, char *option_name, char *option_val, char *source, int line)
+int rc_add_config(rc_handle *rh, const char *option_name, const char *option_val, const char *source, const int line)
 {
 	OPTION *option;
 
@@ -692,6 +701,8 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 	char            buffer[128];
 	char            hostnm[AUTH_ID_LEN + 1];
 	char	       *conf_secret;
+	char	       *buffer_save;
+	char	       *hostnm_save;
 
 	/* Lookup the IP address of the radius server */
 	if ((*ip_addr = rc_get_ipaddr (server_name)) == (UINT4) 0)
@@ -716,7 +727,7 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 		if (*buffer == '#')
 			continue;
 
-		if ((h = strtok (buffer, " \t\n")) == NULL) /* first hostname */
+		if ((h = strtok_r(buffer, " \t\n", &buffer_save)) == NULL) /* first hostname */
 			continue;
 
 		memset (hostnm, '\0', AUTH_ID_LEN);
@@ -728,7 +739,7 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 		strncpy (hostnm, h, (size_t) len);
 		hostnm[AUTH_ID_LEN] = '\0';
 
-		if ((s = strtok (NULL, " \t\n")) == NULL) /* and secret field */
+		if ((s = strtok_r (NULL, " \t\n", &buffer_save)) == NULL) /* and secret field */
 			continue;
 
 		memset (secret, '\0', MAX_SECRET_LENGTH);
@@ -750,11 +761,10 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 		}
 		else /* <name1>/<name2> "paired" form */
 		{
-			strtok (hostnm, "/");
+			strtok_r(hostnm, "/", &hostnm_save);
 			if (rc_is_myname(hostnm) == 0)
 			{	     /* If we're the 1st name, target is 2nd */
-				host2 = strtok (NULL, " ");
-				if (find_match (ip_addr, host2) == 0)
+				if (find_match (ip_addr, hostnm_save) == 0)
 				{
 					result++;
 					break;
