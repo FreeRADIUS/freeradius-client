@@ -1,5 +1,5 @@
 /*
- * $Id: dict.c,v 1.8 2007/01/06 20:15:32 pnixon Exp $
+ * $Id: dict.c,v 1.9 2007/06/05 21:43:39 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -317,7 +317,7 @@ int rc_read_dictionary (rc_handle *rh, const char *filename)
  *
  */
 
-DICT_ATTR *rc_dict_getattr (rc_handle *rh, int attribute)
+DICT_ATTR *rc_dict_getattr (const rc_handle *rh, int attribute)
 {
 	DICT_ATTR      *attr;
 
@@ -341,7 +341,7 @@ DICT_ATTR *rc_dict_getattr (rc_handle *rh, int attribute)
  *
  */
 
-DICT_ATTR *rc_dict_findattr (rc_handle *rh, const char *attrname)
+DICT_ATTR *rc_dict_findattr (const rc_handle *rh, const char *attrname)
 {
 	DICT_ATTR      *attr;
 
@@ -366,7 +366,7 @@ DICT_ATTR *rc_dict_findattr (rc_handle *rh, const char *attrname)
  *
  */
 
-DICT_VALUE *rc_dict_findval (rc_handle *rh, const char *valname)
+DICT_VALUE *rc_dict_findval (const rc_handle *rh, const char *valname)
 {
 	DICT_VALUE     *val;
 
@@ -391,7 +391,7 @@ DICT_VALUE *rc_dict_findval (rc_handle *rh, const char *valname)
  */
 
 DICT_VENDOR *
-rc_dict_findvend(rc_handle *rh, const char *vendorname)
+rc_dict_findvend(const rc_handle *rh, const char *vendorname)
 {
 	DICT_VENDOR	*vend;
 
@@ -410,7 +410,7 @@ rc_dict_findvend(rc_handle *rh, const char *vendorname)
  */
 
 DICT_VENDOR *
-rc_dict_getvend (rc_handle *rh, int vendorpec)
+rc_dict_getvend (const rc_handle *rh, int vendorpec)
 {
         DICT_VENDOR      *vend;
 
@@ -429,7 +429,7 @@ rc_dict_getvend (rc_handle *rh, int vendorpec)
  */
 
 DICT_VALUE *
-rc_dict_getval (rc_handle *rh, UINT4 value, const char *attrname)
+rc_dict_getval (const rc_handle *rh, UINT4 value, const char *attrname)
 {
 	DICT_VALUE     *val;
 

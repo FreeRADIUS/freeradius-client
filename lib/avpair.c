@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.18 2007/01/06 20:15:30 pnixon Exp $
+ * $Id: avpair.c,v 1.19 2007/06/05 21:43:39 cparker Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -29,7 +29,7 @@
  *
  */
 
-VALUE_PAIR *rc_avpair_add (rc_handle *rh, VALUE_PAIR **list, int attrid, void *pval, int len, int vendorpec)
+VALUE_PAIR *rc_avpair_add (const rc_handle *rh, VALUE_PAIR **list, int attrid, void *pval, int len, int vendorpec)
 {
 	VALUE_PAIR     *vp;
 
@@ -93,7 +93,7 @@ int rc_avpair_assign (VALUE_PAIR *vp, void *pval, int len)
  *
  */
 
-VALUE_PAIR *rc_avpair_new (rc_handle *rh, int attrid, void *pval, int len, int vendorpec)
+VALUE_PAIR *rc_avpair_new (const rc_handle *rh, int attrid, void *pval, int len, int vendorpec)
 {
 	VALUE_PAIR     *vp = NULL;
 	DICT_ATTR      *pda;
@@ -165,7 +165,7 @@ VALUE_PAIR *rc_avpair_new (rc_handle *rh, int attrid, void *pval, int len, int v
  */
 
 VALUE_PAIR *
-rc_avpair_gen(rc_handle *rh, VALUE_PAIR *pair, unsigned char *ptr,
+rc_avpair_gen(const rc_handle *rh, VALUE_PAIR *pair, unsigned char *ptr,
     int length, int vendorpec)
 {
 	int attribute, attrlen, x_len;
@@ -454,7 +454,7 @@ rc_fieldcpy(char *string, char **uptr, const char *stopat, size_t len)
 #define PARSE_MODE_VALUE	2
 #define PARSE_MODE_INVALID	3
 
-int rc_avpair_parse (rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
+int rc_avpair_parse (const rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 {
 	int             mode;
 	char            attrstr[AUTH_ID_LEN];
@@ -645,7 +645,7 @@ int rc_avpair_parse (rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
  *
  */
 
-int rc_avpair_tostr (rc_handle *rh, VALUE_PAIR *pair, char *name, int ln, char *value, int lv)
+int rc_avpair_tostr (const rc_handle *rh, VALUE_PAIR *pair, char *name, int ln, char *value, int lv)
 {
 	DICT_VALUE     *dval;
 	char            buffer[32];
@@ -765,7 +765,7 @@ rc_avpair_log(rc_handle *rh, VALUE_PAIR *pair)
  *
  */
 
-VALUE_PAIR *rc_avpair_readin(rc_handle *rh, FILE *input)
+VALUE_PAIR *rc_avpair_readin(const rc_handle *rh, FILE *input)
 {
 	VALUE_PAIR *vp = NULL;
 	char buffer[1024], *q;

@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.20 2007/02/19 22:14:11 cparker Exp $
+ * $Id: sendserver.c,v 1.21 2007/06/05 21:43:40 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -213,14 +213,19 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		{
 			strncpy(secret, data->secret, MAX_SECRET_LENGTH);
 		}
+		/*
 		else
 		{
-			if (rc_find_server (rh, server_name, &auth_ipaddr, secret) != 0)
-			{
-				return ERROR_RC;
-			}
+		*/
+		if (rc_find_server (rh, server_name, &auth_ipaddr, secret) != 0)
+		{
+			rc_log(LOG_ERR, "rc_send_server: unable to find server: %s", server_name);
+			return ERROR_RC;
 		}
+		/*}*/
 	}
+
+	DEBUG(LOG_ERR, "DEBUG: rc_send_server: creating socket to: %s", server_name);
 
 	sockfd = socket (AF_INET, SOCK_DGRAM, 0);
 	if (sockfd < 0)
@@ -291,6 +296,10 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		auth->length = htons ((unsigned short) total_length);
 	}
 
+	DEBUG(LOG_ERR, "DEBUG: local %s : 0, remote %s : %u\n", 
+		inet_ntoa(sinlocal.sin_addr),
+		inet_ntoa(sinremote.sin_addr), data->svc_port);
+
 	for (;;)
 	{
 		sendto (sockfd, (char *) auth, (unsigned int) total_length, (int) 0,
@@ -319,8 +328,8 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		if (++retries >= retry_max)
 		{
 			rc_log(LOG_ERR,
-				"rc_send_server: no reply from RADIUS server %s:%u",
-				 rc_ip_hostname (auth_ipaddr), data->svc_port);
+				"rc_send_server: no reply from RADIUS server %s:%u, %s",
+				 rc_ip_hostname (auth_ipaddr), data->svc_port, inet_ntoa(sinremote.sin_addr));
 			close (sockfd);
 			memset (secret, '\0', sizeof (secret));
 			return TIMEOUT_RC;

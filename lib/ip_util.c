@@ -1,5 +1,5 @@
 /*
- * $Id: ip_util.c,v 1.8 2007/01/06 20:15:33 pnixon Exp $
+ * $Id: ip_util.c,v 1.9 2007/06/05 21:43:39 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -25,6 +25,72 @@
 #endif
 
 /*
+ * Function: rc_gethostbyname
+ *
+ * Purpose: threadsafe replacement for gethostbyname.
+ *
+ * Returns: NULL on failure, hostent pointer on success
+ */
+
+struct hostent *rc_gethostbyname(const char *hostname)
+{
+	struct 	hostent hostbuf, *hp;
+	size_t	hostbuflen;
+	char	*tmphostbuf;
+	int	res;
+	int	herr;
+	
+	hostbuflen = 1024;
+	tmphostbuf = malloc(hostbuflen);
+
+	while ((res = gethostbyname_r(hostname, &hostbuf, tmphostbuf, hostbuflen, &hp, &herr)) == ERANGE)
+	{
+		/* Enlarge the buffer */
+		hostbuflen *= 2;
+		tmphostbuf = realloc(tmphostbuf, hostbuflen);
+	}
+	if (res || hp == NULL) {
+		free(tmphostbuf);
+		return NULL;
+	}
+	free(tmphostbuf);
+	return hp;
+} 
+
+/*
+ * Function: rc_gethostbyname
+ *
+ * Purpose: threadsafe replacement for gethostbyname.
+ *
+ * Returns: NULL on failure, hostent pointer on success
+ */
+
+struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
+{
+	struct 	hostent hostbuf, *hp;
+	size_t	hostbuflen;
+	char	*tmphostbuf;
+	int	res;
+	int	herr;
+	
+	hostbuflen = 1024;
+	tmphostbuf = malloc(hostbuflen);
+
+	while ((res = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen, &hp, &herr)) == ERANGE)
+	{
+		/* Enlarge the buffer */
+		hostbuflen *= 2;
+		tmphostbuf = realloc(tmphostbuf, hostbuflen);
+	}
+	if (res || hp == NULL) {
+		free(tmphostbuf);
+		return NULL;
+	}
+	free(tmphostbuf);
+	return hp;
+} 
+
+/*
  * Function: rc_get_ipaddr
  *
  * Purpose: return an IP address in host long notation from a host
@@ -35,13 +101,13 @@
 
 UINT4 rc_get_ipaddr (char *host)
 {
-	struct hostent *hp;
+	struct 	hostent *hp;
 
 	if (rc_good_ipaddr (host) == 0)
 	{
 		return ntohl(inet_addr (host));
 	}
-	else if ((hp = gethostbyname (host)) == NULL)
+	else if ((hp = rc_gethostbyname(host)) == NULL)
 	{
 		rc_log(LOG_ERR,"rc_get_ipaddr: couldn't resolve hostname: %s", host);
 		return (UINT4)0;
@@ -112,7 +178,7 @@ const char *rc_ip_hostname (UINT4 h_ipaddr)
 	struct hostent  *hp;
 	UINT4           n_ipaddr = htonl (h_ipaddr);
 
-	if ((hp = gethostbyaddr ((char *) &n_ipaddr, sizeof (struct in_addr),
+	if ((hp = rc_gethostbyaddr ((char *) &n_ipaddr, sizeof (struct in_addr),
 			    AF_INET)) == NULL) {
 		rc_log(LOG_ERR,"rc_ip_hostname: couldn't look up host by addr: %08lX", h_ipaddr);
 	}

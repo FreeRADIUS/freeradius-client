@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.15 2007/05/29 13:49:04 cparker Exp $
+ * $Id: config.c,v 1.16 2007/06/05 21:43:39 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -29,13 +29,16 @@
 
 static OPTION *find_option(rc_handle *rh, const char *optname, unsigned int type)
 {
-	int i;
+	int 	i;
+	OPTION 	*opt = NULL;
 
 	/* there're so few options that a binary search seems not necessary */
 	for (i = 0; i < NUM_OPTIONS; i++) {
 		if (!strcmp(rh->config_options[i].name, optname) &&
-		    (rh->config_options[i].type & type))
+		    (rh->config_options[i].type & type)) 
+		{
 		    	return &rh->config_options[i];
+		}
 	}
 
 	return NULL;
@@ -97,16 +100,17 @@ static int set_option_srv(const char *filename, int line, OPTION *option, const 
 	p_dupe = strdup(p);
 
 	if (p_dupe == NULL) {
-		rc_log(LOG_ERR, "%s: line %d: Invalid optioin or memory failure", filename, line);
+		rc_log(LOG_ERR, "%s: line %d: Invalid option or memory failure", filename, line);
 		return -1;
 	}
 
 	serv = (SERVER *) option->val;
 	if (serv == NULL) {
+		DEBUG(LOG_ERR, "option->val / server is NULL, allocating memory");
 		serv = malloc(sizeof(*serv));
 		if (serv == NULL) {
 			rc_log(LOG_CRIT, "read_config: out of memory");
-			free(p);
+			free(p_dupe);
 			return -1;
 		}
 		serv->max = 0;
@@ -294,13 +298,42 @@ int rc_add_config(rc_handle *rh, const char *option_name, const char *option_val
 rc_handle *
 rc_config_init(rc_handle *rh)
 {
+	int i;
+	SERVER *authservers;
+	SERVER *acctservers;
+
         rh->config_options = malloc(sizeof(config_options_default));
-        if (rh->config_options == NULL) {
+        if (rh->config_options == NULL) 
+	{
                 rc_log(LOG_CRIT, "rc_config_init: out of memory");
 		rc_destroy(rh);
                 return NULL;
         }
         memcpy(rh->config_options, &config_options_default, sizeof(config_options_default));
+
+        authservers = rc_conf_srv(rh, "authserver"); 
+	acctservers = rc_conf_srv(rh, "acctserver");
+	authservers = malloc(sizeof(SERVER));
+	acctservers = malloc(sizeof(SERVER));
+
+	if(authservers == NULL || acctservers == NULL)
+	{
+                rc_log(LOG_CRIT, "rc_config_init: error initializing server structs");
+		rc_destroy(rh);
+                return NULL;
+	}
+
+
+	authservers->max = 0;
+	acctservers->max = 0;
+
+	for(i=0; i < SERVER_MAX; i++) 
+	{	
+		authservers->name[i] = NULL;
+		authservers->secret[i] = NULL;
+		acctservers->name[i] = NULL;
+		acctservers->secret[i] = NULL;
+	} 
 	return rh;
 }
 
@@ -589,6 +622,7 @@ int test_config(rc_handle *rh, char *filename)
 
 static int find_match (UINT4 *ip_addr, char *hostname)
 {
+
 	UINT4           addr;
 	char          **paddr;
 	struct hostent *hp;
@@ -600,19 +634,17 @@ static int find_match (UINT4 *ip_addr, char *hostname)
 			return 0;
 		}
 	}
-	else
+	else if ((hp = rc_gethostbyname(hostname)) == NULL)
 	{
-		if ((hp = gethostbyname (hostname)) == NULL)
-		{
 			return -1;
-		}
-		for (paddr = hp->h_addr_list; *paddr; paddr++)
+	}
+		
+	for (paddr = hp->h_addr_list; *paddr; paddr++)
+	{
+		addr = ** (UINT4 **) paddr;
+		if (ntohl(addr) == *ip_addr)
 		{
-			addr = ** (UINT4 **) paddr;
-			if (ntohl(addr) == *ip_addr)
-			{
-				return 0;
-			}
+			return 0;
 		}
 	}
 	return -1;
@@ -662,15 +694,15 @@ rc_ipaddr_local(UINT4 ip_addr)
 static int
 rc_is_myname(char *hostname)
 {
-	UINT4 addr;
-	char **paddr;
-	struct hostent *hp;
-	int res;
+	UINT4 	addr;
+	char 	**paddr;
+	struct 	hostent *hp;
+	int	res;
 
 	if (rc_good_ipaddr(hostname) == 0)
 		return rc_ipaddr_local(ntohl(inet_addr(hostname)));
 
-	if ((hp = gethostbyname (hostname)) == NULL)
+	if ((hp = rc_gethostbyname(hostname)) == NULL)
 		return -1;
 	for (paddr = hp->h_addr_list; *paddr; paddr++) {
 		addr = **(UINT4 **)paddr;
@@ -692,8 +724,9 @@ rc_is_myname(char *hostname)
 
 int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secret)
 {
+	int		i;
 	int             len;
-	int             result;
+	int             result = 0;
 	FILE           *clientfd;
 	char           *h;
 	char           *s;
@@ -703,13 +736,51 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 	char	       *conf_secret;
 	char	       *buffer_save;
 	char	       *hostnm_save;
+	SERVER	       *authservers;
+	SERVER	       *acctservers;
 
 	/* Lookup the IP address of the radius server */
 	if ((*ip_addr = rc_get_ipaddr (server_name)) == (UINT4) 0)
 		return -1;
 
 	/* Check to see if the server secret is defined in the rh config */
-	
+	if( (authservers = rc_conf_srv(rh, "authserver")) != NULL ) 
+	{
+		for( i = 0; i < authservers->max; i++ )
+		{
+			if( strncmp(server_name, authservers->name[i], strlen(server_name)) == 0 ) 
+			{
+				memset (secret, '\0', MAX_SECRET_LENGTH);
+				len = strlen (authservers->secret[i]);
+				if (len > MAX_SECRET_LENGTH)
+				{
+					len = MAX_SECRET_LENGTH;
+				}
+				strncpy (secret, authservers->secret[i], (size_t) len);
+				secret[MAX_SECRET_LENGTH] = '\0';
+				return 0;
+			}
+		}
+	}
+
+	if( (acctservers = rc_conf_srv(rh, "acctserver")) != NULL ) 
+	{
+		for( i = 0; i < acctservers->max; i++ )
+		{
+			if( strncmp(server_name, acctservers->name[i], strlen(server_name)) == 0 ) 
+			{
+				memset (secret, '\0', MAX_SECRET_LENGTH);
+				len = strlen (acctservers->secret[i]);
+				if (len > MAX_SECRET_LENGTH)
+				{
+					len = MAX_SECRET_LENGTH;
+				}
+				strncpy (secret, acctservers->secret[i], (size_t) len);
+				secret[MAX_SECRET_LENGTH] = '\0';
+				return 0;
+			}
+		}
+	}
 
 	/* We didn't find it in the rh_config or the servername is too long so look for a 
 	 * servers file to define the secret(s)
@@ -721,7 +792,6 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 		return -1;
 	}
 
-	result = 0;
 	while (fgets (buffer, sizeof (buffer), clientfd) != NULL)
 	{
 		if (*buffer == '#')
