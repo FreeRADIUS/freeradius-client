@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.2 2007/02/19 22:14:10 cparker Exp $
+ * $Id: freeradius-client.h,v 1.3 2007/06/05 21:45:30 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -16,6 +16,12 @@
 
 #ifndef RADIUSCLIENT_NG_H
 #define RADIUSCLIENT_NG_H
+
+#ifdef CP_DEBUG
+#define		DEBUG	rc_log
+#else
+#define		DEBUG
+#endif
 
 #include	<sys/types.h>
 #include	<stdint.h>
@@ -67,7 +73,7 @@ typedef struct server {
 	int max;
 	char *name[SERVER_MAX];
 	unsigned short port[SERVER_MAX];
-	char *secret[MAX_SECRET_LENGTH];
+	char *secret[SERVER_MAX];
 } SERVER;
 
 typedef struct pw_auth_hdr
@@ -400,17 +406,17 @@ __BEGIN_DECLS
 
 /*	avpair.c		*/
 
-VALUE_PAIR *rc_avpair_add(rc_handle *, VALUE_PAIR **, int, void *, int, int);
+VALUE_PAIR *rc_avpair_add(const rc_handle *, VALUE_PAIR **, int, void *, int, int);
 int rc_avpair_assign(VALUE_PAIR *, void *, int);
-VALUE_PAIR *rc_avpair_new(rc_handle *, int, void *, int, int);
-VALUE_PAIR *rc_avpair_gen(rc_handle *, VALUE_PAIR *, unsigned char *, int, int);
+VALUE_PAIR *rc_avpair_new(const rc_handle *, int, void *, int, int);
+VALUE_PAIR *rc_avpair_gen(const rc_handle *, VALUE_PAIR *, unsigned char *, int, int);
 VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, int, int);
 void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
 void rc_avpair_free(VALUE_PAIR *);
-int rc_avpair_parse(rc_handle *, char *, VALUE_PAIR **);
-int rc_avpair_tostr(rc_handle *, VALUE_PAIR *, char *, int, char *, int);
+int rc_avpair_parse(const rc_handle *, char *, VALUE_PAIR **);
+int rc_avpair_tostr(const rc_handle *, VALUE_PAIR *, char *, int, char *, int);
 char *rc_avpair_log(rc_handle *, VALUE_PAIR *);
-VALUE_PAIR *rc_avpair_readin(rc_handle *, FILE *);
+VALUE_PAIR *rc_avpair_readin(const rc_handle *, FILE *);
 
 /*	buildreq.c		*/
 
@@ -436,23 +442,25 @@ int rc_conf_int(rc_handle *, char *);
 SERVER *rc_conf_srv(rc_handle *, char *);
 int rc_find_server(rc_handle *, char *, UINT4 *, char *);
 void rc_config_free(rc_handle *);
-int rc_add_config(rc_handle *, char *, char *, char *, int);
+int rc_add_config(rc_handle *, const char *, const char *, const char *, const int);
 rc_handle *rc_config_init(rc_handle *);
 int test_config(rc_handle *, char *);
 
 /*	dict.c			*/
 
 int rc_read_dictionary(rc_handle *, const char *);
-DICT_ATTR *rc_dict_getattr(rc_handle *, int);
-DICT_ATTR *rc_dict_findattr(rc_handle *, const char *);
-DICT_VALUE *rc_dict_findval(rc_handle *, const char *);
-DICT_VENDOR *rc_dict_findvend(rc_handle *, const char *);
-DICT_VENDOR *rc_dict_getvend(rc_handle *, int);
-DICT_VALUE * rc_dict_getval(rc_handle *, UINT4, const char *);
+DICT_ATTR *rc_dict_getattr(const rc_handle *, int);
+DICT_ATTR *rc_dict_findattr(const rc_handle *, const char *);
+DICT_VALUE *rc_dict_findval(const rc_handle *, const char *);
+DICT_VENDOR *rc_dict_findvend(const rc_handle *, const char *);
+DICT_VENDOR *rc_dict_getvend(const rc_handle *, int);
+DICT_VALUE * rc_dict_getval(const rc_handle *, UINT4, const char *);
 void rc_dict_free(rc_handle *);
 
 /*	ip_util.c		*/
 
+struct hostent *rc_gethostbyname(const char *);
+struct hostent *rc_gethostbyaddr(const char *, size_t, int);
 UINT4 rc_get_ipaddr(char *);
 int rc_good_ipaddr(char *);
 const char *rc_ip_hostname(UINT4);
