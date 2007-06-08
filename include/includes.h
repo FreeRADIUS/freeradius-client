@@ -1,5 +1,5 @@
 /*
- * $Id: includes.h,v 1.4 2007/06/08 15:21:17 cparker Exp $
+ * $Id: includes.h,v 1.5 2007/06/08 15:31:20 cparker Exp $
  *
  * Copyright (C) 1997 Lars Fenneberg
  *
@@ -59,7 +59,7 @@
 
 /* I realize that this is ugly and unsafe.. :( */
 #ifndef HAVE_SNPRINTF
-# define snprintf(buf, len, format, args...) sprintf(buf, format, __VA_ARGS__)
+# define snprintf(buf, len, format, ...) sprintf(buf, format, __VA_ARGS__)
 #endif
 #ifndef HAVE_VSNPRINTF
 # define vsnprintf(buf, len, format, ap) vsprintf(buf, format, ap)
