@@ -1,5 +1,5 @@
 /*
- * $Id: includes.h,v 1.3 2005/11/07 22:41:42 sobomax Exp $
+ * $Id: includes.h,v 1.4 2007/06/08 15:21:17 cparker Exp $
  *
  * Copyright (C) 1997 Lars Fenneberg
  *
@@ -36,8 +36,14 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <errno.h>
+
+#ifdef HAVE_NETDB_H
 #include <netdb.h>
+#endif
+
+#ifdef HAVE_SYSLOG_H
 #include <syslog.h>
+#endif
 
 #ifdef STDC_HEADERS
 # include <stdlib.h>
@@ -53,7 +59,7 @@
 
 /* I realize that this is ugly and unsafe.. :( */
 #ifndef HAVE_SNPRINTF
-# define snprintf(buf, len, format, args...) sprintf(buf, format, ## args)
+# define snprintf(buf, len, format, args...) sprintf(buf, format, __VA_ARGS__)
 #endif
 #ifndef HAVE_VSNPRINTF
 # define vsnprintf(buf, len, format, ap) vsprintf(buf, format, ap)
@@ -111,10 +117,21 @@
 # endif
 #endif
 
+#ifdef HAVE_PWD_H
 #include <pwd.h>
+#endif
+
+#ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
+#endif
+
+#ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
+#endif
+
+#ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
+#endif
 
 #if defined(HAVE_SIGNAL_H)
 # include <signal.h>
