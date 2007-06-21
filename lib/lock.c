@@ -1,5 +1,5 @@
 /*
- * $Id: lock.c,v 1.2 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: lock.c,v 1.3 2007/06/21 18:07:23 cparker Exp $
  *
  * Copyright (C) 1997 Lars Fenneberg
  *
@@ -14,19 +14,33 @@
 
 #if defined(HAVE_FLOCK)
 
-int do_lock_exclusive(int fd)
+int do_lock_exclusive(FILE * fd)
 {
-	return flock(fd, LOCK_EX|LOCK_NB);
+	return flock(fileno(fd), LOCK_EX|LOCK_NB);
 }
 
-int do_unlock(int fd)
+int do_unlock(FILE * fd)
 {
-	return flock(fd, LOCK_UN);
+	return flock(fileno(fd), LOCK_UN);
+}
+
+#elif defined(WIN32)
+
+int do_lock_exclusive(FILE * fd)
+{
+	_lock_file(fd);
+	return 1;
+}
+
+int do_unlock(FILE * fd)
+{
+	_unlock_file(fd);
+	return 1;
 }
 
 #elif defined(HAVE_FCNTL)
 
-int do_lock_exclusive(int fd)
+int do_lock_exclusive(FILE * fd)
 {
 	flock_t fl;
 	int res;
@@ -37,7 +51,7 @@ int do_lock_exclusive(int fd)
 	fl.l_whence = fl.l_start = 0;
 	fl.l_len = 0; /* 0 means "to end of file" */
 
-	res = fcntl(fd, F_SETLK, &fl);
+	res = fcntl(fileno(fd), F_SETLK, &fl);
 
 	if ((res == -1) && (errno == EAGAIN))
 		errno = EWOULDBLOCK;
@@ -45,7 +59,7 @@ int do_lock_exclusive(int fd)
 	return res;
 }
 
-int do_unlock(int fd)
+int do_unlock(FILE * fd)
 {
 	flock_t fl;
 
@@ -55,10 +69,10 @@ int do_unlock(int fd)
 	fl.l_whence = fl.l_start = 0;
 	fl.l_len = 0; /* 0 means "to end of file" */
 
-	return fcntl(fd, F_SETLK, &fl);
+	return fcntl(fileno(fd}, F_SETLK, &fl);
 }
 
 #else
-YOU_LOOSE "need either flock(2) or fcntl(2)"
+#error YOU_LOOSE "need either flock(2) or fcntl(2)"
 #endif
 

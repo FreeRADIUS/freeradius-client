@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.19 2007/06/05 21:43:39 cparker Exp $
+ * $Id: avpair.c,v 1.20 2007/06/21 18:07:22 cparker Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -61,7 +61,7 @@ int rc_avpair_assign (VALUE_PAIR *vp, void *pval, int len)
 	{
 		case PW_TYPE_STRING:
 			if (len == -1)
-				len = strlen((char *)pval);
+				len = (UINT4)strlen((char *)pval);
 			if (len > AUTH_STRING_LEN) {
 		        	rc_log(LOG_ERR, "rc_avpair_assign: bad attribute length");
 		        	return -1;
@@ -530,7 +530,7 @@ int rc_avpair_parse (const rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 
 			    case PW_TYPE_STRING:
 				strcpy (pair->strvalue, valstr);
-				pair->lvalue = strlen(valstr);
+				pair->lvalue = (UINT4)strlen(valstr);
 				break;
 
 			    case PW_TYPE_INTEGER:
@@ -734,7 +734,7 @@ int rc_avpair_tostr (const rc_handle *rh, VALUE_PAIR *pair, char *name, int ln, 
 char *
 rc_avpair_log(rc_handle *rh, VALUE_PAIR *pair)
 {
-	int len, nlen;
+	size_t len, nlen;
 	VALUE_PAIR *vp;
 	char name[33], value[256];
 	char *cp;

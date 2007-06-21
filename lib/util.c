@@ -1,5 +1,5 @@
 /*
- * $Id: util.c,v 1.7 2007/01/06 20:15:33 pnixon Exp $
+ * $Id: util.c,v 1.8 2007/06/21 18:07:24 cparker Exp $
  *
  * Copyright (c) 1998 The NetBSD Foundation, Inc.
  *
@@ -20,7 +20,7 @@
 #include <includes.h>
 #include <freeradius-client.h>
 
-#define	BUFSIZ	1024
+#define	RC_BUFSIZ	1024
 
 /*
  * Function: rc_str2tm
@@ -103,17 +103,17 @@ char *rc_getifname(rc_handle *rh, char *tty)
  * Purpose: Reads in a string from the user (with or witout echo)
  *
  */
-
+#ifndef _MSC_VER
 char *rc_getstr (rc_handle *rh, char *prompt, int do_echo)
 {
 	int             in, out;
 	char           *p;
-	sigset_t        newset;
-	sigset_t        oldset;
 	struct termios  term_old, term_new;
 	int		is_term, flags, old_flags;
 	char		c;
 	int		flushed = 0;
+	sigset_t        newset;
+	sigset_t        oldset;
 
 	in = fileno(stdin);
 	out = fileno(stdout);
@@ -210,7 +210,7 @@ char *rc_getstr (rc_handle *rh, char *prompt, int do_echo)
 
 	return rh->buf;
 }
-
+#endif
 void rc_mdelay(int msecs)
 {
 	struct timeval tv;
@@ -294,17 +294,17 @@ rc_fgetln(FILE *fp, size_t *len)
 	char *ptr;
 
 	if (buf == NULL) {
-		bufsiz = BUFSIZ;
+		bufsiz = RC_BUFSIZ;
 		if ((buf = malloc(bufsiz)) == NULL)
 			return NULL;
 	}
 
-	if (fgets(buf, bufsiz, fp) == NULL)
+	if (fgets(buf, (int)bufsiz, fp) == NULL)
 		return NULL;
 	*len = 0;
 
 	while ((ptr = strchr(&buf[*len], '\n')) == NULL) {
-		size_t nbufsiz = bufsiz + BUFSIZ;
+		size_t nbufsiz = bufsiz + RC_BUFSIZ;
 		char *nbuf = realloc(buf, nbufsiz);
 
 		if (nbuf == NULL) {
@@ -317,7 +317,7 @@ rc_fgetln(FILE *fp, size_t *len)
 			buf = nbuf;
 
 		*len = bufsiz;
-		if (fgets(&buf[bufsiz], BUFSIZ, fp) == NULL)
+		if (fgets(&buf[bufsiz], RC_BUFSIZ, fp) == NULL)
 			return buf;
 
 		bufsiz = nbufsiz;

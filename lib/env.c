@@ -1,5 +1,5 @@
 /*
- * $Id: env.c,v 1.5 2007/01/06 20:15:33 pnixon Exp $
+ * $Id: env.c,v 1.6 2007/06/21 18:07:23 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -72,7 +72,7 @@ int rc_add_env(ENV *env, char *name, char *value)
 
 	for (i = 0; env->env[i] != NULL; i++)
 	{
-		if (strncmp(env->env[i], name, MAX(strchr(env->env[i], '=') - env->env[i],strlen(name))) == 0)
+		if (strncmp(env->env[i], name, MAX(strchr(env->env[i], '=') - env->env[i], (int)strlen(name))) == 0)
 			break;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.21 2007/06/05 21:43:40 cparker Exp $
+ * $Id: sendserver.c,v 1.22 2007/06/21 18:07:24 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -35,8 +35,9 @@ static int rc_check_reply (AUTH_HDR *, int, char *, unsigned char *, unsigned ch
 
 static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 {
-	int             length, i, pc, secretlen, padded_length;
+	int             length, i, pc, padded_length;
 	int             total_length = 0;
+	size_t			secretlen;
 	UINT4           lvalue, vendor;
 	unsigned char   passbuf[MAX(AUTH_PASS_LEN, CHAP_VALUE_LENGTH)];
 	unsigned char   md5buf[256];
@@ -188,7 +189,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	int             total_length;
 	int             length;
 	int             retry_max;
-	int		secretlen;
+	size_t			secretlen;
 	char            secret[MAX_SECRET_LENGTH + 1];
 	unsigned char   vector[AUTH_VECTOR_LEN];
 	char            recv_buffer[BUFFER_LEN];
@@ -422,7 +423,7 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned
 #endif
 
 	totallen = ntohs (auth->length);
-	secretlen = strlen (secret);
+	secretlen = (int)strlen (secret);
 
 	/* Do sanity checks on packet length */
 	if ((totallen < 20) || (totallen > 4096))
@@ -555,7 +556,7 @@ static void rc_random_vector (unsigned char *vector)
 		return;
 	} /* else fall through */
 #endif
-	srand (time (0) + getppid() + getpid()); /* random enough :) */
+	srand ((unsigned)time (0) + getppid() + getpid()); /* random enough :) */
 	for (i = 0; i < AUTH_VECTOR_LEN;)
 	{
 		randno = rand ();

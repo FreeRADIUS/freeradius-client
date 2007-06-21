@@ -1,5 +1,5 @@
 /*
- * $Id: log.c,v 1.4 2007/01/06 20:15:33 pnixon Exp $
+ * $Id: log.c,v 1.5 2007/06/21 18:07:23 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -26,7 +26,9 @@
 
 void rc_openlog(char *ident)
 {
+#ifndef _MSC_VER /* TODO: Fix me */
 	openlog(ident, LOG_PID, RC_LOG_FACILITY);
+#endif
 }
 
 /*
@@ -49,5 +51,7 @@ void rc_log(int prio, const char *format, ...)
     vsnprintf(buff, sizeof(buff), format, ap);
     va_end(ap);
 
+#ifndef _MSC_VER /* TODO: Fix me */
 	syslog(prio, "%s", buff);
+#endif
 }

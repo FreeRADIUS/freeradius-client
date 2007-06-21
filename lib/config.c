@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.17 2007/06/21 16:48:45 cparker Exp $
+ * $Id: config.c,v 1.18 2007/06/21 18:07:23 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -352,7 +352,8 @@ rc_read_config(char *filename)
 	FILE *configfd;
 	char buffer[512], *p;
 	OPTION *option;
-	int line, pos;
+	int line;
+	size_t pos;
 	rc_handle *rh;
 
 	rh = rc_new();
@@ -479,6 +480,7 @@ char *rc_conf_str(rc_handle *rh, char *optname)
 	} else {
 		rc_log(LOG_CRIT, "rc_conf_str: unkown config option requested: %s", optname);
 		abort();
+		return NULL;
 	}
 }
 
@@ -493,6 +495,7 @@ int rc_conf_int(rc_handle *rh, char *optname)
 	} else {
 		rc_log(LOG_CRIT, "rc_conf_int: unkown config option requested: %s", optname);
 		abort();
+		return 0;
 	}
 }
 
@@ -507,6 +510,7 @@ SERVER *rc_conf_srv(rc_handle *rh, char *optname)
 	} else {
 		rc_log(LOG_CRIT, "rc_conf_srv: unkown config option requested: %s", optname);
 		abort();
+		return NULL;
 	}
 }
 
@@ -725,15 +729,13 @@ rc_is_myname(char *hostname)
 int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secret)
 {
 	int		i;
-	int             len;
+	size_t          len;
 	int             result = 0;
 	FILE           *clientfd;
 	char           *h;
 	char           *s;
-	char           *host2;
 	char            buffer[128];
 	char            hostnm[AUTH_ID_LEN + 1];
-	char	       *conf_secret;
 	char	       *buffer_save;
 	char	       *hostnm_save;
 	SERVER	       *authservers;

@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.11 2007/02/19 22:14:11 cparker Exp $
+ * $Id: buildreq.c,v 1.12 2007/06/21 18:07:22 cparker Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -69,7 +69,7 @@ unsigned char rc_get_seqnbr(rc_handle *rh)
 		return rc_guess_seqnbr();
 	}
 
-	while (do_lock_exclusive(fileno(sf))!= 0)
+	while (do_lock_exclusive(sf)!= 0)
 	{
 		if (errno != EWOULDBLOCK) {
 			rc_log(LOG_ERR, "rc_get_seqnbr: flock failure: %s: %s", seqfile, strerror(errno));
@@ -101,7 +101,7 @@ unsigned char rc_get_seqnbr(rc_handle *rh)
 
 	fflush(sf); /* fflush because a process may read it between the do_unlock and fclose */
 
-	if (do_unlock(fileno(sf)) != 0)
+	if (do_unlock(sf) != 0)
 		rc_log(LOG_ERR, "rc_get_seqnbr: couldn't release lock on %s: %s", seqfile, strerror(errno));
 
 	fclose(sf);

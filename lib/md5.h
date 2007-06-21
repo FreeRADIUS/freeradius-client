@@ -1,7 +1,7 @@
 /*
  * md5.h        Structures and prototypes for md5.
  *
- * Version:     $Id: md5.h,v 1.1 2007/01/27 23:11:22 cparker Exp $
+ * Version:     $Id: md5.h,v 1.2 2007/06/21 18:07:24 cparker Exp $
  * License:	BSD, but largely derived from a public domain source.
  *
  */
@@ -9,7 +9,7 @@
 #ifndef _RCRAD_MD5_H
 #define _RCRAD_MD5_H
 
-#include "../config.h"
+#include "config.h"
 
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>

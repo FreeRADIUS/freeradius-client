@@ -1,5 +1,5 @@
 /*
- * $Id: includes.h,v 1.5 2007/06/08 15:31:20 cparker Exp $
+ * $Id: includes.h,v 1.6 2007/06/21 18:07:22 cparker Exp $
  *
  * Copyright (C) 1997 Lars Fenneberg
  *
@@ -178,5 +178,5 @@ int sigprocmask (int, sigset_t *, sigset_t *);
 #endif
 
 /* rlib/lock.c */
-int do_lock_exclusive(int);
-int do_unlock(int);
+int do_lock_exclusive(FILE *);
+int do_unlock(FILE *);
