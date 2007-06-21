@@ -18,6 +18,9 @@
    */
 #undef HAVE_ALLOCA_H
 
+/* Define to 1 if you have the <apra/inet.h> header file. */
+#undef HAVE_APRA_INET_H
+
 /* Define to 1 if you have the <crypt.h> header file. */
 #undef HAVE_CRYPT_H
 
@@ -67,6 +70,15 @@
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
 
+/* Define to 1 if you have the <netdb.h> header file. */
+#undef HAVE_NETDB_H
+
+/* Define to 1 if you have the <netinet/in.h> header file. */
+#undef HAVE_NETINET_IN_H
+
+/* Define to 1 if you have the <pwd.h> header file. */
+#undef HAVE_PWD_H
+
 /* Define to 1 if you have the `rand' function. */
 #undef HAVE_RAND
 
@@ -115,6 +127,9 @@
 /* Define to 1 if you have the `sysinfo' function. */
 #undef HAVE_SYSINFO
 
+/* Define to 1 if you have the <syslog.h> header file. */
+#undef HAVE_SYSLOG_H
+
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
 #undef HAVE_SYS_DIR_H
@@ -134,6 +149,9 @@
 
 /* Define to 1 if you have the <sys/signal.h> header file. */
 #undef HAVE_SYS_SIGNAL_H
+
+/* Define to 1 if you have the <sys/socket.h> header file. */
+#undef HAVE_SYS_SOCKET_H
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
