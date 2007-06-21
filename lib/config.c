@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.16 2007/06/05 21:43:39 cparker Exp $
+ * $Id: config.c,v 1.17 2007/06/21 16:48:45 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -748,7 +748,8 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 	{
 		for( i = 0; i < authservers->max; i++ )
 		{
-			if( strncmp(server_name, authservers->name[i], strlen(server_name)) == 0 ) 
+			if( (strncmp(server_name, authservers->name[i], strlen(server_name)) == 0) &&
+			    (authservers->secret[i] != NULL) )
 			{
 				memset (secret, '\0', MAX_SECRET_LENGTH);
 				len = strlen (authservers->secret[i]);
@@ -767,7 +768,8 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 	{
 		for( i = 0; i < acctservers->max; i++ )
 		{
-			if( strncmp(server_name, acctservers->name[i], strlen(server_name)) == 0 ) 
+			if( (strncmp(server_name, acctservers->name[i], strlen(server_name)) == 0) &&
+			    (acctservers->secret[i] != NULL) )
 			{
 				memset (secret, '\0', MAX_SECRET_LENGTH);
 				len = strlen (acctservers->secret[i]);
