@@ -1,5 +1,5 @@
 /*
- * $Id: ip_util.c,v 1.9 2007/06/05 21:43:39 cparker Exp $
+ * $Id: ip_util.c,v 1.10 2007/06/26 20:55:12 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -34,7 +34,10 @@
 
 struct hostent *rc_gethostbyname(const char *hostname)
 {
-	struct 	hostent hostbuf, *hp;
+	struct 	hostent *hp;
+#ifdef GETHOSTBYNAMERSTYLE
+#if (GETHOSTBYNAMERSTYLE == SYSVSTYLE) || (GETHOSTBYNAMERSTYLE == GNUSTYLE)
+	struct 	hostent hostbuf;
 	size_t	hostbuflen;
 	char	*tmphostbuf;
 	int	res;
@@ -42,18 +45,31 @@ struct hostent *rc_gethostbyname(const char *hostname)
 	
 	hostbuflen = 1024;
 	tmphostbuf = malloc(hostbuflen);
+#endif
+#endif
 
+#ifdef GETHOSTBYNAMERSTYLE
+#if GETHOSTBYNAMERSTYLE == GNUSTYLE
 	while ((res = gethostbyname_r(hostname, &hostbuf, tmphostbuf, hostbuflen, &hp, &herr)) == ERANGE)
 	{
 		/* Enlarge the buffer */
 		hostbuflen *= 2;
 		tmphostbuf = realloc(tmphostbuf, hostbuflen);
 	}
-	if (res || hp == NULL) {
-		free(tmphostbuf);
+	free(tmphostbuf);
+#elif GETHOSTBYNAMERSTYLE == SYSVSTYLE
+	hp = gethostbyname_r(hostname, &hostbuf, tmphostbuf, hostbuflen, &herr);
+	free(tmphostbuf);
+#else
+	hp = gethostbyname(hostname);
+#endif
+#else
+	hp = gethostbyname(hostname);
+#endif
+
+	if (hp == NULL) {
 		return NULL;
 	}
-	free(tmphostbuf);
 	return hp;
 } 
 
@@ -67,7 +83,10 @@ struct hostent *rc_gethostbyname(const char *hostname)
 
 struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
 {
-	struct 	hostent hostbuf, *hp;
+	struct 	hostent *hp;
+#ifdef GETHOSTBYADDRRSTYLE
+#if (GETHOSTBYADDRRSTYLE == SYSVSTYLE) || (GETHOSTBYADDRRSTYLE == GNUSTYLE)
+	struct	hostent hostbuf;
 	size_t	hostbuflen;
 	char	*tmphostbuf;
 	int	res;
@@ -75,18 +94,32 @@ struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
 	
 	hostbuflen = 1024;
 	tmphostbuf = malloc(hostbuflen);
+#endif
+#endif
 
-	while ((res = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen, &hp, &herr)) == ERANGE)
+#ifdef GETHOSTBYADDRRSTYLE
+#if GETHOSTBYADDRRSTYLE == GNUSTYLE
+	while ((res = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen, 
+					&hp, &herr)) == ERANGE)
 	{
 		/* Enlarge the buffer */
 		hostbuflen *= 2;
 		tmphostbuf = realloc(tmphostbuf, hostbuflen);
 	}
-	if (res || hp == NULL) {
-		free(tmphostbuf);
+	free(tmphostbuf);
+#elif GETHOSTBYADDRSTYLE == SYSVSTYLE
+	hp = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen, &herr);
+	free(tmphostbuf);
+#else
+	hp = gethostbyaddr((char *)&addr, sizeof(struct in_addr), AF_INET);
+#endif
+#else
+	hp = gethostbyaddr((char *)&addr, sizeof(struct in_addr), AF_INET);
+#endif
+
+	if (hp == NULL) {
 		return NULL;
 	}
-	free(tmphostbuf);
 	return hp;
 } 
 

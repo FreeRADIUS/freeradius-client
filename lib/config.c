@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.18 2007/06/21 18:07:23 cparker Exp $
+ * $Id: config.c,v 1.19 2007/06/26 20:55:12 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -138,7 +138,7 @@ static int set_option_srv(const char *filename, int line, OPTION *option, const 
 			}
 		}
 	}
-	if(strlen(q) > 0) {
+	if(q && strlen(q) > 0) {
 		serv->port[serv->max] = atoi(q);
 	} else {
 		if (!strcmp(option->name,"authserver"))
