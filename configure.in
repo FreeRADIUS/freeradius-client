@@ -1,5 +1,5 @@
 # 
-#  $Id: configure.in,v 1.30 2007/06/26 20:55:12 cparker Exp $
+#  $Id: configure.in,v 1.31 2007/06/27 19:41:14 cparker Exp $
 # 
 #  Copyright (C) 1996,1997 Lars Fenneberg
 # 
@@ -61,7 +61,7 @@ gethostbyaddrrstyle=""
 AC_MSG_CHECKING([gethostbyaddr_r() syntax])
 case "$host" in
 *-freebsd*)
-        AC_DEFINE(GETHOSTBYADDRRSTYLE, BSDSTYLE)
+        AC_DEFINE([GETHOSTBYADDRRSTYLE_BSD], [], [Define to 1 to use bsd-style gethostbyaddr_r()])
         gethostbyaddrrstyle=BSD
         AC_MSG_WARN([FreeBSD overridden to BSD-style])
         ;;
@@ -71,7 +71,7 @@ if test "x$gethostbyaddrrstyle" = "x"; then
 #include <stdio.h>
 #include <netdb.h>
 ], [ gethostbyaddr_r(NULL, 0, 0, NULL, NULL, 0, NULL, NULL) ], [
-        AC_DEFINE(GETHOSTBYADDRRSTYLE, GNUSTYLE)
+        AC_DEFINE([GETHOSTBYADDRRSTYLE_GNU], [], [Define to 1 to use gnu-style gethostbyaddr_r()])
         gethostbyaddrrstyle=GNU
 ])
 fi
@@ -80,7 +80,7 @@ if test "x$gethostbyaddrrstyle" = "x"; then
 #include <stdio.h>
 #include <netdb.h>
 ], [ gethostbyaddr_r(NULL, 0, 0, NULL, NULL, 0, NULL) ] , [
-                AC_DEFINE(GETHOSTBYADDRRSTYLE, SYSVSTYLE)
+                AC_DEFINE([GETHOSTBYADDRRSTYLE_SYSV], [], [Define to 1 to use sysv-style gethostbyaddr_r()])
                 gethostbyaddrrstyle=SYSV
         ])
 fi
@@ -89,7 +89,7 @@ if test "x$gethostbyaddrrstyle" = "x"; then
 #include <stdio.h>
 #include <netdb.h>
 ], [ gethostbyaddr(NULL, 0, 0)  ], [
-                AC_DEFINE(GETHOSTBYADDRRSTYLE, BSDSTYLE)
+                AC_DEFINE(GETHOSTBYADDRRSTYLE_BSD)
                 gethostbyaddrrstyle=BSD
         ])
 fi
@@ -117,7 +117,7 @@ AC_TRY_LINK([
 #include <stdio.h>
 #include <netdb.h>
 ], [ gethostbyname_r(NULL, NULL, NULL, 0, NULL, NULL) ], [
-        AC_DEFINE(GETHOSTBYNAMERSTYLE, GNUSTYLE)
+        AC_DEFINE([GETHOSTBYNAMERSTYLE_GNU], [], [Define to 1 to use gnu-style gethostbyname_r()])
         gethostbynamerstyle=GNU
 ])
 if test "x$gethostbynamerstyle" = "x"; then
@@ -125,7 +125,7 @@ if test "x$gethostbynamerstyle" = "x"; then
 #include <stdio.h>
 #include <netdb.h>
 ], [ gethostbyname_r(NULL, NULL, NULL, 0, NULL) ] , [
-                AC_DEFINE(GETHOSTBYNAMERSTYLE, SYSVSTYLE)
+                AC_DEFINE([GETHOSTBYNAMERSTYLE_SYSV], [], [Define to 1 to use sysv-style gethostbyname_r()])
                 gethostbynamerstyle=SYSV
         ])
 fi
@@ -134,7 +134,7 @@ if test "x$gethostbynamerstyle" = "x"; then
 #include <stdio.h>
 #include <netdb.h>
 ], [ gethostbyname(NULL)  ], [
-                AC_DEFINE(GETHOSTBYNAMERSTYLE, BSDSTYLE)
+                AC_DEFINE([GETHOSTBYNAMERSTYLE_BSD], [], [Define to 1 to use bsd-style gethostbyname_r()])
                 gethostbynamerstyle=BSD
         ])
 fi

@@ -11,6 +11,24 @@
 /* Define to 1 if using `alloca.c'. */
 #undef C_ALLOCA
 
+/* Define to 1 to use bsd-style gethostbyaddr_r() */
+#undef GETHOSTBYADDRRSTYLE_BSD
+
+/* Define to 1 to use gnu-style gethostbyaddr_r() */
+#undef GETHOSTBYADDRRSTYLE_GNU
+
+/* Define to 1 to use sysv-style gethostbyaddr_r() */
+#undef GETHOSTBYADDRRSTYLE_SYSV
+
+/* Define to 1 to use bsd-style gethostbyname_r() */
+#undef GETHOSTBYNAMERSTYLE_BSD
+
+/* Define to 1 to use gnu-style gethostbyname_r() */
+#undef GETHOSTBYNAMERSTYLE_GNU
+
+/* Define to 1 to use sysv-style gethostbyname_r() */
+#undef GETHOSTBYNAMERSTYLE_SYSV
+
 /* Define to 1 if you have `alloca', as a function or macro. */
 #undef HAVE_ALLOCA
 
@@ -57,12 +75,6 @@
 
 /* Define to 1 if you have the `crypt' library (-lcrypt). */
 #undef HAVE_LIBCRYPT
-
-/* Define to 1 if you have the `nsl' library (-lnsl). */
-#undef HAVE_LIBNSL
-
-/* Define to 1 if you have the `socket' library (-lsocket). */
-#undef HAVE_LIBSOCKET
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
