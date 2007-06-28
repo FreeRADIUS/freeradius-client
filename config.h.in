@@ -20,6 +20,9 @@
 /* Define to 1 to use sysv-style gethostbyaddr_r() */
 #undef GETHOSTBYADDRRSTYLE_SYSV
 
+/* Define to 1 us gethostbyaddr_r() */
+#undef GETHOSTBYADDR_R
+
 /* Define to 1 to use bsd-style gethostbyname_r() */
 #undef GETHOSTBYNAMERSTYLE_BSD
 
@@ -28,6 +31,9 @@
 
 /* Define to 1 to use sysv-style gethostbyname_r() */
 #undef GETHOSTBYNAMERSTYLE_SYSV
+
+/* Define to 1 to use gethostbyname_r() */
+#undef GETHOSTBYNAME_R
 
 /* Define to 1 if you have `alloca', as a function or macro. */
 #undef HAVE_ALLOCA
@@ -229,7 +235,7 @@
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
-   automatically deduced at run-time.
+   automatically deduced at runtime.
 	STACK_DIRECTION > 0 => grows toward higher addresses
 	STACK_DIRECTION < 0 => grows toward lower addresses
 	STACK_DIRECTION = 0 => direction of growth unknown */
@@ -257,8 +263,8 @@
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
-/* Define to `long' if <sys/types.h> does not define. */
+/* Define to `long int' if <sys/types.h> does not define. */
 #undef off_t
 
-/* Define to `unsigned' if <sys/types.h> does not define. */
+/* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t

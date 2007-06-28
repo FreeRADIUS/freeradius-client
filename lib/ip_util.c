@@ -1,5 +1,5 @@
 /*
- * $Id: ip_util.c,v 1.10 2007/06/26 20:55:12 cparker Exp $
+ * $Id: ip_util.c,v 1.11 2007/06/28 14:16:49 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -35,8 +35,8 @@
 struct hostent *rc_gethostbyname(const char *hostname)
 {
 	struct 	hostent *hp;
-#ifdef GETHOSTBYNAMERSTYLE
-#if (GETHOSTBYNAMERSTYLE == SYSVSTYLE) || (GETHOSTBYNAMERSTYLE == GNUSTYLE)
+#ifdef GETHOSTBYNAME_R
+#if (GETHOSTBYNAMERSTYLE_SYSV) || (GETHOSTBYNAMERSTYLE_GNU)
 	struct 	hostent hostbuf;
 	size_t	hostbuflen;
 	char	*tmphostbuf;
@@ -48,8 +48,8 @@ struct hostent *rc_gethostbyname(const char *hostname)
 #endif
 #endif
 
-#ifdef GETHOSTBYNAMERSTYLE
-#if GETHOSTBYNAMERSTYLE == GNUSTYLE
+#ifdef GETHOSTBYNAME_R
+#if GETHOSTBYNAMERSTYLE_GNU
 	while ((res = gethostbyname_r(hostname, &hostbuf, tmphostbuf, hostbuflen, &hp, &herr)) == ERANGE)
 	{
 		/* Enlarge the buffer */
@@ -57,7 +57,7 @@ struct hostent *rc_gethostbyname(const char *hostname)
 		tmphostbuf = realloc(tmphostbuf, hostbuflen);
 	}
 	free(tmphostbuf);
-#elif GETHOSTBYNAMERSTYLE == SYSVSTYLE
+#elif GETHOSTBYNAMERSTYLE_SYSV
 	hp = gethostbyname_r(hostname, &hostbuf, tmphostbuf, hostbuflen, &herr);
 	free(tmphostbuf);
 #else
@@ -84,8 +84,8 @@ struct hostent *rc_gethostbyname(const char *hostname)
 struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
 {
 	struct 	hostent *hp;
-#ifdef GETHOSTBYADDRRSTYLE
-#if (GETHOSTBYADDRRSTYLE == SYSVSTYLE) || (GETHOSTBYADDRRSTYLE == GNUSTYLE)
+#ifdef GETHOSTBYADDR_R
+#if (GETHOSTBYADDRRSTYLE_SYSV) || (GETHOSTBYADDRRSTYLE_GNU)
 	struct	hostent hostbuf;
 	size_t	hostbuflen;
 	char	*tmphostbuf;
@@ -97,8 +97,8 @@ struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
 #endif
 #endif
 
-#ifdef GETHOSTBYADDRRSTYLE
-#if GETHOSTBYADDRRSTYLE == GNUSTYLE
+#ifdef GETHOSTBYADDR_R
+#if GETHOSTBYADDRRSTYLE_GNU
 	while ((res = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen, 
 					&hp, &herr)) == ERANGE)
 	{
@@ -107,7 +107,7 @@ struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
 		tmphostbuf = realloc(tmphostbuf, hostbuflen);
 	}
 	free(tmphostbuf);
-#elif GETHOSTBYADDRSTYLE == SYSVSTYLE
+#elif GETHOSTBYADDRSTYLE_SYSV
 	hp = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen, &herr);
 	free(tmphostbuf);
 #else
