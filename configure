@@ -19575,32 +19575,41 @@ echo "${ECHO_T}no" >&6
 
 fi;
 
+gethostbyaddrrstyle=""
+echo "$as_me:$LINENO: checking gethostbyaddr_r() syntax" >&5
+echo $ECHO_N "checking gethostbyaddr_r() syntax... $ECHO_C" >&6
+case "$host" in
+*-freebsd*)
 
-echo "$as_me:$LINENO: checking for gethostbyname in -lnsl" >&5
-echo $ECHO_N "checking for gethostbyname in -lnsl... $ECHO_C" >&6
-if test "${ac_cv_lib_nsl_gethostbyname+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnsl  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
+cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYADDR_R
+_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYADDRRSTYLE_BSD
+_ACEOF
+
+        gethostbyaddrrstyle=BSD
+        { echo "$as_me:$LINENO: WARNING: FreeBSD overridden to BSD-style" >&5
+echo "$as_me: WARNING: FreeBSD overridden to BSD-style" >&2;}
+        ;;
+esac
+if test "x$gethostbyaddrrstyle" = "x"; then
+        cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char gethostbyname ();
+#include <stdio.h>
+#include <netdb.h>
+
 int
 main ()
 {
-gethostbyname ();
+ gethostbyaddr_r(NULL, 0, 0, NULL, NULL, 0, NULL, NULL)
   ;
   return 0;
 }
@@ -19627,54 +19636,41 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_nsl_gethostbyname=yes
+
+	cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYADDR_R 1
+_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYADDRRSTYLE_GNU
+_ACEOF
+
+        gethostbyaddrrstyle=GNU
+
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_nsl_gethostbyname=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_nsl_gethostbyname" >&5
-echo "${ECHO_T}$ac_cv_lib_nsl_gethostbyname" >&6
-if test $ac_cv_lib_nsl_gethostbyname = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBNSL 1
-_ACEOF
-
-  LIBS="-lnsl $LIBS"
-
-fi
-
-
-echo "$as_me:$LINENO: checking for socket in -lsocket" >&5
-echo $ECHO_N "checking for socket in -lsocket... $ECHO_C" >&6
-if test "${ac_cv_lib_socket_socket+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lsocket  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
+if test "x$gethostbyaddrrstyle" = "x"; then
+        cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char socket ();
+#include <stdio.h>
+#include <netdb.h>
+
 int
 main ()
 {
-socket ();
+ gethostbyaddr_r(NULL, 0, 0, NULL, NULL, 0, NULL)
   ;
   return 0;
 }
@@ -19701,55 +19697,41 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_socket_socket=yes
+
+	cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYADDR_R 1
+_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYADDRRSTYLE_SYSV
+_ACEOF
+
+        gethostbyaddrrstyle=SYSV
+
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_socket_socket=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_socket_socket" >&5
-echo "${ECHO_T}$ac_cv_lib_socket_socket" >&6
-if test $ac_cv_lib_socket_socket = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBSOCKET 1
-_ACEOF
-
-  LIBS="-lsocket $LIBS"
-
-fi
-
-if test "$shadow_passwords" = "yes"
-then
-	echo "$as_me:$LINENO: checking for getspnam in -lc" >&5
-echo $ECHO_N "checking for getspnam in -lc... $ECHO_C" >&6
-if test "${ac_cv_lib_c_getspnam+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lc  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
+if test "x$gethostbyaddrrstyle" = "x"; then
+        cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char getspnam ();
+#include <stdio.h>
+#include <netdb.h>
+
 int
 main ()
 {
-getspnam ();
+ gethostbyaddr(NULL, 0, 0)
   ;
   return 0;
 }
@@ -19776,29 +19758,42 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_c_getspnam=yes
+
+	cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYADDR_R 1
+_ACEOF
+
+        cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYADDRRSTYLE_BSD 1
+_ACEOF
+
+        gethostbyaddrrstyle=BSD
+
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_c_getspnam=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_c_getspnam" >&5
-echo "${ECHO_T}$ac_cv_lib_c_getspnam" >&6
-if test $ac_cv_lib_c_getspnam = yes; then
-  :
+
+if test "x$gethostbyaddrrstyle" = "x"; then
+        echo "$as_me:$LINENO: result: none!  It must not exist, here." >&5
+echo "${ECHO_T}none!  It must not exist, here." >&6
 else
-  echo "$as_me:$LINENO: checking for getspnam in -lshadow" >&5
-echo $ECHO_N "checking for getspnam in -lshadow... $ECHO_C" >&6
-if test "${ac_cv_lib_shadow_getspnam+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lshadow  $LIBS"
+        echo "$as_me:$LINENO: result: ${gethostbyaddrrstyle}-style" >&5
+echo "${ECHO_T}${gethostbyaddrrstyle}-style" >&6
+fi
+
+if test "x$gethostbyaddrrstyle" = "xBSD"; then
+        { echo "$as_me:$LINENO: WARNING:  ****** BSD-style gethostbyaddr might NOT be thread-safe! ****** " >&5
+echo "$as_me: WARNING:  ****** BSD-style gethostbyaddr might NOT be thread-safe! ****** " >&2;}
+fi
+
+gethostbynamerstyle=""
+echo "$as_me:$LINENO: checking gethostbyname_r() syntax" >&5
+echo $ECHO_N "checking gethostbyname_r() syntax... $ECHO_C" >&6
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -19806,17 +19801,13 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 
-/* Override any gcc2 internal prototype to avoid an error.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-/* We use char because int might match the return type of a gcc2
-   builtin and then its argument prototype would still apply.  */
-char getspnam ();
+#include <stdio.h>
+#include <netdb.h>
+
 int
 main ()
 {
-getspnam ();
+ gethostbyname_r(NULL, NULL, NULL, 0, NULL, NULL)
   ;
   return 0;
 }
@@ -19843,28 +19834,162 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_shadow_getspnam=yes
+
+
+cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYNAME_R
+_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYNAMERSTYLE_GNU
+_ACEOF
+
+        gethostbynamerstyle=GNU
+
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
 
-ac_cv_lib_shadow_getspnam=no
 fi
 rm -f conftest.err conftest.$ac_objext \
       conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_shadow_getspnam" >&5
-echo "${ECHO_T}$ac_cv_lib_shadow_getspnam" >&6
-if test $ac_cv_lib_shadow_getspnam = yes; then
-  LIBS="$LIBS -lshadow"
+if test "x$gethostbynamerstyle" = "x"; then
+        cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#include <stdio.h>
+#include <netdb.h>
+
+int
+main ()
+{
+ gethostbyname_r(NULL, NULL, NULL, 0, NULL)
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+
+        cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYNAME_R 1
+_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYNAMERSTYLE_SYSV
+_ACEOF
+
+        gethostbynamerstyle=SYSV
+
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
 
 fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+fi
+if test "x$gethostbynamerstyle" = "x"; then
+        cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
 
+#include <stdio.h>
+#include <netdb.h>
+
+int
+main ()
+{
+ gethostbyname(NULL)
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+
+	cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYNAME_R 1
+_ACEOF
+
+
+cat >>confdefs.h <<\_ACEOF
+#define GETHOSTBYNAMERSTYLE_BSD
+_ACEOF
+
+        gethostbynamerstyle=BSD
+
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
 
 fi
-
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
 fi
+
+if test "x$gethostbynamerstyle" = "x"; then
+        echo "$as_me:$LINENO: result: none!  It must not exist, here." >&5
+echo "${ECHO_T}none!  It must not exist, here." >&6
+else
+        echo "$as_me:$LINENO: result: ${gethostbynamerstyle}-style" >&5
+echo "${ECHO_T}${gethostbynamerstyle}-style" >&6
+fi
+
+if test "x$gethostbynamerstyle" = "xBSD"; then
+        { echo "$as_me:$LINENO: WARNING:  ****** BSD-style gethostbyname might NOT be thread-safe! ****** " >&5
+echo "$as_me: WARNING:  ****** BSD-style gethostbyname might NOT be thread-safe! ****** " >&2;}
+fi
+
 
 echo "$as_me:$LINENO: checking for crypt in -lcrypt" >&5
 echo $ECHO_N "checking for crypt in -lcrypt... $ECHO_C" >&6
