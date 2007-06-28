@@ -1,5 +1,5 @@
 # 
-#  $Id: configure.in,v 1.32 2007/06/28 14:16:49 cparker Exp $
+#  $Id: configure.in,v 1.33 2007/06/28 16:54:30 cparker Exp $
 # 
 #  Copyright (C) 1996,1997 Lars Fenneberg
 # 
@@ -49,6 +49,10 @@ AC_ARG_ENABLE(shadow,
 	shadow_passwords=no
 ]
 )
+
+dnl Check if we need -lnsl. Usually if we want to
+dnl link against -lsocket we need to include -lnsl as well.
+AC_CHECK_LIB(nsl, gethostbyaddr)
 
 dnl Check the style of gethostbyaddr, in order of preference
 dnl GNU (_r eight args)
