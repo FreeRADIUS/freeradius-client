@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.3 2007/06/05 21:45:30 cparker Exp $
+ * $Id: freeradius-client.h,v 1.4 2007/07/06 21:49:48 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -24,7 +24,9 @@
 #endif
 
 #include	<sys/types.h>
+#ifdef HAVE_STDINT_H
 #include	<stdint.h>
+#endif
 #include	<stdio.h>
 #include	<time.h>
 
