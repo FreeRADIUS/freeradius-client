@@ -1,5 +1,5 @@
 /*
- * $Id: ip_util.c,v 1.11 2007/06/28 14:16:49 cparker Exp $
+ * $Id: ip_util.c,v 1.12 2007/07/06 21:44:24 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -36,7 +36,7 @@ struct hostent *rc_gethostbyname(const char *hostname)
 {
 	struct 	hostent *hp;
 #ifdef GETHOSTBYNAME_R
-#if (GETHOSTBYNAMERSTYLE_SYSV) || (GETHOSTBYNAMERSTYLE_GNU)
+#if defined (GETHOSTBYNAMERSTYLE_SYSV) || defined (GETHOSTBYNAMERSTYLE_GNU)
 	struct 	hostent hostbuf;
 	size_t	hostbuflen;
 	char	*tmphostbuf;
@@ -49,7 +49,7 @@ struct hostent *rc_gethostbyname(const char *hostname)
 #endif
 
 #ifdef GETHOSTBYNAME_R
-#if GETHOSTBYNAMERSTYLE_GNU
+#if defined (GETHOSTBYNAMERSTYLE_GNU)
 	while ((res = gethostbyname_r(hostname, &hostbuf, tmphostbuf, hostbuflen, &hp, &herr)) == ERANGE)
 	{
 		/* Enlarge the buffer */
@@ -57,7 +57,7 @@ struct hostent *rc_gethostbyname(const char *hostname)
 		tmphostbuf = realloc(tmphostbuf, hostbuflen);
 	}
 	free(tmphostbuf);
-#elif GETHOSTBYNAMERSTYLE_SYSV
+#elif defined (GETHOSTBYNAMERSTYLE_SYSV)
 	hp = gethostbyname_r(hostname, &hostbuf, tmphostbuf, hostbuflen, &herr);
 	free(tmphostbuf);
 #else
@@ -85,7 +85,7 @@ struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
 {
 	struct 	hostent *hp;
 #ifdef GETHOSTBYADDR_R
-#if (GETHOSTBYADDRRSTYLE_SYSV) || (GETHOSTBYADDRRSTYLE_GNU)
+#if defined (GETHOSTBYADDRRSTYLE_SYSV) || defined (GETHOSTBYADDRRSTYLE_GNU)
 	struct	hostent hostbuf;
 	size_t	hostbuflen;
 	char	*tmphostbuf;
@@ -98,7 +98,7 @@ struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
 #endif
 
 #ifdef GETHOSTBYADDR_R
-#if GETHOSTBYADDRRSTYLE_GNU
+#if defined (GETHOSTBYADDRRSTYLE_GNU)
 	while ((res = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen, 
 					&hp, &herr)) == ERANGE)
 	{
