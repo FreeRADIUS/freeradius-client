@@ -1,5 +1,5 @@
 /*
- * $Id: radexample.c,v 1.7 2007/04/13 14:20:16 pnixon Exp $
+ * $Id: radexample.c,v 1.8 2007/07/11 17:29:30 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -11,7 +11,7 @@
 
 
 static char	rcsid[] =
-		"$Id: radexample.c,v 1.7 2007/04/13 14:20:16 pnixon Exp $";
+		"$Id: radexample.c,v 1.8 2007/07/11 17:29:30 cparker Exp $";
 
 #include	<config.h>
 #include	<includes.h>
@@ -27,7 +27,7 @@ main (int argc, char **argv)
 	char		username[128];
 	char            passwd[AUTH_PASS_LEN + 1];
 	VALUE_PAIR 	*send, *received;
-	UINT4		service;
+	uint32_t		service;
 	char 		msg[4096], username_realm[256];
 	char		*default_realm;
 	rc_handle	*rh;

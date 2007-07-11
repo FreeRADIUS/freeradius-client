@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.6 2007/07/11 16:39:16 cparker Exp $
+ * $Id: freeradius-client.h,v 1.7 2007/07/11 17:29:28 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -44,7 +44,7 @@
 # define __END_DECLS /* empty */
 #endif
 
-typedef uint32_t UINT4;
+typedef uint32_t uint32_t;
 typedef int32_t  INT4;
 
 #define AUTH_VECTOR_LEN		16
@@ -94,8 +94,8 @@ typedef struct pw_auth_hdr
 struct rc_conf
 {
 	struct _option		*config_options;
-	UINT4 			this_host_ipaddr;
-	UINT4			*this_host_bind_ipaddr;
+	uint32_t 			this_host_ipaddr;
+	uint32_t			*this_host_bind_ipaddr;
 	struct map2id_s		*map2id_list;
 	struct dict_attr	*dictionary_attributes;
 	struct dict_value	*dictionary_values;
@@ -359,7 +359,7 @@ typedef struct value_pair
 	char               name[NAME_LENGTH + 1];
 	int                attribute;
 	int                type;
-	UINT4              lvalue;
+	uint32_t              lvalue;
 	char               strvalue[AUTH_STRING_LEN + 1];
 	struct value_pair *next;
 } VALUE_PAIR;
@@ -428,16 +428,16 @@ VALUE_PAIR *rc_avpair_readin(const rc_handle *, FILE *);
 
 void rc_buildreq(rc_handle *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
 unsigned char rc_get_seqnbr(rc_handle *);
-int rc_auth(rc_handle *, UINT4, VALUE_PAIR *, VALUE_PAIR **, char *);
+int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
-int rc_acct(rc_handle *, UINT4, VALUE_PAIR *);
+int rc_acct(rc_handle *, uint32_t, VALUE_PAIR *);
 int rc_acct_proxy(rc_handle *, VALUE_PAIR *);
 int rc_check(rc_handle *, char *, char *, unsigned short, char *);
 
 /*	clientid.c		*/
 
 int rc_read_mapfile(rc_handle *, char *);
-UINT4 rc_map2id(rc_handle *, char *);
+uint32_t rc_map2id(rc_handle *, char *);
 void rc_map2id_free(rc_handle *);
 
 /*	config.c		*/
@@ -446,7 +446,7 @@ rc_handle *rc_read_config(char *);
 char *rc_conf_str(rc_handle *, char *);
 int rc_conf_int(rc_handle *, char *);
 SERVER *rc_conf_srv(rc_handle *, char *);
-int rc_find_server(rc_handle *, char *, UINT4 *, char *);
+int rc_find_server(rc_handle *, char *, uint32_t *, char *);
 void rc_config_free(rc_handle *);
 int rc_add_config(rc_handle *, const char *, const char *, const char *, const int);
 rc_handle *rc_config_init(rc_handle *);
@@ -460,20 +460,20 @@ DICT_ATTR *rc_dict_findattr(const rc_handle *, const char *);
 DICT_VALUE *rc_dict_findval(const rc_handle *, const char *);
 DICT_VENDOR *rc_dict_findvend(const rc_handle *, const char *);
 DICT_VENDOR *rc_dict_getvend(const rc_handle *, int);
-DICT_VALUE * rc_dict_getval(const rc_handle *, UINT4, const char *);
+DICT_VALUE * rc_dict_getval(const rc_handle *, uint32_t, const char *);
 void rc_dict_free(rc_handle *);
 
 /*	ip_util.c		*/
 
 struct hostent *rc_gethostbyname(const char *);
 struct hostent *rc_gethostbyaddr(const char *, size_t, int);
-UINT4 rc_get_ipaddr(char *);
+uint32_t rc_get_ipaddr(char *);
 int rc_good_ipaddr(char *);
-const char *rc_ip_hostname(UINT4);
+const char *rc_ip_hostname(uint32_t);
 unsigned short rc_getport(int);
 int rc_own_hostname(char *, int);
-UINT4 rc_own_ipaddress(rc_handle *);
-UINT4 rc_own_bind_ipaddress(rc_handle *);
+uint32_t rc_own_ipaddress(rc_handle *);
+uint32_t rc_own_bind_ipaddress(rc_handle *);
 struct sockaddr;
 int rc_get_srcaddr(struct sockaddr *, struct sockaddr *);
 

@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.20 2007/06/21 18:07:22 cparker Exp $
+ * $Id: avpair.c,v 1.21 2007/07/11 17:29:28 cparker Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -61,7 +61,7 @@ int rc_avpair_assign (VALUE_PAIR *vp, void *pval, int len)
 	{
 		case PW_TYPE_STRING:
 			if (len == -1)
-				len = (UINT4)strlen((char *)pval);
+				len = (uint32_t)strlen((char *)pval);
 			if (len > AUTH_STRING_LEN) {
 		        	rc_log(LOG_ERR, "rc_avpair_assign: bad attribute length");
 		        	return -1;
@@ -74,7 +74,7 @@ int rc_avpair_assign (VALUE_PAIR *vp, void *pval, int len)
 		case PW_TYPE_DATE:
 		case PW_TYPE_INTEGER:
 	        case PW_TYPE_IPADDR:
-			vp->lvalue = * (UINT4 *) pval;
+			vp->lvalue = * (uint32_t *) pval;
 			break;
 
 		default:
@@ -170,7 +170,7 @@ rc_avpair_gen(const rc_handle *rh, VALUE_PAIR *pair, unsigned char *ptr,
 {
 	int attribute, attrlen, x_len;
 	unsigned char *x_ptr;
-	UINT4 lvalue;
+	uint32_t lvalue;
 	DICT_ATTR *attr;
 	VALUE_PAIR *rpair;
 	char buffer[(AUTH_STRING_LEN * 2) + 1];
@@ -530,7 +530,7 @@ int rc_avpair_parse (const rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 
 			    case PW_TYPE_STRING:
 				strcpy (pair->strvalue, valstr);
-				pair->lvalue = (UINT4)strlen(valstr);
+				pair->lvalue = (uint32_t)strlen(valstr);
 				break;
 
 			    case PW_TYPE_INTEGER:
@@ -570,9 +570,9 @@ int rc_avpair_parse (const rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
 				tm->tm_sec = 0;
 				rc_str2tm (valstr, tm);
 #ifdef TIMELOCAL
-				pair->lvalue = (UINT4) timelocal (tm);
+				pair->lvalue = (uint32_t) timelocal (tm);
 #else	/* TIMELOCAL */
-				pair->lvalue = (UINT4) mktime (tm);
+				pair->lvalue = (uint32_t) mktime (tm);
 #endif	/* TIMELOCAL */
 				break;
 

@@ -1,5 +1,5 @@
 /*
- * $Id: clientid.c,v 1.6 2007/04/13 14:20:16 pnixon Exp $
+ * $Id: clientid.c,v 1.7 2007/07/11 17:29:29 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -15,7 +15,7 @@
 
 struct map2id_s {
 	char *name;
-	UINT4 id;
+	uint32_t id;
 
 	struct map2id_s *next;
 };
@@ -102,7 +102,7 @@ int rc_read_mapfile(rc_handle *rh, char *filename)
  * Returns: port id, zero if no entry found
  */
 
-UINT4 rc_map2id(rc_handle *rh, char *name)
+uint32_t rc_map2id(rc_handle *rh, char *name)
 {
 	struct map2id_s *p;
 	char ttyname[PATH_MAX];

@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.12 2007/06/21 18:07:22 cparker Exp $
+ * $Id: buildreq.c,v 1.13 2007/07/11 17:29:29 cparker Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -120,7 +120,7 @@ unsigned char rc_get_seqnbr(rc_handle *rh)
  *
  */
 
-int rc_auth(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send, VALUE_PAIR **received,
+int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
 	    char *msg)
 {
 	SEND_DATA       data;
@@ -219,7 +219,7 @@ int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *
  *	    in by this function, the rest has to be supplied.
  */
 
-int rc_acct(rc_handle *rh, UINT4 client_port, VALUE_PAIR *send)
+int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send)
 {
 	SEND_DATA       data;
 	VALUE_PAIR	*adt_vp;
@@ -330,7 +330,7 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 {
 	SEND_DATA       data;
 	int		result;
-	UINT4		service_type;
+	uint32_t		service_type;
 	int		timeout = rc_conf_int(rh, "radius_timeout");
 	int		retries = rc_conf_int(rh, "radius_retries");
 

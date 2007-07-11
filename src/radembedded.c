@@ -15,8 +15,8 @@ main (int argc, char **argv)
 	int		retval = 0;
 	rc_handle 	*rh = NULL;
 
-	UINT4 		client_port = 0;
-	UINT4		status_type = PW_STATUS_STOP; 
+	uint32_t 		client_port = 0;
+	uint32_t		status_type = PW_STATUS_STOP; 
         VALUE_PAIR      *send = NULL;
 /*
 	VALUE_PAIR 	*vp = NULL;

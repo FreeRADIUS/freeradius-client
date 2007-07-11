@@ -1,5 +1,5 @@
 /*
- * $Id: radacct.c,v 1.5 2007/01/06 20:15:36 pnixon Exp $
+ * $Id: radacct.c,v 1.6 2007/07/11 17:29:30 cparker Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
@@ -10,7 +10,7 @@
  */
 
 static char	rcsid[] =
-		"$Id: radacct.c,v 1.5 2007/01/06 20:15:36 pnixon Exp $";
+		"$Id: radacct.c,v 1.6 2007/07/11 17:29:30 cparker Exp $";
 
 #include <config.h>
 #include <includes.h>
@@ -41,7 +41,7 @@ main (int argc, char **argv)
 {
 	int			result = ERROR_RC;
 	VALUE_PAIR	*send = NULL;
-   	UINT4		client_port;
+   	uint32_t		client_port;
    	int			c;
 	VALUE_PAIR	*vp;
 	DICT_VALUE  *dval;

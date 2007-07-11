@@ -1,5 +1,5 @@
 /*
- * $Id: radius.c,v 1.8 2007/04/13 14:20:15 pnixon Exp $
+ * $Id: radius.c,v 1.9 2007/07/11 17:29:30 cparker Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
@@ -17,11 +17,11 @@
 
 extern ENV *env;
 
-LFUNC auth_radius(rc_handle *rh, UINT4 client_port, char *username, char *passwd)
+LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char *username, char *passwd)
 {
 
 	VALUE_PAIR 	*send, *received, *vp, *service_vp;
-	UINT4		service, ftype, ctype;
+	uint32_t		service, ftype, ctype;
 	char 		msg[4096], *p, username_realm[256];
 	char            name[2048], value[2048]; /* more than enough */
 	int		result;

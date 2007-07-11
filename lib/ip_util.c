@@ -1,5 +1,5 @@
 /*
- * $Id: ip_util.c,v 1.12 2007/07/06 21:44:24 cparker Exp $
+ * $Id: ip_util.c,v 1.13 2007/07/11 17:29:29 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -132,7 +132,7 @@ struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
  * Returns: 0 on failure
  */
 
-UINT4 rc_get_ipaddr (char *host)
+uint32_t rc_get_ipaddr (char *host)
 {
 	struct 	hostent *hp;
 
@@ -143,9 +143,9 @@ UINT4 rc_get_ipaddr (char *host)
 	else if ((hp = rc_gethostbyname(host)) == NULL)
 	{
 		rc_log(LOG_ERR,"rc_get_ipaddr: couldn't resolve hostname: %s", host);
-		return (UINT4)0;
+		return (uint32_t)0;
 	}
-	return ntohl((*(UINT4 *) hp->h_addr));
+	return ntohl((*(uint32_t *) hp->h_addr));
 }
 
 /*
@@ -206,10 +206,10 @@ int rc_good_ipaddr (char *addr)
  *
  */
 
-const char *rc_ip_hostname (UINT4 h_ipaddr)
+const char *rc_ip_hostname (uint32_t h_ipaddr)
 {
 	struct hostent  *hp;
-	UINT4           n_ipaddr = htonl (h_ipaddr);
+	uint32_t           n_ipaddr = htonl (h_ipaddr);
 
 	if ((hp = rc_gethostbyaddr ((char *) &n_ipaddr, sizeof (struct in_addr),
 			    AF_INET)) == NULL) {
@@ -289,7 +289,7 @@ rc_own_hostname(char *hostname, int len)
  *
  */
 
-UINT4 rc_own_ipaddress(rc_handle *rh)
+uint32_t rc_own_ipaddress(rc_handle *rh)
 {
 	char hostname[256];
 
@@ -321,10 +321,10 @@ UINT4 rc_own_ipaddress(rc_handle *rh)
  *
  */
 
-UINT4 rc_own_bind_ipaddress(rc_handle *rh)
+uint32_t rc_own_bind_ipaddress(rc_handle *rh)
 {
 	char hostname[256];
-	UINT4 rval;
+	uint32_t rval;
 
 	if (rh->this_host_bind_ipaddr != NULL)
 		return *rh->this_host_bind_ipaddr;

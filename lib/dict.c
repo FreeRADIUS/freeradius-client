@@ -1,5 +1,5 @@
 /*
- * $Id: dict.c,v 1.9 2007/06/05 21:43:39 cparker Exp $
+ * $Id: dict.c,v 1.10 2007/07/11 17:29:29 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -429,7 +429,7 @@ rc_dict_getvend (const rc_handle *rh, int vendorpec)
  */
 
 DICT_VALUE *
-rc_dict_getval (const rc_handle *rh, UINT4 value, const char *attrname)
+rc_dict_getval (const rc_handle *rh, uint32_t value, const char *attrname)
 {
 	DICT_VALUE     *val;
 

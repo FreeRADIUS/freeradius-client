@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.22 2007/06/21 18:07:24 cparker Exp $
+ * $Id: sendserver.c,v 1.23 2007/07/11 17:29:30 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -38,7 +38,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 	int             length, i, pc, padded_length;
 	int             total_length = 0;
 	size_t			secretlen;
-	UINT4           lvalue, vendor;
+	uint32_t           lvalue, vendor;
 	unsigned char   passbuf[MAX(AUTH_PASS_LEN, CHAP_VALUE_LENGTH)];
 	unsigned char   md5buf[256];
 	unsigned char   *buf, *vector, *vsa_length_ptr;
@@ -53,7 +53,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 			vsa_length_ptr = buf;
 			*buf++ = 6;
 			vendor = htonl(VENDOR(vp->attribute));
-			memcpy(buf, &vendor, sizeof(UINT4));
+			memcpy(buf, &vendor, sizeof(uint32_t));
 			buf += 4;
 			total_length += 6;
 		}
@@ -149,12 +149,12 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 
 		    case PW_TYPE_INTEGER:
 		    case PW_TYPE_IPADDR:
-			*buf++ = sizeof (UINT4) + 2;
-			if (vsa_length_ptr != NULL) *vsa_length_ptr += sizeof(UINT4) + 2;
+			*buf++ = sizeof (uint32_t) + 2;
+			if (vsa_length_ptr != NULL) *vsa_length_ptr += sizeof(uint32_t) + 2;
 			lvalue = htonl (vp->lvalue);
-			memcpy (buf, (char *) &lvalue, sizeof (UINT4));
-			buf += sizeof (UINT4);
-			total_length += sizeof (UINT4) + 2;
+			memcpy (buf, (char *) &lvalue, sizeof (uint32_t));
+			buf += sizeof (uint32_t);
+			total_length += sizeof (uint32_t) + 2;
 			break;
 
 		    default:
@@ -182,7 +182,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	struct timeval  authtime;
 	fd_set          readfds;
 	AUTH_HDR       *auth, *recv_auth;
-	UINT4           auth_ipaddr, nas_ipaddr;
+	uint32_t           auth_ipaddr, nas_ipaddr;
 	char           *server_name;	/* Name of server to query */
 	socklen_t       salen;
 	int             result;

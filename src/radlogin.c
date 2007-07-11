@@ -1,7 +1,7 @@
 /*
  * radlogin.c  RADIUS based /bin/login replacement
  *
- * Version:    $Id: radlogin.c,v 1.7 2007/01/06 20:15:37 pnixon Exp $
+ * Version:    $Id: radlogin.c,v 1.8 2007/07/11 17:29:30 cparker Exp $
  *
  * Copyright (C) 1995,1996 Lars Fenneberg
  * Copyright (C) 2007 The FreeRADIUS Project
@@ -11,7 +11,7 @@
  */
 
 static char	rcsid[] =
-		"$Id: radlogin.c,v 1.7 2007/01/06 20:15:37 pnixon Exp $";
+		"$Id: radlogin.c,v 1.8 2007/07/11 17:29:30 cparker Exp $";
 
 #include	<config.h>
 #include	<includes.h>
@@ -188,7 +188,7 @@ main (int argc, char **argv)
 	char		username[128];
 	char		passwd[AUTH_PASS_LEN + 1];
 	int 		tries, remaining, c;
-	UINT4		client_port;
+	uint32_t		client_port;
 	void 		(*login_func)(rc_handle *, char *);
 	FILE		*fp;
 	char 		buf[4096];

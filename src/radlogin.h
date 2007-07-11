@@ -1,5 +1,5 @@
 /*
- * $Id: radlogin.h,v 1.3 2004/02/23 20:10:39 sobomax Exp $
+ * $Id: radlogin.h,v 1.4 2007/07/11 17:29:31 cparker Exp $
  *
  * Copyright (C) 1996 Lars Fenneberg
  *
@@ -15,7 +15,7 @@
 typedef void (*LFUNC)(rc_handle *, char *);
 
 /* radius.c */
-LFUNC auth_radius(rc_handle *, UINT4, char *, char *);
+LFUNC auth_radius(rc_handle *, uint32_t, char *, char *);
 void radius_login(rc_handle *, char *);
 
 /* local.c */

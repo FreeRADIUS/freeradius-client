@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.19 2007/06/26 20:55:12 cparker Exp $
+ * $Id: config.c,v 1.20 2007/07/11 17:29:29 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -624,10 +624,10 @@ int test_config(rc_handle *rh, char *filename)
  *
  */
 
-static int find_match (UINT4 *ip_addr, char *hostname)
+static int find_match (uint32_t *ip_addr, char *hostname)
 {
 
-	UINT4           addr;
+	uint32_t           addr;
 	char          **paddr;
 	struct hostent *hp;
 
@@ -645,7 +645,7 @@ static int find_match (UINT4 *ip_addr, char *hostname)
 		
 	for (paddr = hp->h_addr_list; *paddr; paddr++)
 	{
-		addr = ** (UINT4 **) paddr;
+		addr = ** (uint32_t **) paddr;
 		if (ntohl(addr) == *ip_addr)
 		{
 			return 0;
@@ -664,7 +664,7 @@ static int find_match (UINT4 *ip_addr, char *hostname)
  */
 
 static int
-rc_ipaddr_local(UINT4 ip_addr)
+rc_ipaddr_local(uint32_t ip_addr)
 {
 	int temp_sock, res, serrno;
 	struct sockaddr_in sin;
@@ -698,7 +698,7 @@ rc_ipaddr_local(UINT4 ip_addr)
 static int
 rc_is_myname(char *hostname)
 {
-	UINT4 	addr;
+	uint32_t 	addr;
 	char 	**paddr;
 	struct 	hostent *hp;
 	int	res;
@@ -709,7 +709,7 @@ rc_is_myname(char *hostname)
 	if ((hp = rc_gethostbyname(hostname)) == NULL)
 		return -1;
 	for (paddr = hp->h_addr_list; *paddr; paddr++) {
-		addr = **(UINT4 **)paddr;
+		addr = **(uint32_t **)paddr;
 		res = rc_ipaddr_local(ntohl(addr));
 		if (res == 0 || res == -1)
 			return res;
@@ -726,7 +726,7 @@ rc_is_myname(char *hostname)
  *
  */
 
-int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secret)
+int rc_find_server (rc_handle *rh, char *server_name, uint32_t *ip_addr, char *secret)
 {
 	int		i;
 	size_t          len;
@@ -742,7 +742,7 @@ int rc_find_server (rc_handle *rh, char *server_name, UINT4 *ip_addr, char *secr
 	SERVER	       *acctservers;
 
 	/* Lookup the IP address of the radius server */
-	if ((*ip_addr = rc_get_ipaddr (server_name)) == (UINT4) 0)
+	if ((*ip_addr = rc_get_ipaddr (server_name)) == (uint32_t) 0)
 		return -1;
 
 	/* Check to see if the server secret is defined in the rh config */
