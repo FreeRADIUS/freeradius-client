@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.5 2007/07/07 12:41:31 cparker Exp $
+ * $Id: freeradius-client.h,v 1.6 2007/07/11 16:39:16 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -24,7 +24,13 @@
 #endif
 
 #include	<sys/types.h>
-#include	<stdint.h>
+/*
+ * Include for C99 uintX_t defines is stdint.h on most systems.  Solaris uses
+ * inttypes.h instead.  Comment out the stdint include if you get an error,
+ * and uncomment the inttypes.h include.
+ */
+#include	<stdint.h> 
+/* #include	<inttypes.h> */
 #include	<stdio.h>
 #include	<time.h>
 
