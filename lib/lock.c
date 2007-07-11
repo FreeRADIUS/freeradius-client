@@ -1,5 +1,5 @@
 /*
- * $Id: lock.c,v 1.3 2007/06/21 18:07:23 cparker Exp $
+ * $Id: lock.c,v 1.4 2007/07/11 16:37:35 cparker Exp $
  *
  * Copyright (C) 1997 Lars Fenneberg
  *
@@ -69,10 +69,10 @@ int do_unlock(FILE * fd)
 	fl.l_whence = fl.l_start = 0;
 	fl.l_len = 0; /* 0 means "to end of file" */
 
-	return fcntl(fileno(fd}, F_SETLK, &fl);
+	return fcntl(fileno(fd), F_SETLK, &fl);
 }
 
 #else
-#error YOU_LOOSE "need either flock(2) or fcntl(2)"
+#error YOU_LOSE "need either flock(2) or fcntl(2)"
 #endif
 
