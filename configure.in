@@ -1,5 +1,5 @@
 # 
-#  $Id: configure.in,v 1.35 2007/07/11 16:52:57 cparker Exp $
+#  $Id: configure.in,v 1.36 2007/07/11 16:59:07 cparker Exp $
 # 
 #  Copyright (C) 1996,1997 Lars Fenneberg
 # 
@@ -182,7 +182,6 @@ AC_CHECK_HEADERS(sys/utsname.h getopt.h unistd.h)
 AC_CHECK_HEADERS(sys/file.h termios.h sys/ioctl.h)
 AC_CHECK_HEADERS(netdb.h syslog.h pwd.h)
 AC_CHECK_HEADERS(sys/socket.h netinet/in.h apra/inet.h)
-AC_CHECK_HEADERS(stdint.h)
 if test "$shadow_passwords" = "yes"
 then
 	AC_CHECK_HEADER(shadow.h)
