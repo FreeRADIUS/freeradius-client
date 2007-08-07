@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.7 2007/07/11 17:29:28 cparker Exp $
+ * $Id: freeradius-client.h,v 1.8 2007/08/07 14:26:29 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -78,17 +78,17 @@ typedef int32_t  INT4;
 typedef struct server {
 	int max;
 	char *name[SERVER_MAX];
-	unsigned short port[SERVER_MAX];
+	uint16_t port[SERVER_MAX];
 	char *secret[SERVER_MAX];
 } SERVER;
 
 typedef struct pw_auth_hdr
 {
-	u_char          code;
-	u_char          id;
-	u_short         length;
-	u_char          vector[AUTH_VECTOR_LEN];
-	u_char          data[2];
+	uint8_t          code;
+	uint8_t          id;
+	uint16_t         length;
+	uint8_t          vector[AUTH_VECTOR_LEN];
+	uint8_t          data[2];
 } AUTH_HDR;
 
 struct rc_conf
@@ -359,7 +359,7 @@ typedef struct value_pair
 	char               name[NAME_LENGTH + 1];
 	int                attribute;
 	int                type;
-	uint32_t              lvalue;
+	uint32_t           lvalue;
 	char               strvalue[AUTH_STRING_LEN + 1];
 	struct value_pair *next;
 } VALUE_PAIR;
@@ -376,13 +376,13 @@ typedef struct value_pair
 
 typedef struct send_data /* Used to pass information to sendserver() function */
 {
-	u_char          code;		/* RADIUS packet code */
-	u_char          seq_nbr;	/* Packet sequence number */
+	uint8_t        code;		/* RADIUS packet code */
+	uint8_t        seq_nbr;		/* Packet sequence number */
 	char           *server;		/* Name/addrress of RADIUS server */
-	int             svc_port;	/* RADIUS protocol destination port */
+	int            svc_port;	/* RADIUS protocol destination port */
 	char	       *secret;		/* Shared secret of RADIUS server */	
-	int             timeout;	/* Session timeout in seconds */
-	int		retries;
+	int            timeout;		/* Session timeout in seconds */
+	int	       retries;
 	VALUE_PAIR     *send_pairs;     /* More a/v pairs to send */
 	VALUE_PAIR     *receive_pairs;  /* Where to place received a/v pairs */
 } SEND_DATA;

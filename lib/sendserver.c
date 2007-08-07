@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.23 2007/07/11 17:29:30 cparker Exp $
+ * $Id: sendserver.c,v 1.24 2007/08/07 14:26:29 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -411,15 +411,14 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
  *
  */
 
-static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned char *vector,\
-			   unsigned char seq_nbr)
+static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned char *vector, uint8_t seq_nbr)
 {
 	int             secretlen;
 	int             totallen;
 	unsigned char   calc_digest[AUTH_VECTOR_LEN];
 	unsigned char   reply_digest[AUTH_VECTOR_LEN];
 #ifdef DIGEST_DEBUG
-	u_char		*ptr;
+	uint8_t		*ptr;
 #endif
 
 	totallen = ntohs (auth->length);
