@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.8 2007/08/07 14:26:29 cparker Exp $
+ * $Id: freeradius-client.h,v 1.9 2007/10/05 15:37:26 cparker Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -44,7 +44,6 @@
 # define __END_DECLS /* empty */
 #endif
 
-typedef uint32_t uint32_t;
 typedef int32_t  INT4;
 
 #define AUTH_VECTOR_LEN		16
