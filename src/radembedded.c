@@ -4,6 +4,7 @@
  */
 
 
+#include <stdlib.h>
 #include <sys/types.h>
 #include <syslog.h>
 #include <freeradius-client.h>
