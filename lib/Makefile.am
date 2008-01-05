@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.am,v 1.5 2007/01/06 20:15:30 pnixon Exp $
+# $Id: Makefile.am,v 1.6 2008/01/05 03:08:04 sobomax Exp $
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
@@ -21,5 +21,5 @@ CLEANFILES = *~
 lib_LTLIBRARIES =   libfreeradius-client.la
 libfreeradius_client_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
 	avpair.c config.c dict.c ip_util.c log.c md5.c util.c lock.c \
-	options.h
+	options.h md5.h
 libfreeradius_client_la_LDFLAGS = -version-info $(LIBVERSION)
