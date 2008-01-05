@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.10 2008/01/05 03:06:53 sobomax Exp $
+ * $Id: freeradius-client.h,v 1.11 2008/01/05 03:09:37 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -43,8 +43,6 @@
 # define __BEGIN_DECLS /* empty */
 # define __END_DECLS /* empty */
 #endif
-
-typedef int32_t  INT4;
 
 #define AUTH_VECTOR_LEN		16
 #define AUTH_PASS_LEN		(3 * 16) /* multiple of 16 */
