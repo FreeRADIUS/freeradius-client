@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.24 2007/08/07 14:26:29 cparker Exp $
+ * $Id: sendserver.c,v 1.25 2008/01/05 03:06:53 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -392,6 +392,11 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		(recv_auth->code == PW_ACCOUNTING_RESPONSE))
 	{
 		result = OK_RC;
+	}
+	else if ((recv_auth->code == PW_ACCESS_REJECT) ||
+		(recv_auth->code == PW_PASSWORD_REJECT))
+	{
+		result = REJECT_RC;
 	}
 	else
 	{

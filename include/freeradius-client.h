@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.9 2007/10/05 15:37:26 cparker Exp $
+ * $Id: freeradius-client.h,v 1.10 2008/01/05 03:06:53 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -372,6 +372,7 @@ typedef struct value_pair
 #define ERROR_RC	-1
 #define OK_RC		0
 #define TIMEOUT_RC	1
+#define REJECT_RC	2
 
 typedef struct send_data /* Used to pass information to sendserver() function */
 {
