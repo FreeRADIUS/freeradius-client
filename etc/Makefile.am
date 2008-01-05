@@ -1,5 +1,5 @@
 #
-# $Id: Makefile.am,v 1.4 2006/06/23 05:57:59 sobomax Exp $
+# $Id: Makefile.am,v 1.5 2008/01/05 03:04:46 sobomax Exp $
 #
 # Copyright (C) 1997,1998 Lars Fenneberg
 #
@@ -33,4 +33,4 @@ install-data-local: servers
         $(INSTALL) -m 600 $(srcdir)/servers $(DESTDIR)$(pkgsysconfdir)/servers
 
 uninstall-local:
-	rm -f $(pkgsysconfdir)/servers
+	rm -f $(DESTDIR)$(pkgsysconfdir)/servers
