@@ -90,17 +90,17 @@ radiusclient-ng: build
 	done
 
 libradius-ng: build
-	install -m755 $(topdir)/lib/.libs/libradiusclient-ng.so.$(version_so) debian/libradius-ng/usr/lib
+	install -m755 $(topdir)/lib/.libs/libfreeradius-client.so.$(version_so) debian/libradius-ng/usr/lib
 	for file in radiusclient.conf dictionary dictionary.ascend dictionary.compat dictionary.merit; do \
 	  install -m644 $(topdir)/etc/$$file $(topdir)/debian/libradius-ng/etc/radiusclient-ng; \
 	done
-	cd debian/libradius-ng/usr/lib && ln -s libradiusclient-ng.so.$(version_so) libradiusclient-ng.so.2
+	cd debian/libradius-ng/usr/lib && ln -s libfreeradius-client.so.$(version_so) libfreeradius-client.so.2
 
 libradius-ng-dev: build
 	install -m644 $(topdir)/include/freeradius-client.h $(topdir)/debian/libradius-ng-dev/usr/include
-	install -m644 $(topdir)/lib/.libs/libradiusclient-ng.a $(topdir)/debian/libradius-ng-dev/usr/lib
-	install -m644 $(topdir)/lib/libradiusclient-ng.la $(topdir)/debian/libradius-ng-dev/usr/lib
-	cd debian/libradius-ng-dev/usr/lib && ln -s libradiusclient-ng.so.$(version_so) libradiusclient-ng.so
+	install -m644 $(topdir)/lib/.libs/libfreeradius-client.a $(topdir)/debian/libradius-ng-dev/usr/lib
+	install -m644 $(topdir)/lib/libfreeradius-client.la $(topdir)/debian/libradius-ng-dev/usr/lib
+	cd debian/libradius-ng-dev/usr/lib && ln -s libfreeradius-client.so.$(version_so) libfreeradius-client.so
 
 source diff:                                                                  
 	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
