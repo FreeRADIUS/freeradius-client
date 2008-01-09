@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.20 2007/07/11 17:29:29 cparker Exp $
+ * $Id: config.c,v 1.21 2008/01/09 07:11:21 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -30,7 +30,6 @@
 static OPTION *find_option(rc_handle *rh, const char *optname, unsigned int type)
 {
 	int 	i;
-	OPTION 	*opt = NULL;
 
 	/* there're so few options that a binary search seems not necessary */
 	for (i = 0; i < NUM_OPTIONS; i++) {
@@ -637,10 +636,12 @@ static int find_match (uint32_t *ip_addr, char *hostname)
 		{
 			return 0;
 		}
+		return -1;
 	}
-	else if ((hp = rc_gethostbyname(hostname)) == NULL)
+
+	if ((hp = rc_gethostbyname(hostname)) == NULL)
 	{
-			return -1;
+		return -1;
 	}
 		
 	for (paddr = hp->h_addr_list; *paddr; paddr++)
