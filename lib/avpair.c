@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.22 2008/01/05 03:02:57 sobomax Exp $
+ * $Id: avpair.c,v 1.23 2008/01/09 07:05:11 sobomax Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -697,7 +697,7 @@ int rc_avpair_tostr (const rc_handle *rh, VALUE_PAIR *pair, char *name, int ln, 
 		}
 		else
 		{
-			sprintf (buffer, "%ld", pair->lvalue);
+			sprintf (buffer, "%ld", (long int)pair->lvalue);
 			strncpy(value, buffer, (size_t) lv);
 		}
 		break;
