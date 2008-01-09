@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.11 2008/01/05 03:09:37 sobomax Exp $
+ * $Id: freeradius-client.h,v 1.12 2008/01/09 07:07:26 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -14,13 +14,13 @@
  *
  */
 
-#ifndef RADIUSCLIENT_NG_H
-#define RADIUSCLIENT_NG_H
+#ifndef FREERADIUS_CLIENT_H
+#define FREERADIUS_CLIENT_H
 
 #ifdef CP_DEBUG
-#define		DEBUG	rc_log
+#define		DEBUG(args...)	rc_log(## args)
 #else
-#define		DEBUG
+#define		DEBUG(args...)	;
 #endif
 
 #include	<sys/types.h>
@@ -509,4 +509,4 @@ void rc_md5_calc(unsigned char *, unsigned char *, unsigned int);
 
 __END_DECLS
 
-#endif /* RADIUSCLIENT_NG_H */
+#endif /* FREERADIUS_CLIENT_H */
