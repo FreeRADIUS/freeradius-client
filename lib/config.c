@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.21 2008/01/09 07:11:21 sobomax Exp $
+ * $Id: config.c,v 1.22 2008/02/11 06:54:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -171,6 +171,7 @@ static int set_option_srv(const char *filename, int line, OPTION *option, const 
 	}
 	free(p_dupe);
 
+	serv->deadtime_ends[serv->max] = -1;
 	serv->max++;
 
 	if (option->val == NULL)
@@ -559,7 +560,11 @@ int test_config(rc_handle *rh, char *filename)
 		rc_log(LOG_ERR,"%s: radius_retries <= 0 is illegal", filename);
 		return -1;
 	}
-
+	if (rc_conf_int(rh, "radius_deadtime") < 0)
+	{
+		rc_log(LOG_ERR,"%s: radius_deadtime is illegal", filename);
+		return -1;
+	}
 #if 0
 	file = rc_conf_str(rh, "login_local");
 	if (stat(file, &st) == 0)

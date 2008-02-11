@@ -1,5 +1,5 @@
 /*
- * $Id: util.c,v 1.8 2007/06/21 18:07:24 cparker Exp $
+ * $Id: util.c,v 1.9 2008/02/11 06:54:23 sobomax Exp $
  *
  * Copyright (c) 1998 The NetBSD Foundation, Inc.
  *
@@ -15,6 +15,8 @@
  * and I'll send you a copy.
  *
  */
+
+#include <sys/time.h>
 
 #include <config.h>
 #include <includes.h>
@@ -325,4 +327,23 @@ rc_fgetln(FILE *fp, size_t *len)
 
 	*len = (ptr - buf) + 1;
 	return buf;
+}
+
+/*
+ * Function: rc_getctime
+ *
+ * Purpose: Get current time (seconds since epoch) expressed as
+ * double-precision floating point number.
+ *
+ */
+
+double
+rc_getctime(void)
+{
+    struct timeval timev;
+
+    if (gettimeofday(&timev, NULL) == -1)
+        return -1;
+
+    return timev.tv_sec + ((double)timev.tv_usec) / 1000000.0;
 }

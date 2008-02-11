@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.12 2008/01/09 07:07:26 sobomax Exp $
+ * $Id: freeradius-client.h,v 1.13 2008/02/11 06:54:23 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -77,6 +77,7 @@ typedef struct server {
 	char *name[SERVER_MAX];
 	uint16_t port[SERVER_MAX];
 	char *secret[SERVER_MAX];
+	double deadtime_ends[SERVER_MAX];
 } SERVER;
 
 typedef struct pw_auth_hdr
@@ -495,6 +496,7 @@ char *rc_mksid(rc_handle *);
 rc_handle *rc_new(void);
 void rc_destroy(rc_handle *);
 char *rc_fgetln(FILE *, size_t *);
+double rc_getctime(void);
 
 /*	env.c			*/
 

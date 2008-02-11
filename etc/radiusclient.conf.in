@@ -71,6 +71,17 @@ radius_timeout	10
 # resend request this many times before trying the next server
 radius_retries	3
 
+# The length of time in seconds that we skip a nonresponsive RADIUS
+# server for transaction requests.  Server(s) being in the "dead" state
+# are tried only after all other non-dead servers have been tried and
+# failed or timeouted.  The deadtime interval starts when the server
+# does not respond to an authentication/accounting request transmissions. 
+# When the interval expires, the "dead" server would be re-tried again,
+# and if it's still down then it will be considered "dead" for another
+# such interval and so on. This option is no-op if there is only one
+# server in the list. Set to 0 in order to disable the feature.
+radius_deadtime	0
+
 # local address from which radius packets have to be sent
 bindaddr *
 
