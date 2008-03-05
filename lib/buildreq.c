@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.14 2008/02/11 06:54:23 sobomax Exp $
+ * $Id: buildreq.c,v 1.15 2008/03/05 16:35:20 cparker Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -130,8 +130,8 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	SERVER		*aaaserver;
 	int		timeout = rc_conf_int(rh, "radius_timeout");
 	int		retries = rc_conf_int(rh, "radius_retries");
+	int		radius_deadtime = rc_conf_int(rh, "radius_deadtime");
 	double		start_time;
-	int		radius_deadtime;
 	time_t		dtime;
 
 	if (request_type != PW_ACCOUNTING_REQUEST) {
@@ -141,8 +141,6 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	}
 	if (aaaserver == NULL)
 		return ERROR_RC;
-
-	radius_deadtime = rc_conf_int(rh, "radius_deadtime");
 
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
