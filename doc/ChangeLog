@@ -1,5 +1,13 @@
-$Id: ChangeLog,v 1.4 2007/04/13 14:23:32 pnixon Exp $
+$Id: ChangeLog,v 1.5 2008/03/05 17:55:52 cparker Exp $
 
+FreeRADIUS-client 1.1.6, March 5, 2008
+
+  o Added dead_time functionality / configuration
+  o Merge in fixes and enhancements from 'radiusclient-ng'
+  o Improved functionality for embedded operation
+    - In use in FreeSWITCH and OpenSER projects
+  o Wrap gethostby*() family of calls with threadsafe variants
+  o Change UINT4 to uint32_t, int to size_t, etc.
   o Fixed wrong usage of strncat function in several places
 
 FreeRADIUS-client 1.1.5, March 2, 2007
