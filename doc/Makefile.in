@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 #
-# $Id: Makefile.in,v 1.19 2007/06/28 16:18:45 cparker Exp $
+# $Id: Makefile.in,v 1.20 2008/03/05 18:02:56 cparker Exp $
 #
 # Copyright (C) 1997 Lars Fenneberg
 #
@@ -47,7 +47,8 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 subdir = doc
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in ChangeLog
+DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	ChangeLog
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
