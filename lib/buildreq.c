@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.15 2008/03/05 16:35:20 cparker Exp $
+ * $Id: buildreq.c,v 1.16 2008/10/31 18:23:10 sobomax Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -124,14 +124,15 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
     char *msg, int add_nas_port, int request_type)
 {
 	SEND_DATA       data;
-	VALUE_PAIR	*adt_vp;
+	VALUE_PAIR	*adt_vp = NULL;
 	int		result;
 	int		i, skip_count;
 	SERVER		*aaaserver;
 	int		timeout = rc_conf_int(rh, "radius_timeout");
 	int		retries = rc_conf_int(rh, "radius_retries");
 	int		radius_deadtime = rc_conf_int(rh, "radius_deadtime");
-	double		start_time;
+	double		start_time = 0;
+	double		now = 0;
 	time_t		dtime;
 
 	if (request_type != PW_ACCOUNTING_REQUEST) {
@@ -159,16 +160,23 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 		 * Fill in Acct-Delay-Time
 		 */
 		dtime = 0;
-		if ((adt_vp = rc_avpair_add(rh, &(data.send_pairs),
-		    PW_ACCT_DELAY_TIME, &dtime, 0, 0)) == NULL)
-			return ERROR_RC;
+		now = rc_getctime();
+		adt_vp = rc_avpair_get(data.send_pairs, PW_ACCT_DELAY_TIME, 0);
+		if (adt_vp == NULL) {
+			adt_vp = rc_avpair_add(rh, &(data.send_pairs),
+			    PW_ACCT_DELAY_TIME, &dtime, 0, 0);
+			if (adt_vp == NULL)
+				return ERROR_RC;
+			start_time = now;
+		} else {
+			start_time = now - adt_vp->lvalue;
+		}
 	}
 
-	start_time = rc_getctime();
 	skip_count = 0;
 	result = ERROR_RC;
 	for (i=0; (i < aaaserver->max) && (result != OK_RC) && (result != BADRESP_RC)
-	    ; i++)
+	    ; i++, now = rc_getctime())
 	{
 		if (aaaserver->deadtime_ends[i] != -1 &&
 		    aaaserver->deadtime_ends[i] > start_time) {
@@ -183,7 +191,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 		    aaaserver->port[i], aaaserver->secret[i], timeout, retries);
 
 		if (request_type == PW_ACCOUNTING_REQUEST) {
-			dtime = rc_getctime() - start_time;
+			dtime = now - start_time;
 			rc_avpair_assign(adt_vp, &dtime, 0);
 		}
 
