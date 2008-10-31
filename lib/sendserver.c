@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.25 2008/01/05 03:06:53 sobomax Exp $
+ * $Id: sendserver.c,v 1.26 2008/10/31 19:10:17 sobomax Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -13,6 +13,8 @@
  * and I'll send you a copy.
  *
  */
+
+#include <poll.h>
 
 #include <config.h>
 #include <includes.h>
@@ -179,13 +181,11 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	int             sockfd;
 	struct sockaddr_in sinlocal;
 	struct sockaddr_in sinremote;
-	struct timeval  authtime;
-	fd_set          readfds;
 	AUTH_HDR       *auth, *recv_auth;
 	uint32_t           auth_ipaddr, nas_ipaddr;
 	char           *server_name;	/* Name of server to query */
 	socklen_t       salen;
-	int             result;
+	int             result = 0;
 	int             total_length;
 	int             length;
 	int             retry_max;
@@ -196,6 +196,8 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	char            send_buffer[BUFFER_LEN];
 	int		retries;
 	VALUE_PAIR 	*vp;
+	struct pollfd	pfd;
+	double		start_time, timeout;
 
 	server_name = data->server;
 	if (server_name == NULL || server_name[0] == '\0')
@@ -306,20 +308,24 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		sendto (sockfd, (char *) auth, (unsigned int) total_length, (int) 0,
 			SA(&sinremote), sizeof (struct sockaddr_in));
 
-		authtime.tv_usec = 0L;
-		authtime.tv_sec = (long) data->timeout;
-		FD_ZERO (&readfds);
-		FD_SET (sockfd, &readfds);
-		if (select (sockfd + 1, &readfds, NULL, NULL, &authtime) < 0)
+		pfd.fd = sockfd;
+		pfd.events = POLLIN;
+		pfd.revents = 0;
+		start_time = rc_getctime();
+		for (timeout = data->timeout; timeout > 0;
+		    timeout -= rc_getctime() - start_time) {
+			result = poll(&pfd, 1, timeout * 1000000);
+			if (result != -1 || errno != EINTR)
+				break;
+		}
+		if (result == -1)
 		{
-			if (errno == EINTR)
-				continue;
-			rc_log(LOG_ERR, "rc_send_server: select: %s", strerror(errno));
+			rc_log(LOG_ERR, "rc_send_server: poll: %s", strerror(errno));
 			memset (secret, '\0', sizeof (secret));
 			close (sockfd);
 			return ERROR_RC;
 		}
-		if (FD_ISSET (sockfd, &readfds))
+		if (result == 1 && (pfd.revents & POLLIN) != 0)
 			break;
 
 		/*
