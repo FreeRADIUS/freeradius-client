@@ -23,7 +23,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $Id: radiusclient.c,v 1.7 2007/01/06 20:15:36 pnixon Exp $
+ * $Id: radiusclient.c,v 1.8 2010/02/04 10:30:26 aland Exp $
  */
 
 #include <ctype.h>
@@ -33,6 +33,8 @@
 #include <unistd.h>
 
 #include <freeradius-client.h>
+
+#define BUF_LEN 4096
 
 int process(void *, VALUE_PAIR *, int, int);
 
@@ -163,13 +165,14 @@ process(void *rh, VALUE_PAIR *send, int acct, int nas_port)
 {
     VALUE_PAIR *received;
     char msg[4096];
+    char buf[BUF_LEN];
     int i;
 
     received = NULL;
     if (acct == 0) {
         i = rc_auth(rh, nas_port, send, &received, msg);
         if (received != NULL) {
-            printf("%s", rc_avpair_log(rh, received));
+            printf("%s", rc_avpair_log(rh, received, buf, BUF_LEN));
             rc_avpair_free(received);
         }
     } else {

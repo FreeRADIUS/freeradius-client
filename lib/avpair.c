@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.23 2008/01/09 07:05:11 sobomax Exp $
+ * $Id: avpair.c,v 1.24 2010/02/04 10:30:26 aland Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -726,18 +726,16 @@ int rc_avpair_tostr (const rc_handle *rh, VALUE_PAIR *pair, char *name, int ln, 
  * Function: rc_avpair_log
  *
  * Purpose: format sequence of attribute value pairs into printable
- * string. The string is dynamically allocated and is automatically
- * freed when rc_handle is destroyed or rc_avpair_log() is called
- * again.
+ * string. The caller should provide a storage buffer and the buffer length.
+ * Returns pointer to provided storage buffer.
  *
  */
 char *
-rc_avpair_log(rc_handle *rh, VALUE_PAIR *pair)
+rc_avpair_log(rc_handle *rh, VALUE_PAIR *pair, char *buf, size_t buf_len)
 {
 	size_t len, nlen;
 	VALUE_PAIR *vp;
 	char name[33], value[256];
-	char *cp;
 
 	len = 0;
 	for (vp = pair; vp != NULL; vp = vp->next) {
@@ -745,16 +743,12 @@ rc_avpair_log(rc_handle *rh, VALUE_PAIR *pair)
 		    sizeof(value)) == -1)
 		        return NULL;
 		nlen = len + 32 + 3 + strlen(value) + 2 + 2;
-		cp = realloc(rh->ppbuf, nlen);
-		if (cp == NULL) {
-			rc_log(LOG_ERR, "rc_avpair_log: can't allocate memory");
-			return NULL;
-		}
-		sprintf(cp + len, "%-32s = '%s'\n", name, value);
-		rh->ppbuf = cp;
+		if(nlen<buf_len-1) {
+			sprintf(buf + len, "%-32s = '%s'\n", name, value);
+		} else return buf;
 		len = nlen - 1;
 	}
-	return (len > 0) ? rh->ppbuf : NULL;
+	return buf;
 }
 
 /*
