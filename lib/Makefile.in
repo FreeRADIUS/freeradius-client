@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 #
-# $Id: Makefile.in,v 1.20 2008/03/05 18:02:56 cparker Exp $
+# $Id: Makefile.in,v 1.21 2010/02/04 10:27:09 aland Exp $
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
@@ -68,7 +68,7 @@ LTLIBRARIES = $(lib_LTLIBRARIES)
 libfreeradius_client_la_LIBADD =
 am_libfreeradius_client_la_OBJECTS = buildreq.lo clientid.lo env.lo \
 	sendserver.lo avpair.lo config.lo dict.lo ip_util.lo log.lo \
-	md5.lo util.lo lock.lo
+	md5.lo util.lo 
 libfreeradius_client_la_OBJECTS =  \
 	$(am_libfreeradius_client_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
@@ -201,7 +201,7 @@ INCLUDES = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir)
 CLEANFILES = *~
 lib_LTLIBRARIES = libfreeradius-client.la
 libfreeradius_client_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
-	avpair.c config.c dict.c ip_util.c log.c md5.c util.c lock.c \
+	avpair.c config.c dict.c ip_util.c log.c md5.c util.c  \
 	options.h md5.h
 
 libfreeradius_client_la_LDFLAGS = -version-info $(LIBVERSION)
@@ -281,7 +281,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dict.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/env.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ip_util.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lock.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sendserver.Plo@am__quote@

@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.13 2008/02/11 06:54:23 sobomax Exp $
+ * $Id: freeradius-client.h,v 1.14 2010/02/04 10:27:09 aland Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -426,7 +426,7 @@ VALUE_PAIR *rc_avpair_readin(const rc_handle *, FILE *);
 /*	buildreq.c		*/
 
 void rc_buildreq(rc_handle *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
-unsigned char rc_get_seqnbr(rc_handle *);
+unsigned char rc_get_id();
 int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_acct(rc_handle *, uint32_t, VALUE_PAIR *);

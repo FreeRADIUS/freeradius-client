@@ -1,5 +1,5 @@
 /*
- * $Id: buildreq.c,v 1.16 2008/10/31 18:23:10 sobomax Exp $
+ * $Id: buildreq.c,v 1.17 2010/02/04 10:27:09 aland Exp $
  *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
@@ -13,7 +13,7 @@
 #include <includes.h>
 #include <freeradius-client.h>
 
-unsigned char rc_get_seqnbr(rc_handle *);
+unsigned char rc_get_id();
 
 /*
  * Function: rc_buildreq
@@ -29,84 +29,23 @@ void rc_buildreq(rc_handle *rh, SEND_DATA *data, int code, char *server, unsigne
 	data->server = server;
 	data->secret = secret;
 	data->svc_port = port;
-	data->seq_nbr = rc_get_seqnbr(rh);
+	data->seq_nbr = rc_get_id();
 	data->timeout = timeout;
 	data->retries = retries;
 	data->code = code;
 }
 
 /*
- * Function: rc_guess_seqnbr
+ * Function: rc_get_id
  *
- * Purpose: return a random sequence number
+ * Purpose: generate random id
  *
  */
 
-static unsigned char rc_guess_seqnbr(void)
+unsigned char rc_get_id()
 {
 	srandom((unsigned int)(time(NULL)+getpid()));
 	return (unsigned char)(random() & UCHAR_MAX);
-}
-
-/*
- * Function: rc_get_seqnbr
- *
- * Purpose: generate a sequence number
- *
- */
-
-unsigned char rc_get_seqnbr(rc_handle *rh)
-{
-	FILE *sf;
-	int tries = 1;
-	int seq_nbr;
-	char *seqfile = rc_conf_str(rh, "seqfile");
-
-	if ((sf = fopen(seqfile, "a+")) == NULL)
-	{
-		rc_log(LOG_ERR,"rc_get_seqnbr: couldn't open sequence file %s: %s", seqfile, strerror(errno));
-		/* well, so guess a sequence number */
-		return rc_guess_seqnbr();
-	}
-
-	while (do_lock_exclusive(sf)!= 0)
-	{
-		if (errno != EWOULDBLOCK) {
-			rc_log(LOG_ERR, "rc_get_seqnbr: flock failure: %s: %s", seqfile, strerror(errno));
-			fclose(sf);
-			return rc_guess_seqnbr();
-		}
-		tries++;
-		if (tries <= 10)
-			rc_mdelay(500);
-		else
-			break;
-	}
-
-	if (tries > 10) {
-		rc_log(LOG_ERR,"rc_get_seqnbr: couldn't get lock after %d tries: %s", tries-1, seqfile);
- 		fclose(sf);
-		return rc_guess_seqnbr();
-	}
-
-	rewind(sf);
-	if (fscanf(sf, "%d", &seq_nbr) != 1) {
-		rc_log(LOG_ERR,"rc_get_seqnbr: fscanf failure: %s", seqfile);
-		seq_nbr = rc_guess_seqnbr();
-	}
-
-	rewind(sf);
-	ftruncate(fileno(sf),0);
-	fprintf(sf,"%d\n", (seq_nbr+1) & UCHAR_MAX);
-
-	fflush(sf); /* fflush because a process may read it between the do_unlock and fclose */
-
-	if (do_unlock(sf) != 0)
-		rc_log(LOG_ERR, "rc_get_seqnbr: couldn't release lock on %s: %s", seqfile, strerror(errno));
-
-	fclose(sf);
-
-	return (unsigned char)seq_nbr;
 }
 
 /*

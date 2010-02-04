@@ -1,13 +1,7 @@
-$Id: BUGS,v 1.2 2007/06/21 18:35:00 cparker Exp $
+$Id: BUGS,v 1.3 2010/02/04 10:27:09 aland Exp $
 
 Testing can show the presense of bugs, but not their absence.
                 -- Dijkstra
-
-The get_seqnbr function in build_req.c sometimes returns the same
-number, if invoked from multiple processes at the same time. This
-occurs only if a lot of process try to read the sequence file,
-so I suspect a race condition in the locking code, but I can't
-find one. Any help is appreciated.
 
 Radlogin respectively send_server in sendserver.c does not honour a 
 ACCESS_CHALLENGE packet from the RADIUS server. 
