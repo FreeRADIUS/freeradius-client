@@ -1,5 +1,5 @@
 /*
- * $Id: util.c,v 1.9 2008/02/11 06:54:23 sobomax Exp $
+ * $Id: util.c,v 1.10 2010/02/04 10:31:41 aland Exp $
  *
  * Copyright (c) 1998 The NetBSD Foundation, Inc.
  *
@@ -276,8 +276,6 @@ rc_destroy(rc_handle *rh)
 	rc_config_free(rh);
 	if (rh->this_host_bind_ipaddr != NULL)
 		free(rh->this_host_bind_ipaddr);
-	if (rh->ppbuf != NULL)
-		free(rh->ppbuf);
 	free(rh);
 }
 

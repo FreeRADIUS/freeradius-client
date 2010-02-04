@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.15 2010/02/04 10:30:26 aland Exp $
+ * $Id: freeradius-client.h,v 1.16 2010/02/04 10:31:41 aland Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -101,7 +101,6 @@ struct rc_conf
 	char			buf[GETSTR_LENGTH];
 	char			buf1[14];
 	char			ifname[512];
-	char			*ppbuf;
 };
 
 typedef struct rc_conf rc_handle;
