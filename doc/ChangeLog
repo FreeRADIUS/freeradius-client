@@ -1,4 +1,9 @@
-$Id: ChangeLog,v 1.5 2008/03/05 17:55:52 cparker Exp $
+$Id: ChangeLog,v 1.6 2010/02/04 10:33:33 aland Exp $
+
+FreeRADIUS-client 1.1.7, (unreleased)
+  o Removed lock file for sequence number.  It isn't needed.
+  o Made rc_avpair_log thread-safe by using a buffer supplied
+    by the caller.
 
 FreeRADIUS-client 1.1.6, March 5, 2008
 
