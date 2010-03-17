@@ -1,5 +1,5 @@
 /*
- * $Id: ip_util.c,v 1.13 2007/07/11 17:29:29 cparker Exp $
+ * $Id: ip_util.c,v 1.14 2010/03/17 18:57:01 aland Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -18,11 +18,17 @@
 #include <includes.h>
 #include <freeradius-client.h>
 
+#define HOSTBUF_SIZE 1024
+
 #if !defined(SA_LEN)
 #define SA_LEN(sa) \
   (((sa)->sa_family == AF_INET) ? \
     sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6))
 #endif
+
+
+static __thread size_t	hostbuflen=HOSTBUF_SIZE;
+static __thread	char	*tmphostbuf=NULL;
 
 /*
  * Function: rc_gethostbyname
@@ -38,13 +44,10 @@ struct hostent *rc_gethostbyname(const char *hostname)
 #ifdef GETHOSTBYNAME_R
 #if defined (GETHOSTBYNAMERSTYLE_SYSV) || defined (GETHOSTBYNAMERSTYLE_GNU)
 	struct 	hostent hostbuf;
-	size_t	hostbuflen;
-	char	*tmphostbuf;
 	int	res;
 	int	herr;
 	
-	hostbuflen = 1024;
-	tmphostbuf = malloc(hostbuflen);
+	if(!tmphostbuf) tmphostbuf = malloc(hostbuflen);
 #endif
 #endif
 
@@ -56,10 +59,9 @@ struct hostent *rc_gethostbyname(const char *hostname)
 		hostbuflen *= 2;
 		tmphostbuf = realloc(tmphostbuf, hostbuflen);
 	}
-	free(tmphostbuf);
+	if(res) return NULL;
 #elif defined (GETHOSTBYNAMERSTYLE_SYSV)
 	hp = gethostbyname_r(hostname, &hostbuf, tmphostbuf, hostbuflen, &herr);
-	free(tmphostbuf);
 #else
 	hp = gethostbyname(hostname);
 #endif
@@ -87,13 +89,10 @@ struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
 #ifdef GETHOSTBYADDR_R
 #if defined (GETHOSTBYADDRRSTYLE_SYSV) || defined (GETHOSTBYADDRRSTYLE_GNU)
 	struct	hostent hostbuf;
-	size_t	hostbuflen;
-	char	*tmphostbuf;
 	int	res;
 	int	herr;
 	
-	hostbuflen = 1024;
-	tmphostbuf = malloc(hostbuflen);
+	if(!tmphostbuf) tmphostbuf = malloc(hostbuflen);
 #endif
 #endif
 
@@ -106,10 +105,9 @@ struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
 		hostbuflen *= 2;
 		tmphostbuf = realloc(tmphostbuf, hostbuflen);
 	}
-	free(tmphostbuf);
+	if(res) return NULL;
 #elif GETHOSTBYADDRSTYLE_SYSV
 	hp = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen, &herr);
-	free(tmphostbuf);
 #else
 	hp = gethostbyaddr((char *)&addr, sizeof(struct in_addr), AF_INET);
 #endif
