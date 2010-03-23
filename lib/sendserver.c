@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.26 2008/10/31 19:10:17 sobomax Exp $
+ * $Id: sendserver.c,v 1.27 2010/03/23 15:19:27 aland Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -314,7 +314,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		start_time = rc_getctime();
 		for (timeout = data->timeout; timeout > 0;
 		    timeout -= rc_getctime() - start_time) {
-			result = poll(&pfd, 1, timeout * 1000000);
+			result = poll(&pfd, 1, timeout * 1000);
 			if (result != -1 || errno != EINTR)
 				break;
 		}
