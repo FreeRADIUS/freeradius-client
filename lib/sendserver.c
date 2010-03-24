@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.27 2010/03/23 15:19:27 aland Exp $
+ * $Id: sendserver.c,v 1.28 2010/03/24 23:52:05 aland Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -259,18 +259,20 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	sinremote.sin_port = htons ((unsigned short) data->svc_port);
 
 	/*
-	 * Fill in NAS-IP-Address
+	 * Fill in NAS-IP-Address (if needed)
 	 */
-	if (sinlocal.sin_addr.s_addr == htonl(INADDR_ANY)) {
-		if (rc_get_srcaddr(SA(&sinlocal), SA(&sinremote)) != 0) {
-			close (sockfd);
-			memset (secret, '\0', sizeof (secret));
-			return ERROR_RC;
+	if (rc_avpair_get(data->send_pairs, PW_NAS_IP_ADDRESS, 0) == NULL) {
+		if (sinlocal.sin_addr.s_addr == htonl(INADDR_ANY)) {
+			if (rc_get_srcaddr(SA(&sinlocal), SA(&sinremote)) != 0) {
+				close (sockfd);
+				memset (secret, '\0', sizeof (secret));
+				return ERROR_RC;
+			}
 		}
+		nas_ipaddr = ntohl(sinlocal.sin_addr.s_addr);
+		rc_avpair_add(rh, &(data->send_pairs), PW_NAS_IP_ADDRESS,
+		    &nas_ipaddr, 0, 0);
 	}
-	nas_ipaddr = ntohl(sinlocal.sin_addr.s_addr);
-	rc_avpair_add(rh, &(data->send_pairs), PW_NAS_IP_ADDRESS,
-	    &nas_ipaddr, 0, 0);
 
 	/* Build a request */
 	auth = (AUTH_HDR *) send_buffer;
