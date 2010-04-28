@@ -1,5 +1,5 @@
 /*
- * $Id: config.c,v 1.22 2008/02/11 06:54:23 sobomax Exp $
+ * $Id: config.c,v 1.23 2010/04/28 14:26:15 aland Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -112,6 +112,7 @@ static int set_option_srv(const char *filename, int line, OPTION *option, const 
 			free(p_dupe);
 			return -1;
 		}
+		memset(serv, 0, sizeof(*serv));
 		serv->max = 0;
 	}
 
