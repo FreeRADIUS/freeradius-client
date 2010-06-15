@@ -1,5 +1,5 @@
 /*
- * $Id: sendserver.c,v 1.29 2010/06/15 09:19:09 aland Exp $
+ * $Id: sendserver.c,v 1.30 2010/06/15 09:22:52 aland Exp $
  *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
@@ -372,7 +372,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 
 	length = ntohs(recv_auth->length)  - AUTH_HDR_LEN;
 	if (length > 0) {
-		data->receive_pairs = rc_avpair_gen(rh, recv_auth->data,
+		data->receive_pairs = rc_avpair_gen(rh, NULL, recv_auth->data,
 		    length, 0);
 	} else {
 		data->receive_pairs = NULL;

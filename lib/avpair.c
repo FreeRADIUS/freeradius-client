@@ -1,5 +1,5 @@
 /*
- * $Id: avpair.c,v 1.25 2010/06/15 09:19:09 aland Exp $
+ * $Id: avpair.c,v 1.26 2010/06/15 09:22:52 aland Exp $
  *
  * Copyright (C) 1995 Lars Fenneberg
  *
@@ -165,14 +165,14 @@ VALUE_PAIR *rc_avpair_new (const rc_handle *rh, int attrid, void *pval, int len,
  */
 
 VALUE_PAIR *
-rc_avpair_gen(const rc_handle *rh, unsigned char *ptr,
+rc_avpair_gen(const rc_handle *rh, VALUE_PAIR *pair, unsigned char *ptr,
     int length, int vendorpec)
 {
 	int attribute, attrlen, x_len;
 	unsigned char *x_ptr;
 	uint32_t lvalue;
 	DICT_ATTR *attr;
-	VALUE_PAIR *rpair, *pair;
+	VALUE_PAIR *rpair;
 	char buffer[(AUTH_STRING_LEN * 2) + 1];
 	/* For hex string conversion. */
 	char hex[3];

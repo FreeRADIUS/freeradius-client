@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.17 2010/06/15 09:19:09 aland Exp $
+ * $Id: freeradius-client.h,v 1.18 2010/06/15 09:22:51 aland Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -414,7 +414,7 @@ __BEGIN_DECLS
 VALUE_PAIR *rc_avpair_add(const rc_handle *, VALUE_PAIR **, int, void *, int, int);
 int rc_avpair_assign(VALUE_PAIR *, void *, int);
 VALUE_PAIR *rc_avpair_new(const rc_handle *, int, void *, int, int);
-VALUE_PAIR *rc_avpair_gen(const rc_handle *, unsigned char *, int, int);
+VALUE_PAIR *rc_avpair_gen(const rc_handle *, VALUE_PAIR *, unsigned char *, int, int);
 VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, int, int);
 void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
 void rc_avpair_free(VALUE_PAIR *);
