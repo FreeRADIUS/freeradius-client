@@ -1,5 +1,5 @@
 /*
- * $Id: freeradius-client.h,v 1.16 2010/02/04 10:31:41 aland Exp $
+ * $Id: freeradius-client.h,v 1.17 2010/06/15 09:19:09 aland Exp $
  *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
@@ -180,6 +180,7 @@ typedef struct rc_conf rc_handle;
 #define	PW_PORT_LIMIT                   62      /* integer */
 #define PW_LOGIN_LAT_PORT               63      /* string */
 #define PW_CONNECT_INFO                 77      /* string */
+#define PW_MESSAGE_AUTHENTICATOR        80      /* string */
 
 /* RFC3162 IPv6 attributes */
 
@@ -413,7 +414,7 @@ __BEGIN_DECLS
 VALUE_PAIR *rc_avpair_add(const rc_handle *, VALUE_PAIR **, int, void *, int, int);
 int rc_avpair_assign(VALUE_PAIR *, void *, int);
 VALUE_PAIR *rc_avpair_new(const rc_handle *, int, void *, int, int);
-VALUE_PAIR *rc_avpair_gen(const rc_handle *, VALUE_PAIR *, unsigned char *, int, int);
+VALUE_PAIR *rc_avpair_gen(const rc_handle *, unsigned char *, int, int);
 VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, int, int);
 void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
 void rc_avpair_free(VALUE_PAIR *);
