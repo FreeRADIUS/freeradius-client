@@ -334,7 +334,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		 * Timed out waiting for response.  Retry "retry_max" times
 		 * before giving up.  If retry_max = 0, don't retry at all.
 		 */
-		if (++retries >= retry_max)
+		if (retries++ >= retry_max)
 		{
 			rc_log(LOG_ERR,
 				"rc_send_server: no reply from RADIUS server %s:%u, %s",
