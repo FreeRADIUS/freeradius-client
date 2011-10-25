@@ -26,9 +26,13 @@
     sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6))
 #endif
 
-
+#ifdef __APPLE__
+static size_t	hostbuflen=HOSTBUF_SIZE;
+static char	*tmphostbuf=NULL;
+#else
 static __thread size_t	hostbuflen=HOSTBUF_SIZE;
 static __thread	char	*tmphostbuf=NULL;
+#endif
 
 /*
  * Function: rc_gethostbyname
