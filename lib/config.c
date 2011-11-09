@@ -530,12 +530,12 @@ int test_config(rc_handle *rh, char *filename)
 	char	    *file;
 #endif
 
-	if (!(rc_conf_srv(rh, "authserver")->max))
+	if (!(rc_conf_srv(rh, "authserver") && rc_conf_srv(rh, "authserver")->max))
 	{
 		rc_log(LOG_ERR,"%s: no authserver specified", filename);
 		return -1;
 	}
-	if (!(rc_conf_srv(rh, "acctserver")->max))
+	if (!(rc_conf_srv(rh, "acctserver") && rc_conf_srv(rh, "acctserver")->max))
 	{
 		rc_log(LOG_ERR,"%s: no acctserver specified", filename);
 		return -1;
