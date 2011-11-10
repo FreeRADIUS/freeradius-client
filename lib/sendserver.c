@@ -35,7 +35,7 @@ static int rc_check_reply (AUTH_HDR *, int, char *, unsigned char *, unsigned ch
  *
  */
 
-static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
+static int rc_pack_avp (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth, unsigned char *buf) 
 {
 	int             length, i, pc, padded_length;
 	int             total_length = 0;
@@ -43,13 +43,9 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 	uint32_t           lvalue, vendor;
 	unsigned char   passbuf[MAX(AUTH_PASS_LEN, CHAP_VALUE_LENGTH)];
 	unsigned char   md5buf[256];
-	unsigned char   *buf, *vector, *vsa_length_ptr;
-
-	buf = auth->data;
-
-	while (vp != NULL)
-	{
-		vsa_length_ptr = NULL;
+	unsigned char   *vector, *vsa_length_ptr;
+	
+	vsa_length_ptr = NULL;
 		if (VENDOR(vp->attribute) != 0) {
 			*buf++ = PW_VENDOR_SPECIFIC;
 			vsa_length_ptr = buf;
@@ -61,51 +57,57 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		}
 		*buf++ = (vp->attribute & 0xff);
 
-		switch (vp->attribute)
-		{
-		 case PW_USER_PASSWORD:
+		switch (vp->attribute) {
+			case PW_USER_PASSWORD:
 
-		  /* Encrypt the password */
+			/* Encrypt the password */
 
-		  /* Chop off password at AUTH_PASS_LEN */
-		  length = vp->lvalue;
-		  if (length > AUTH_PASS_LEN)
-			length = AUTH_PASS_LEN;
+			/* Chop off password at AUTH_PASS_LEN */
+			length = vp->lvalue;
+			if (length > AUTH_PASS_LEN) {
+				length = AUTH_PASS_LEN;
+			}
 
-		  /* Calculate the padded length */
-		  padded_length = (length+(AUTH_VECTOR_LEN-1)) & ~(AUTH_VECTOR_LEN-1);
+			/* Calculate the padded length */
+			padded_length = (length+(AUTH_VECTOR_LEN-1)) & ~(AUTH_VECTOR_LEN-1);
 
-		  /* Record the attribute length */
-		  *buf++ = padded_length + 2;
-		  if (vsa_length_ptr != NULL) *vsa_length_ptr += padded_length + 2;
+			/* Record the attribute length */
+			*buf++ = padded_length + 2;
+			if (vsa_length_ptr != NULL) {
+				*vsa_length_ptr += padded_length + 2;
+			}
 
-		  /* Pad the password with zeros */
-		  memset ((char *) passbuf, '\0', AUTH_PASS_LEN);
-		  memcpy ((char *) passbuf, vp->strvalue, (size_t) length);
+			/* Pad the password with zeros */
+			memset ((char *) passbuf, '\0', AUTH_PASS_LEN);
+			memcpy ((char *) passbuf, vp->strvalue, (size_t) length);
 
-		  secretlen = strlen (secret);
-		  vector = (unsigned char *)auth->vector;
-		  for(i = 0; i < padded_length; i += AUTH_VECTOR_LEN)
-		  {
-		  	/* Calculate the MD5 digest*/
-		  	strcpy ((char *) md5buf, secret);
-		  	memcpy ((char *) md5buf + secretlen, vector,
-		  		  AUTH_VECTOR_LEN);
-		  	rc_md5_calc (buf, md5buf, secretlen + AUTH_VECTOR_LEN);
+			secretlen = strlen (secret);
+			vector = (unsigned char *)auth->vector;
+			for(i = 0; i < padded_length; i += AUTH_VECTOR_LEN) {
+				/* Calculate the MD5 digest*/
+				strcpy ((char *) md5buf, secret);
+				memcpy ((char *) md5buf + secretlen, vector, 
+					AUTH_VECTOR_LEN);
+				rc_md5_calc (buf, md5buf, secretlen + AUTH_VECTOR_LEN);
 
-		        /* Remeber the start of the digest */
-		  	vector = buf;
+				/* Remeber the start of the digest */
+				vector = buf;
 
-			/* Xor the password into the MD5 digest */
-			for (pc = i; pc < (i + AUTH_VECTOR_LEN); pc++)
-		  	{
-				*buf++ ^= passbuf[pc];
-		  	}
-		  }
-
-		  total_length += padded_length + 2;
-
-		  break;
+				/* Xor the password into the MD5 digest */
+				for (pc = i; pc < (i + AUTH_VECTOR_LEN); pc++) {
+					*buf++ ^= passbuf[pc];
+				}
+			}
+			
+			total_length += padded_length + 2;
+			break;
+		case PW_MESSAGE_AUTHENTICATOR:
+			printf("message authenticator\n");
+			
+			
+			
+			
+			break;
 #if 0
 		 case PW_CHAP_PASSWORD:
 
@@ -138,6 +140,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		  break;
 #endif
 		 default:
+			printf("default avp: %d\n", vp->attribute);
 		  switch (vp->type)
 		  {
 		    case PW_TYPE_STRING:
@@ -164,8 +167,36 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		  }
 		  break;
 		}
+	return total_length;
+}
+
+static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
+{
+	int				len;
+	VALUE_PAIR		*msg_auth = 0;
+	int				total_length = 0;
+	unsigned char	*buf;
+
+	buf = auth->data;
+
+	while (vp != NULL)
+	{
+		if (vp->attribute == PW_MESSAGE_AUTHENTICATOR) {
+			/* Message-Authenticator is packed at the very end */
+			msg_auth = vp;
+		}
+		else {
+			len = rc_pack_avp(vp, secret, auth, buf);
+			buf += len;
+			total_length += len;
+		}
+
 		vp = vp->next;
 	}
+	if (msg_auth) {
+		total_length += rc_pack_avp(msg_auth, secret, auth, buf);
+	}
+	
 	return total_length;
 }
 
