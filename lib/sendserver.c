@@ -102,11 +102,7 @@ static int rc_pack_avp (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth, unsigned c
 			total_length += padded_length + 2;
 			break;
 		case PW_MESSAGE_AUTHENTICATOR:
-			printf("message authenticator\n");
-			
-			
-			
-			
+			/* This is done somewhere else */
 			break;
 #if 0
 		 case PW_CHAP_PASSWORD:
@@ -194,7 +190,21 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		vp = vp->next;
 	}
 	if (msg_auth) {
-		total_length += rc_pack_avp(msg_auth, secret, auth, buf);
+		int tl = total_length + AUTH_HDR_LEN + (AUTH_VECTOR_LEN + 2);
+		auth->length = htons ((unsigned short) tl);
+		
+		/* According to RFC2869: 
+				Message-Authenticator = HMAC-MD5 (Type, Identifier, Length,
+      			Request Authenticator, Attributes)
+		*/
+		
+		*buf++ = (msg_auth->attribute & 0xff);
+		*buf++ = AUTH_VECTOR_LEN + 2;
+		//uint8_t digest[AUTH_VECTOR_LEN];
+		rc_hmac_md5((uint8_t *) auth, tl, secret, strlen(secret), buf);
+		//memcpy(buf, hmac_digest, AUTH_VECTOR_LEN);
+		buf += AUTH_VECTOR_LEN;
+		total_length += AUTH_VECTOR_LEN + 2;
 	}
 	
 	return total_length;

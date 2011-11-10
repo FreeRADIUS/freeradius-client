@@ -508,6 +508,7 @@ int rc_import_env(struct env *, char **);
 /* md5.c			*/
 
 void rc_md5_calc(unsigned char *, unsigned char *, unsigned int);
+void rc_hmac_md5(const uint8_t *text, int text_len, const uint8_t *key, int key_len, uint8_t *digest);
 
 __END_DECLS
 
