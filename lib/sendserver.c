@@ -136,7 +136,6 @@ static int rc_pack_avp (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth, unsigned c
 		  break;
 #endif
 		 default:
-			printf("default avp: %d\n", vp->attribute);
 		  switch (vp->type)
 		  {
 		    case PW_TYPE_STRING:
@@ -240,6 +239,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	struct pollfd	pfd;
 	double		start_time, timeout;
 
+	memset(send_buffer, 0, BUFFER_LEN);
 	server_name = data->server;
 	if (server_name == NULL || server_name[0] == '\0')
 		return ERROR_RC;
