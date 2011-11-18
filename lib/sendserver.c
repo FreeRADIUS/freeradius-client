@@ -232,8 +232,9 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	size_t			secretlen;
 	char            secret[MAX_SECRET_LENGTH + 1];
 	unsigned char   vector[AUTH_VECTOR_LEN];
-	char            recv_buffer[BUFFER_LEN];
-	char            send_buffer[BUFFER_LEN];
+	// uint16_t for alignment
+	uint16_t		recv_buffer[BUFFER_LEN / sizeof(uint16_t)];
+	uint16_t		send_buffer[BUFFER_LEN / sizeof(uint16_t)];
 	int		retries;
 	VALUE_PAIR 	*vp;
 	struct pollfd	pfd;
