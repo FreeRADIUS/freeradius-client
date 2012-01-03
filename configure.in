@@ -57,6 +57,28 @@ dnl Check if we need -lnsl. Usually if we want to
 dnl link against -lsocket we need to include -lnsl as well.
 AC_CHECK_LIB(nsl, gethostbyaddr)
 
+dnl Checking which gethostbyXXX style to use
+AC_MSG_CHECKING([which gethostby{addr,name} style to use])
+AC_ARG_WITH(gethostby-style,
+[  --with-gethostby-style=XXX  gethostby{addr,name} style to use (GNU, SYSV or BSD)],
+[
+        AC_MSG_RESULT($withval)
+        case $withval in
+            GNU) ;;
+            SYSV) ;;
+            BSD) ;;
+            *)
+              AC_ERROR([Invalid option ($withval) passed to --with-gethostby-style])
+              ;;
+        esac
+        GETHOSTBYXXX=$withval
+],
+[
+        AC_MSG_RESULT(guess the best one)
+        GETHOSTBYXXX=""
+]
+)
+
 dnl Check the style of gethostbyaddr, in order of preference
 dnl GNU (_r eight args)
 dnl SYSV (_r six args)
@@ -66,15 +88,19 @@ dnl     http://h30097.www3.hp.com/docs/base_doc/DOCUMENTATION/V51B_HTML/MAN/MAN3
 dnl We need #stdio.h to define NULL on FreeBSD (at least)
 gethostbyaddrrstyle=""
 AC_MSG_CHECKING([gethostbyaddr_r() syntax])
-case "$host" in
-*-freebsd*)
-	AC_DEFINE([GETHOSTBYADDR_R], [], [Define to 1 us gethostbyaddr_r()])
+
+if test "x$GETHOSTBYXXX" = "x"; then
+    case "$host" in
+    *-freebsd*)
+        AC_DEFINE([GETHOSTBYADDR_R], [], [Define to 1 us gethostbyaddr_r()])
         AC_DEFINE([GETHOSTBYADDRRSTYLE_BSD], [], [Define to 1 to use bsd-style gethostbyaddr_r()])
         gethostbyaddrrstyle=BSD
         AC_MSG_WARN([FreeBSD overridden to BSD-style])
         ;;
-esac
-if test "x$gethostbyaddrrstyle" = "x"; then
+    esac
+fi
+
+if test "x$gethostbyaddrrstyle" = "x" && (test "x$GETHOSTBYXXX" = "x" || test "x$GETHOSTBYXXX" = "xGNU") ; then
         AC_TRY_LINK([
 #include <stdio.h>
 #include <netdb.h>
@@ -82,9 +108,15 @@ if test "x$gethostbyaddrrstyle" = "x"; then
 	AC_DEFINE(GETHOSTBYADDR_R)
         AC_DEFINE([GETHOSTBYADDRRSTYLE_GNU], [], [Define to 1 to use gnu-style gethostbyaddr_r()])
         gethostbyaddrrstyle=GNU
+],
+[
+    if test "x$GETHOSTBYXXX" = "xGNU" ; then
+        AC_ERROR([Forced gethostby-style to GNU but this style is not available])
+    fi
 ])
 fi
-if test "x$gethostbyaddrrstyle" = "x"; then
+
+if test "x$gethostbyaddrrstyle" = "x" && (test "x$GETHOSTBYXXX" = "x" || test "x$GETHOSTBYXXX" = "xSYSV") ; then
         AC_TRY_LINK([
 #include <stdio.h>
 #include <netdb.h>
@@ -92,9 +124,15 @@ if test "x$gethostbyaddrrstyle" = "x"; then
 	AC_DEFINE(GETHOSTBYADDR_R)
 	AC_DEFINE([GETHOSTBYADDRRSTYLE_SYSV], [], [Define to 1 to use sysv-style gethostbyaddr_r()])
         gethostbyaddrrstyle=SYSV
+],
+[
+    if test "x$GETHOSTBYXXX" = "xSYSV" ; then
+        AC_ERROR([Forced gethostby-style to SYSV but this style is not available])
+    fi
 ])
+
 fi
-if test "x$gethostbyaddrrstyle" = "x"; then
+if test "x$gethostbyaddrrstyle" = "x" && (test "x$GETHOSTBYXXX" = "x" || test "x$GETHOSTBYXXX" = "xBSD") ; then
         AC_TRY_LINK([
 #include <stdio.h>
 #include <netdb.h>
@@ -102,6 +140,11 @@ if test "x$gethostbyaddrrstyle" = "x"; then
 	AC_DEFINE(GETHOSTBYADDR_R)
         AC_DEFINE(GETHOSTBYADDRRSTYLE_BSD)
         gethostbyaddrrstyle=BSD
+],
+[
+    if test "x$GETHOSTBYXXX" = "xBSD" ; then
+        AC_ERROR([Forced gethostby-style to BSD but this style is not available])
+    fi
 ])
 fi
 
@@ -124,6 +167,7 @@ dnl     http://h30097.www3.hp.com/docs/base_doc/DOCUMENTATION/V51B_HTML/MAN/MAN3
 dnl We need #stdio.h to define NULL on FreeBSD (at least)
 gethostbynamerstyle=""
 AC_MSG_CHECKING([gethostbyname_r() syntax])
+if test "x$GETHOSTBYXXX" = "x" || test "x$GETHOSTBYXXX" = "xGNU" ; then
 AC_TRY_LINK([
 #include <stdio.h>
 #include <netdb.h>
@@ -131,8 +175,15 @@ AC_TRY_LINK([
 	AC_DEFINE([GETHOSTBYNAME_R], [], [Define to 1 to use gethostbyname_r()])
         AC_DEFINE([GETHOSTBYNAMERSTYLE_GNU], [], [Define to 1 to use gnu-style gethostbyname_r()])
         gethostbynamerstyle=GNU
+],
+[
+    if test "x$GETHOSTBYXXX" = "xGNU" ; then
+        AC_ERROR([Forced gethostby-style to GNU but this style is not available])
+    fi
 ])
-if test "x$gethostbynamerstyle" = "x"; then
+fi
+
+if test "x$gethostbynamerstyle" = "x" && (test "x$GETHOSTBYXXX" = "x" || test "x$GETHOSTBYXXX" = "xSYSV") ; then
         AC_TRY_LINK([
 #include <stdio.h>
 #include <netdb.h>
@@ -140,9 +191,15 @@ if test "x$gethostbynamerstyle" = "x"; then
         AC_DEFINE(GETHOSTBYNAME_R)        
 	AC_DEFINE([GETHOSTBYNAMERSTYLE_SYSV], [], [Define to 1 to use sysv-style gethostbyname_r()])
         gethostbynamerstyle=SYSV
+],
+[
+    if test "x$GETHOSTBYXXX" = "xSYSV" ; then
+        AC_ERROR([Forced gethostby-style to SYSV but this style is not available])
+    fi
 ])
 fi
-if test "x$gethostbynamerstyle" = "x"; then
+
+if test "x$gethostbynamerstyle" = "x" && (test "x$GETHOSTBYXXX" = "x" || test "x$GETHOSTBYXXX" = "xBSD") ; then
         AC_TRY_LINK([
 #include <stdio.h>
 #include <netdb.h>
@@ -150,6 +207,11 @@ if test "x$gethostbynamerstyle" = "x"; then
 	AC_DEFINE(GETHOSTBYNAME_R)
 	AC_DEFINE([GETHOSTBYNAMERSTYLE_BSD], [], [Define to 1 to use bsd-style gethostbyname_r()])
         gethostbynamerstyle=BSD
+],
+[
+    if test "x$GETHOSTBYXXX" = "xBSD" ; then
+        AC_ERROR([Forced gethostby-style to BSD but this style is not available])
+    fi
 ])
 fi
 
