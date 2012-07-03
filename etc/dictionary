@@ -312,3 +312,38 @@ VALUE  Tunnel-Medium-Type              Appletalk               12
 VALUE  Tunnel-Medium-Type              DecNet-IV               13
 VALUE  Tunnel-Medium-Type              Banyan-Vines            14
 VALUE  Tunnel-Medium-Type              E.164-NSAP              15
+
+VENDOR 3GPPTS29061V770         10415
+ATTRIBUTE      3GPP-IMSI                               1       string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Charging-Id                        2       integer         vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-PDP-Type                           3       integer         vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-CG-Address                         4       ipaddr          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-GPRS-Negotiated-QoS-profile        5       string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-SGSN-Address                       6       ipaddr          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-GGSN-Address                       7       ipaddr          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-IMSI-MCC-MNC                       8       string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-GGSN-MCC-MNC                       9       string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-NSAPI                              10      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Session-Stop-Indicator             11      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Selection-Mode                     12      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Charging-Characteristics           13      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-CG-IPv6-address                    14      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-SGSN-IPv6-address                  15      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-GGSN-IPv6-address                  16      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-IPv6-DNS-Servers                   17      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-SGSN-MCC-MNC                       18      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Teardown-Indicator                 19      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GGP-IMEISV                             20      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-RAT-Type                           21      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-User-Location-Info                 22      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-MS-TimeZone                        23      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Camel-Charging-Info                24      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Packet-Filter                      25      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Negotiated-DSCP                    26      string          vendor=3GPPTS29061V770
+
+ATTRIBUTE      Framed-Pool                             88      string
+
+# 3GPP-PDP-Type
+VALUE  3GPP-PDP-Type           IPv4            0
+VALUE  3GPP-PDP-Type           PPP             1
+VALUE  3GPP-PDP-Type           IPv6            2
