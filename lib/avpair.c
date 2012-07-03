@@ -18,6 +18,119 @@
 #include <includes.h>
 #include <freeradius-client.h>
 
+
+
+/*
+ *     Decode Tunnel-Password encrypted attributes.
+ *
+ *             Defined in RFC-2868, this uses a two char SALT along with the
+ *             initial intermediate value, to differentiate it from the
+ *             above.
+ */
+int rc_tunnel_pwdecode(uint8_t *passwd, int *pwlen, const char *secret,
+                                               const char *vector)
+{
+       uint8_t         buffer[AUTH_VECTOR_LEN + MAX_STRING_LEN + 3];
+       uint8_t         digest[AUTH_VECTOR_LEN];
+       uint8_t         decrypted[MAX_STRING_LEN + 1];
+       int             secretlen;
+       unsigned        i, n, len;
+
+       len = *pwlen;
+
+       /*
+        *      We need at least a salt.
+        */
+       if (len < 2) {
+               rc_log(LOG_ERR, "tunnel password is too short");
+               return -1;
+       }
+
+       /*
+        *      There's a salt, but no password.  Or, there's a salt
+        *      and a 'data_len' octet.  It's wrong, but at least we
+        *      can figure out what it means: the password is empty.
+        *
+        *      Note that this means we ignore the 'data_len' field,
+        *      if the attribute length tells us that there's no
+        *      more data.      So the 'data_len' field may be wrong,
+        *      but that's ok...
+        */
+       if (len <= 3) {
+               passwd[0] = 0;
+               *pwlen = 0;
+               return 0;
+       }
+
+       len -= 2;               /* discount the salt */
+
+       /*
+        *      Use the secret to setup the decryption digest
+        */
+       secretlen = strlen(secret);
+
+       /*
+        *      Set up the initial key:
+        *
+        *       b(1) = MD5(secret + vector + salt)
+        */
+       memcpy(buffer, secret, secretlen);
+       memcpy(buffer + secretlen, vector, AUTH_VECTOR_LEN);
+       memcpy(buffer + secretlen + AUTH_VECTOR_LEN, passwd, 2);
+       rc_md5_calc(digest, buffer, secretlen + AUTH_VECTOR_LEN + 2);
+
+       /*
+        *      A quick check: decrypt the first octet of the password,
+        *      which is the 'data_len' field.  Ensure it's sane.
+        *
+        *      'n' doesn't include the 'data_len' octet
+        *      'len' does.
+        */
+       n = passwd[2] ^ digest[0];
+       if (n >= len) {
+               rc_log(LOG_ERR, "tunnel password is \
+                                too long for the attribute");
+               return -1;
+       }
+
+       /*
+        *      Loop over the data, decrypting it, and generating
+        *      the key for the next round of decryption.
+        */
+       for (n = 0; n < len; n += AUTH_PASS_LEN) {
+               for (i = 0; i < AUTH_PASS_LEN; i++) {
+                       decrypted[n + i] = passwd[n + i + 2] ^ digest[i];
+
+                       /*
+                        *      Encrypted password may not be aligned
+                        *      on 16 octets, so we catch that here...
+                        */
+                       if ((n + i) == len) break;
+               }
+
+               /*
+                *      Update the digest, based on
+                *
+                *      b(n) = MD5(secret + cleartext(n-1)
+                *
+                *      but only if there's more data...
+                */
+               memcpy(buffer + secretlen, passwd + n + 2, AUTH_PASS_LEN);
+               rc_md5_calc(digest, buffer, secretlen + AUTH_PASS_LEN);
+       }
+
+       /*
+        *      We've already validated the length of the decrypted
+        *      password.  Copy it back to the caller.
+        */
+       memcpy(passwd, decrypted + 1, decrypted[0]);
+       passwd[decrypted[0]] = 0;
+       *pwlen = decrypted[0];
+
+       return decrypted[0];
+}
+
+
 /*
  * Function: rc_avpair_add
  *
@@ -97,13 +210,17 @@ VALUE_PAIR *rc_avpair_new (const rc_handle *rh, int attrid, void *pval, int len,
 {
 	VALUE_PAIR     *vp = NULL;
 	DICT_ATTR      *pda;
+	int attrType;
 
 	attrid = attrid | (vendorpec << 16);
 	if ((pda = rc_dict_getattr (rh, attrid)) == NULL)
 	{
 		rc_log(LOG_ERR,"rc_avpair_new: unknown attribute %d", attrid);
-		return NULL;
+		attrType = PW_TYPE_STRING;
 	}
+	else
+		attrType = pda->type;
+
 	if (vendorpec != 0 && rc_dict_getvend(rh, vendorpec) == NULL)
 	{
 		rc_log(LOG_ERR,"rc_avpair_new: unknown Vendor-Id %d", vendorpec);
@@ -111,10 +228,13 @@ VALUE_PAIR *rc_avpair_new (const rc_handle *rh, int attrid, void *pval, int len,
 	}
 	if ((vp = malloc (sizeof (VALUE_PAIR))) != NULL)
 	{
-		strncpy (vp->name, pda->name, sizeof (vp->name));
+		if(pda)
+			strncpy (vp->name, pda->name, sizeof (vp->name));
+		else
+			sprintf(vp->name, "attr%d", attrid);
 		vp->attribute = attrid;
 		vp->next = NULL;
-		vp->type = pda->type;
+		vp->type = attrType;
 		if (rc_avpair_assign (vp, pval, len) == 0)
 		{
 			/* XXX: Fix up Digest-Attributes */
@@ -257,9 +377,23 @@ rc_avpair_gen(const rc_handle *rh, VALUE_PAIR *pair, unsigned char *ptr,
 	strcpy(pair->name, attr->name);
 	pair->attribute = attr->value;
 	pair->type = attr->type;
+	pair->flags = attr->flags;
+
+	/* Handle attributes with tags. */
+	if (attr->flags.has_tag) 
+	{
+		pair->flags.tag = ptr[0];
+	}
 
 	switch (attr->type) {
 	case PW_TYPE_STRING:
+		/* We don't do decryption here - we don't have all the
+		 * info. */
+		if (attr->flags.has_tag) 
+		{
+			++ptr;
+			--attrlen;
+		}
 		memcpy(pair->strvalue, (char *)ptr, (size_t)attrlen);
 		pair->strvalue[attrlen] = '\0';
 		pair->lvalue = attrlen;
@@ -278,6 +412,11 @@ rc_avpair_gen(const rc_handle *rh, VALUE_PAIR *pair, unsigned char *ptr,
 			goto shithappens;
 		}
 		memcpy((char *)&lvalue, (char *)ptr, 4);
+		if (attr->flags.has_tag) 
+		{
+			/* suppress the tag */
+			lvalue &= 0xFFF;
+		}
 		pair->lvalue = ntohl(lvalue);
 		break;
 
