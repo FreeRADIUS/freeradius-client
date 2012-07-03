@@ -206,7 +206,7 @@ AC_REPLACE_FUNCS(strdup strerror strcasecmp)
 AC_CHECK_FUNCS(flock fcntl uname gethostname sysinfo getdomainname)
 AC_CHECK_FUNCS(stricmp random rand snprintf vsnprintf)
 
-if test "$ac_cv_func_uname" = 'yes'
+if test "$ac_cv_func_uname" = 'yes' && test "$cross_compiling" = 'no'
 then
 	AC_MSG_CHECKING([for field domainname in struct utsname])
 	AC_TRY_RUN([
