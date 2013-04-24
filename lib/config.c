@@ -302,6 +302,8 @@ rc_config_init(rc_handle *rh)
 	int i;
 	SERVER *authservers;
 	SERVER *acctservers;
+	OPTION *acct;
+	OPTION *auth;
 
         rh->config_options = malloc(sizeof(config_options_default));
         if (rh->config_options == NULL) 
@@ -312,8 +314,8 @@ rc_config_init(rc_handle *rh)
         }
         memcpy(rh->config_options, &config_options_default, sizeof(config_options_default));
 
-        authservers = rc_conf_srv(rh, "authserver"); 
-	acctservers = rc_conf_srv(rh, "acctserver");
+	acct = find_option(rh, "acctserver", OT_ANY);
+	auth = find_option(rh, "authserver", OT_ANY);
 	authservers = malloc(sizeof(SERVER));
 	acctservers = malloc(sizeof(SERVER));
 
@@ -335,6 +337,8 @@ rc_config_init(rc_handle *rh)
 		acctservers->name[i] = NULL;
 		acctservers->secret[i] = NULL;
 	} 
+	acct->val = acctservers;
+	auth->val = authservers;
 	return rh;
 }
 
