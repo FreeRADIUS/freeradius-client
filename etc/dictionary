@@ -263,3 +263,87 @@ VALUE		Add-Port-To-IP-Address	Yes			1
 #VALUE		Server-Config		Password-Expiration	30
 #VALUE		Server-Config		Password-Warning	5
 
+#
+# RFC2868 attributes and values
+#
+ATTRIBUTE      Tunnel-Type                             64      integer has_tag
+ATTRIBUTE      Tunnel-Medium-Type                      65      integer has_tag
+ATTRIBUTE      Tunnel-Client-Endpoint                  66      string  has_tag
+ATTRIBUTE      Tunnel-Server-Endpoint                  67      string  has_tag
+
+ATTRIBUTE      Tunnel-Password                         69      string  has_tag,encrypt=2
+
+ATTRIBUTE      Tunnel-Private-Group-Id                 81      string  has_tag
+ATTRIBUTE      Tunnel-Assignment-Id                    82      string  has_tag
+ATTRIBUTE      Tunnel-Preference                       83      integer has_tag
+
+ATTRIBUTE      Tunnel-Client-Auth-Id                   90      string  has_tag
+ATTRIBUTE      Tunnel-Server-Auth-Id                   91      string  has_tag
+
+#      Tunnel Type
+
+VALUE  Tunnel-Type                     PPTP                    1
+VALUE  Tunnel-Type                     L2F                     2
+VALUE  Tunnel-Type                     L2TP                    3
+VALUE  Tunnel-Type                     ATMP                    4
+VALUE  Tunnel-Type                     VTP                     5
+VALUE  Tunnel-Type                     AH                      6
+VALUE  Tunnel-Type                     IP                      7
+VALUE  Tunnel-Type                     MIN-IP                  8
+VALUE  Tunnel-Type                     ESP                     9
+VALUE  Tunnel-Type                     GRE                     10
+VALUE  Tunnel-Type                     DVS                     11
+VALUE  Tunnel-Type                     IP-in-IP                12
+
+#      Tunnel Medium Type
+
+VALUE  Tunnel-Medium-Type              IP                      1
+VALUE  Tunnel-Medium-Type              X25                     2
+VALUE  Tunnel-Medium-Type              ATM                     3
+VALUE  Tunnel-Medium-Type              Frame-Relay             4
+VALUE  Tunnel-Medium-Type              BBN-1822                5
+VALUE  Tunnel-Medium-Type              IEEE-802                6
+VALUE  Tunnel-Medium-Type              E.163                   7
+VALUE  Tunnel-Medium-Type              E.164                   8
+VALUE  Tunnel-Medium-Type              F.69                    9
+VALUE  Tunnel-Medium-Type              X.121                   10
+VALUE  Tunnel-Medium-Type              IPX                     11
+VALUE  Tunnel-Medium-Type              Appletalk               12
+VALUE  Tunnel-Medium-Type              DecNet-IV               13
+VALUE  Tunnel-Medium-Type              Banyan-Vines            14
+VALUE  Tunnel-Medium-Type              E.164-NSAP              15
+
+VENDOR 3GPPTS29061V770         10415
+ATTRIBUTE      3GPP-IMSI                               1       string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Charging-Id                        2       integer         vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-PDP-Type                           3       integer         vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-CG-Address                         4       ipaddr          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-GPRS-Negotiated-QoS-profile        5       string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-SGSN-Address                       6       ipaddr          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-GGSN-Address                       7       ipaddr          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-IMSI-MCC-MNC                       8       string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-GGSN-MCC-MNC                       9       string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-NSAPI                              10      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Session-Stop-Indicator             11      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Selection-Mode                     12      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Charging-Characteristics           13      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-CG-IPv6-address                    14      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-SGSN-IPv6-address                  15      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-GGSN-IPv6-address                  16      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-IPv6-DNS-Servers                   17      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-SGSN-MCC-MNC                       18      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Teardown-Indicator                 19      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GGP-IMEISV                             20      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-RAT-Type                           21      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-User-Location-Info                 22      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-MS-TimeZone                        23      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Camel-Charging-Info                24      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Packet-Filter                      25      string          vendor=3GPPTS29061V770
+ATTRIBUTE      3GPP-Negotiated-DSCP                    26      string          vendor=3GPPTS29061V770
+
+ATTRIBUTE      Framed-Pool                             88      string
+
+# 3GPP-PDP-Type
+VALUE  3GPP-PDP-Type           IPv4            0
+VALUE  3GPP-PDP-Type           PPP             1
+VALUE  3GPP-PDP-Type           IPv6            2

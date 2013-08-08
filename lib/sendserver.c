@@ -44,6 +44,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 	unsigned char   passbuf[MAX(AUTH_PASS_LEN, CHAP_VALUE_LENGTH)];
 	unsigned char   md5buf[256];
 	unsigned char   *buf, *vector, *vsa_length_ptr;
+	VALUE_PAIR      *first_vp = vp;
 
 	buf = auth->data;
 
@@ -106,37 +107,32 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		  total_length += padded_length + 2;
 
 		  break;
-#if 0
 		 case PW_CHAP_PASSWORD:
 
-		  *buf++ = CHAP_VALUE_LENGTH + 2;
-		  if (vsa_length_ptr != NULL) *vsa_length_ptr += CHAP_VALUE_LENGTH + 2;
-
-		  /* Encrypt the Password */
-		  length = vp->lvalue;
-		  if (length > CHAP_VALUE_LENGTH)
 		  {
-			length = CHAP_VALUE_LENGTH;
-		  }
-		  memset ((char *) passbuf, '\0', CHAP_VALUE_LENGTH);
-		  memcpy ((char *) passbuf, vp->strvalue, (size_t) length);
+				int chap_attr_len = CHAP_VALUE_LENGTH + 3;
+				*buf++ = chap_attr_len;
+				char string[MAX_STRING_LEN * 2 + 1];
+				char *ptr = string;
+				int i = 0;
+				*ptr++ = auth->id;
 
-		  /* Calculate the MD5 Digest */
-		  secretlen = strlen (secret);
-		  strcpy ((char *) md5buf, secret);
-		  memcpy ((char *) md5buf + secretlen, (char *) auth->vector,
-		  	  AUTH_VECTOR_LEN);
-		  rc_md5_calc (buf, md5buf, secretlen + AUTH_VECTOR_LEN);
+				i++;
+				memcpy(ptr, vp->strvalue, vp->lvalue);
+				ptr += vp->lvalue;
+				i += vp->lvalue;
 
-		  /* Xor the password into the MD5 digest */
-		  for (i = 0; i < CHAP_VALUE_LENGTH; i++)
-		  {
-			*buf++ ^= passbuf[i];
+				/* TODO: use Chap-Challenge if available */
+				/*                      rc_avpair_get(); */
+				memcpy(ptr, auth->vector, AUTH_VECTOR_LEN);
+				i += AUTH_VECTOR_LEN;
+				*buf = auth->id;
+				rc_md5_calc((u_char *)buf + 1, (u_char *)string, i);
+				buf += chap_attr_len - 2;
+				total_length += chap_attr_len;
 		  }
-		  total_length += CHAP_VALUE_LENGTH + 2;
 
 		  break;
-#endif
 		 default:
 		  switch (vp->type)
 		  {
@@ -307,8 +303,12 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 
 	for (;;)
 	{
-		sendto (sockfd, (char *) auth, (unsigned int) total_length, (int) 0,
+		int ret = sendto (sockfd, (char *) auth, (unsigned int) total_length, (int) 0,
 			SA(&sinremote), sizeof (struct sockaddr_in));
+		if (ret < 0) 
+		{
+			rc_log(LOG_ERR, "%s: socket: %s", __FUNCTION__, strerror(errno));
+		}
 
 		pfd.fd = sockfd;
 		pfd.events = POLLIN;

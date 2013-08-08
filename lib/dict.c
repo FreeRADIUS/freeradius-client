@@ -71,6 +71,8 @@ int rc_read_dictionary (rc_handle *rh, const char *filename)
 			*cp = '\0';
 		}
 
+		ATTR_FLAGS flags;
+		memset(&flags, 0, sizeof(flags));
 		if (strncmp (buffer, "ATTRIBUTE", 9) == 0)
 		{
 			optstr[0] = '\0';
@@ -140,15 +142,59 @@ int rc_read_dictionary (rc_handle *rh, const char *filename)
 						cp++;
 					}
 					if (strncmp(cp1, "vendor=", 7) == 0)
+					{
 						cp1 += 7;
-					dvend = rc_dict_findvend(rh, cp1);
-					if (dvend == NULL) {
-						rc_log(LOG_ERR,
-						 "rc_read_dictionary: unknown Vendor-Id %s on line %d of dictionary %s",
+						dvend = rc_dict_findvend(rh, cp1);
+						if (dvend == NULL) {
+							rc_log(LOG_ERR,
+							 "rc_read_dictionary: unknown Vendor-Id %s on line %d"
+							 " of dictionary %s",
 							 cp1, line_no, filename);
-						fclose(dictfd);
-						return -1;
+							fclose(dictfd);
+							return -1;
+						}
 					}
+					else if(strcmp(cp1, "has_tag") == 0 ||
+										strcmp(cp1, "has_tag=1") == 0)
+					{
+						flags.has_tag = 1;
+					}
+					else if (strncmp(cp1, "encrypt=", 8) == 0)
+					{
+						/* Encryption method, defaults to 0 (none).
+						   Currently valid is just type 2,
+						   Tunnel-Password style, which can only
+						   be applied to strings. */
+						char *pc = NULL;
+						flags.encrypt = strtol(cp1 + 8, &pc, 0);
+						if (*pc) {
+							rc_log(LOG_ERR, "%s:  invalid option %s at line %d",
+							__FUNCTION__, cp1, line_no);
+							return -1;
+						}
+					}
+				}
+			}
+			/*
+			 *	  Special checks for tags, they make our life much more
+			 *	  difficult.
+			 */
+
+			if (flags.has_tag) {
+				/*
+				 *	  Only string, octets, and integer can be tagged.
+				 */
+				switch (type) {
+					case PW_TYPE_STRING:
+					case PW_TYPE_INTEGER:
+						break;
+
+					default:
+						rc_log(LOG_ERR, "%s: Attributes of type %d cannot"
+						 " be tagged (line %d).",
+						  __FUNCTION__, type, line_no);
+						 return -1;
+
 				}
 			}
 
@@ -162,6 +208,7 @@ int rc_read_dictionary (rc_handle *rh, const char *filename)
 			strcpy (attr->name, namestr);
 			attr->value = value;
 			attr->type = type;
+			attr->flags = flags;
 
 			if (dvend != NULL)
 				attr->value |= (dvend->vendorpec << 16);
