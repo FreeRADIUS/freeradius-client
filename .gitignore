@@ -1,0 +1,15 @@
+lib/*
+.fetched
+src/.*
+*.o
+Makefile
+src/radacct
+src/radembedded
+src/radexample
+src/radiusclient
+src/radlogin
+src/radstatus
+stamp-h*
+config.*
+libtool
+etc/radiusclient.conf
