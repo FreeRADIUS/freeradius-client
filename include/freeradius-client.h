@@ -205,6 +205,8 @@ typedef struct rc_conf rc_handle;
 #define PW_ACCT_TERMINATE_CAUSE		49	/* integer */
 #define PW_ACCT_MULTI_SESSION_ID	50	/* string */
 #define PW_ACCT_LINK_COUNT		51	/* integer */
+#define PW_ACCT_INPUT_GIGAWORDS		52	/* integer */
+#define PW_ACCT_OUTPUT_GIGAWORDS	53	/* integer */
 
 /* 	Experimental SIP-specific attributes (draft-sterman-aaa-sip-00.txt etc) */
 
