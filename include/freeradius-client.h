@@ -443,15 +443,15 @@ void rc_map2id_free(rc_handle *);
 
 /*	config.c		*/
 
-rc_handle *rc_read_config(char *);
-char *rc_conf_str(rc_handle *, char *);
-int rc_conf_int(rc_handle *, char *);
-SERVER *rc_conf_srv(rc_handle *, char *);
+rc_handle *rc_read_config(const char *);
+char *rc_conf_str(rc_handle *, const char *);
+int rc_conf_int(rc_handle *, const char *);
+SERVER *rc_conf_srv(rc_handle *, const char *);
 int rc_find_server(rc_handle *, char *, uint32_t *, char *);
 void rc_config_free(rc_handle *);
 int rc_add_config(rc_handle *, const char *, const char *, const char *, const int);
 rc_handle *rc_config_init(rc_handle *);
-int test_config(rc_handle *, char *);
+int test_config(rc_handle *, const char *);
 
 /*	dict.c			*/
 
