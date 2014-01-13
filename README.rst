@@ -1,5 +1,15 @@
-$Id: README,v 1.7 2007/03/02 15:05:56 cparker Exp $
+The FreeRADIUS client
+=====================
 
+0. BRANCH STATE
+---------------
+|BuildStatus|_
+
+.. |BuildStatus| image:: https://travis-ci.org/FreeRADIUS/freeradius-client.png
+.. _BuildStatus: https://travis-ci.org/FreeRADIUS/freeradius-client
+
+1. INTRODUCTION
+---------------
 FreeRADIUS Client is a framework and library for writing RADIUS Clients
 which additionally includes radlogin, a flexible RADIUS aware login
 replacement, a command line program to send RADIUS accounting records
@@ -27,8 +37,10 @@ FreeRADIUS Client is known to compile on the following platforms:
 		x86_64 Linux
 		sparc-sun-solaris2.5.1
 
-********* SECURITY NOTE *********
 
+
+2. Security note
+----------------
 This code has not yet been fully audited by the FreeRADIUS project, as it
 has only recently been adopted by the FreeRADIUS project to continue 
 development and support.  Any security related issues should be reported 
@@ -38,7 +50,7 @@ to the project either via email:
 
 or via the FreeRADIUS bugtracker:
 
-  http://bugs.freeradius.org/enter_bug.cgi?product=freeradius-client
+  http://bugs.freeradius.org/
 
 As is the case with any open-source project, patches in addition to
 bug reports are always welcome.
@@ -46,7 +58,3 @@ bug reports are always welcome.
 Additional Security related information on the FreeRADIUS project:
 
   http://www.freeradius.org/security.html
-
-********* END SECURITY NOTE *********
-
-
