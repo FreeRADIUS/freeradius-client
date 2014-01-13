@@ -25,19 +25,15 @@ It is highly portable and runs on Linux, many BSD variants and Solaris.
 
 FreeRADIUS Client is known to compile on the following platforms:
 
-	Compiled on:
-
-		i386-pc-bsdi2.1
-		sparc-unknown-netbsd1.2.1
-		i386-unknown-freebsd2.2.6
+- Compiled on:
+   * i386-pc-bsdi2.1
+   * sparc-unknown-netbsd1.2.1
+   * i386-unknown-freebsd2.2.6
 	
-	Compiled and tested on:
-
-		x86 Linux
-		x86_64 Linux
-		sparc-sun-solaris2.5.1
-
-
+- Compiled and tested on:
+   * x86 Linux
+   * x86_64 Linux
+   * sparc-sun-solaris2.5.1
 
 2. Security note
 ----------------
@@ -46,15 +42,15 @@ has only recently been adopted by the FreeRADIUS project to continue
 development and support.  Any security related issues should be reported 
 to the project either via email:
 
-  security at freeradius dot org
+security at freeradius dot org
 
 or via the FreeRADIUS bugtracker:
 
-  http://bugs.freeradius.org/
+http://bugs.freeradius.org/
 
 As is the case with any open-source project, patches in addition to
 bug reports are always welcome.
 
 Additional Security related information on the FreeRADIUS project:
 
-  http://www.freeradius.org/security.html
+http://www.freeradius.org/security.html
