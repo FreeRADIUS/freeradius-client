@@ -1,0 +1,28 @@
+# Build products
+src/radstatus
+src/radlogin
+src/radiusclient
+src/radexample
+src/radembedded
+src/radacct
+*.o
+*.lo
+*.la
+lib/.libs
+lib/.deps
+src/.libs
+src/.deps
+etc/radiusclient.conf
+
+# Configure and Automake
+config.status
+config.cache
+config.log
+config.h
+libtool
+stamp-h*
+Makefile
+
+# Misc
+*.swp
+
