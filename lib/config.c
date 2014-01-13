@@ -352,7 +352,7 @@ rc_config_init(rc_handle *rh)
  */
 
 rc_handle *
-rc_read_config(char *filename)
+rc_read_config(const char *filename)
 {
 	FILE *configfd;
 	char buffer[512], *p;
@@ -474,7 +474,7 @@ rc_read_config(char *filename)
  * Returns: config option value
  */
 
-char *rc_conf_str(rc_handle *rh, char *optname)
+char *rc_conf_str(rc_handle *rh, const char *optname)
 {
 	OPTION *option;
 
@@ -489,7 +489,7 @@ char *rc_conf_str(rc_handle *rh, char *optname)
 	}
 }
 
-int rc_conf_int(rc_handle *rh, char *optname)
+int rc_conf_int(rc_handle *rh, const char *optname)
 {
 	OPTION *option;
 
@@ -504,7 +504,7 @@ int rc_conf_int(rc_handle *rh, char *optname)
 	}
 }
 
-SERVER *rc_conf_srv(rc_handle *rh, char *optname)
+SERVER *rc_conf_srv(rc_handle *rh, const char *optname)
 {
 	OPTION *option;
 
@@ -527,7 +527,7 @@ SERVER *rc_conf_srv(rc_handle *rh, char *optname)
  * Returns: 0 on success, -1 when failure
  */
 
-int test_config(rc_handle *rh, char *filename)
+int test_config(rc_handle *rh, const char *filename)
 {
 #if 0
 	struct stat st;
