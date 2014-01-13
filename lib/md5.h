@@ -66,11 +66,11 @@ typedef struct MD5Context {
 
 /* __BEGIN_DECLS */
 void	 MD5Init(MD5_CTX *);
-void	 MD5Update(MD5_CTX *, const uint8_t *, size_t)
+void	 MD5Update(MD5_CTX *, uint8_t const *, size_t)
 /*		__attribute__((__bounded__(__string__,2,3)))*/;
 void	 MD5Final(uint8_t [MD5_DIGEST_LENGTH], MD5_CTX *)
 /*		__attribute__((__bounded__(__minbytes__,1,MD5_DIGEST_LENGTH)))*/;
-void	 MD5Transform(uint32_t [4], const uint8_t [MD5_BLOCK_LENGTH])
+void	 MD5Transform(uint32_t [4], uint8_t const [MD5_BLOCK_LENGTH])
 /*		__attribute__((__bounded__(__minbytes__,1,4)))*/
 /*		__attribute__((__bounded__(__minbytes__,2,MD5_BLOCK_LENGTH)))*/;
 /* __END_DECLS */

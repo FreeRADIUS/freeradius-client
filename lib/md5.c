@@ -96,7 +96,7 @@ MD5Init(MD5_CTX *ctx)
  * of bytes.
  */
 void
-MD5Update(MD5_CTX *ctx, const unsigned char *input, size_t len)
+MD5Update(MD5_CTX *ctx, uint8_t const *input, size_t len)
 {
 	size_t have, need;
 
@@ -112,7 +112,7 @@ MD5Update(MD5_CTX *ctx, const unsigned char *input, size_t len)
 	}
 	ctx->count[1] += ((uint32_t)len >> 29);
 
-	
+
 
 	if (len >= need) {
 		if (have != 0) {
@@ -184,7 +184,7 @@ MD5Final(unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
  * the data and converts bytes into longwords for this routine.
  */
 void
-MD5Transform(uint32_t state[4], const uint8_t block[MD5_BLOCK_LENGTH])
+MD5Transform(uint32_t state[4], uint8_t const block[MD5_BLOCK_LENGTH])
 {
 	uint32_t a, b, c, d, in[MD5_BLOCK_LENGTH / 4];
 

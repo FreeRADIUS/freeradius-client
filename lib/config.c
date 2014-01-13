@@ -27,14 +27,14 @@
  * Returns: pointer to option on success, NULL otherwise
  */
 
-static OPTION *find_option(rc_handle *rh, const char *optname, unsigned int type)
+static OPTION *find_option(rc_handle *rh, char const *optname, unsigned int type)
 {
 	int 	i;
 
 	/* there're so few options that a binary search seems not necessary */
 	for (i = 0; i < NUM_OPTIONS; i++) {
 		if (!strcmp(rh->config_options[i].name, optname) &&
-		    (rh->config_options[i].type & type)) 
+		    (rh->config_options[i].type & type))
 		{
 		    	return &rh->config_options[i];
 		}
@@ -51,7 +51,7 @@ static OPTION *find_option(rc_handle *rh, const char *optname, unsigned int type
  * Returns: 0 on success, -1 on failure
  */
 
-static int set_option_str(const char *filename, int line, OPTION *option, const char *p)
+static int set_option_str(char const *filename, int line, OPTION *option, char const *p)
 {
 	if (p) {
 		option->val = (void *) strdup(p);
@@ -66,7 +66,7 @@ static int set_option_str(const char *filename, int line, OPTION *option, const 
 	return 0;
 }
 
-static int set_option_int(const char *filename, int line, OPTION *option, const char *p)
+static int set_option_int(char const *filename, int line, OPTION *option, char const *p)
 {
 	int *iptr;
 
@@ -86,7 +86,7 @@ static int set_option_int(const char *filename, int line, OPTION *option, const 
 	return 0;
 }
 
-static int set_option_srv(const char *filename, int line, OPTION *option, const char *p)
+static int set_option_srv(char const *filename, int line, OPTION *option, char const *p)
 {
 	SERVER *serv;
 	char *p_pointer;
@@ -122,12 +122,12 @@ static int set_option_srv(const char *filename, int line, OPTION *option, const 
 	if ((q = strchr(p_pointer,':')) != NULL) {
 		*q = '\0';
 		q++;
-		
+
 		/* Check to see if we have 'servername:port:secret' syntax */
 		if((s = strchr(q,':')) != NULL) {
 			*s = '\0';
 			s++;
-			serv->secret[serv->max] = strdup(s);			
+			serv->secret[serv->max] = strdup(s);
 			if (serv->secret[serv->max] == NULL) {
 				rc_log(LOG_CRIT, "read_config: out of memory");
 				if (option->val == NULL) {
@@ -181,7 +181,7 @@ static int set_option_srv(const char *filename, int line, OPTION *option, const 
 	return 0;
 }
 
-static int set_option_auo(const char *filename, int line, OPTION *option, const char *p)
+static int set_option_auo(char const *filename, int line, OPTION *option, char const *p)
 {
 	int *iptr;
 	char *p_dupe = NULL;
@@ -237,23 +237,23 @@ static int set_option_auo(const char *filename, int line, OPTION *option, const 
 
 
 /* Function: rc_add_config
- * 
+ *
  * Purpose: allow a config option to be added to rc_handle from inside a program
- * 
+ *
  * Returns: 0 on success, -1 on failure
  */
 
-int rc_add_config(rc_handle *rh, const char *option_name, const char *option_val, const char *source, const int line)
+int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val, char const *source, int const line)
 {
 	OPTION *option;
 
-	if ((option = find_option(rh, option_name, OT_ANY)) == NULL) 
+	if ((option = find_option(rh, option_name, OT_ANY)) == NULL)
 	{
 		rc_log(LOG_ERR, "ERROR: unrecognized option: %s", option_name);
 		return -1;
 	}
 
-	if (option->status != ST_UNDEF) 
+	if (option->status != ST_UNDEF)
 	{
 		rc_log(LOG_ERR, "ERROR: duplicate option: %s", option_name);
 		return -1;
@@ -289,10 +289,10 @@ int rc_add_config(rc_handle *rh, const char *option_name, const char *option_val
 
 /*
  * Function: rc_config_init
- * 
+ *
  * Purpose: initialize the configuration structure from an external program.  For use when not
  * running a standalone client that reads from a config file.
- * 
+ *
  * Returns: rc_handle on success, NULL on failure
  */
 
@@ -306,7 +306,7 @@ rc_config_init(rc_handle *rh)
 	OPTION *auth;
 
         rh->config_options = malloc(sizeof(config_options_default));
-        if (rh->config_options == NULL) 
+        if (rh->config_options == NULL)
 	{
                 rc_log(LOG_CRIT, "rc_config_init: out of memory");
 		rc_destroy(rh);
@@ -330,13 +330,13 @@ rc_config_init(rc_handle *rh)
 	authservers->max = 0;
 	acctservers->max = 0;
 
-	for(i=0; i < SERVER_MAX; i++) 
-	{	
+	for(i=0; i < SERVER_MAX; i++)
+	{
 		authservers->name[i] = NULL;
 		authservers->secret[i] = NULL;
 		acctservers->name[i] = NULL;
 		acctservers->secret[i] = NULL;
-	} 
+	}
 	acct->val = acctservers;
 	auth->val = authservers;
 	return rh;
@@ -352,7 +352,7 @@ rc_config_init(rc_handle *rh)
  */
 
 rc_handle *
-rc_read_config(const char *filename)
+rc_read_config(char const *filename)
 {
 	FILE *configfd;
 	char buffer[512], *p;
@@ -474,7 +474,7 @@ rc_read_config(const char *filename)
  * Returns: config option value
  */
 
-char *rc_conf_str(rc_handle *rh, const char *optname)
+char *rc_conf_str(rc_handle *rh, char const *optname)
 {
 	OPTION *option;
 
@@ -489,7 +489,7 @@ char *rc_conf_str(rc_handle *rh, const char *optname)
 	}
 }
 
-int rc_conf_int(rc_handle *rh, const char *optname)
+int rc_conf_int(rc_handle *rh, char const *optname)
 {
 	OPTION *option;
 
@@ -504,7 +504,7 @@ int rc_conf_int(rc_handle *rh, const char *optname)
 	}
 }
 
-SERVER *rc_conf_srv(rc_handle *rh, const char *optname)
+SERVER *rc_conf_srv(rc_handle *rh, char const *optname)
 {
 	OPTION *option;
 
@@ -527,7 +527,7 @@ SERVER *rc_conf_srv(rc_handle *rh, const char *optname)
  * Returns: 0 on success, -1 when failure
  */
 
-int test_config(rc_handle *rh, const char *filename)
+int test_config(rc_handle *rh, char const *filename)
 {
 #if 0
 	struct stat st;
@@ -653,7 +653,7 @@ static int find_match (uint32_t *ip_addr, char *hostname)
 	{
 		return -1;
 	}
-		
+
 	for (paddr = hp->h_addr_list; *paddr; paddr++)
 	{
 		addr = ** (uint32_t **) paddr;
@@ -757,7 +757,7 @@ int rc_find_server (rc_handle *rh, char *server_name, uint32_t *ip_addr, char *s
 		return -1;
 
 	/* Check to see if the server secret is defined in the rh config */
-	if( (authservers = rc_conf_srv(rh, "authserver")) != NULL ) 
+	if( (authservers = rc_conf_srv(rh, "authserver")) != NULL )
 	{
 		for( i = 0; i < authservers->max; i++ )
 		{
@@ -777,7 +777,7 @@ int rc_find_server (rc_handle *rh, char *server_name, uint32_t *ip_addr, char *s
 		}
 	}
 
-	if( (acctservers = rc_conf_srv(rh, "acctserver")) != NULL ) 
+	if( (acctservers = rc_conf_srv(rh, "acctserver")) != NULL )
 	{
 		for( i = 0; i < acctservers->max; i++ )
 		{
@@ -797,7 +797,7 @@ int rc_find_server (rc_handle *rh, char *server_name, uint32_t *ip_addr, char *s
 		}
 	}
 
-	/* We didn't find it in the rh_config or the servername is too long so look for a 
+	/* We didn't find it in the rh_config or the servername is too long so look for a
 	 * servers file to define the secret(s)
 	 */
 

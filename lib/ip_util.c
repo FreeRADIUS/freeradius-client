@@ -38,7 +38,7 @@ static __thread	char	*tmphostbuf=NULL;
  * Returns: NULL on failure, hostent pointer on success
  */
 
-struct hostent *rc_gethostbyname(const char *hostname)
+struct hostent *rc_gethostbyname(char const *hostname)
 {
 	struct 	hostent *hp;
 #ifdef GETHOSTBYNAME_R
@@ -83,7 +83,7 @@ struct hostent *rc_gethostbyname(const char *hostname)
  * Returns: NULL on failure, hostent pointer on success
  */
 
-struct hostent *rc_gethostbyaddr(const char *addr, size_t length, int format)
+struct hostent *rc_gethostbyaddr(char const *addr, size_t length, int format)
 {
 	struct 	hostent *hp;
 #ifdef GETHOSTBYADDR_R
@@ -204,7 +204,7 @@ int rc_good_ipaddr (char *addr)
  *
  */
 
-const char *rc_ip_hostname (uint32_t h_ipaddr)
+char const *rc_ip_hostname (uint32_t h_ipaddr)
 {
 	struct hostent  *hp;
 	uint32_t           n_ipaddr = htonl (h_ipaddr);

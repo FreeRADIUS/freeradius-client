@@ -29,7 +29,7 @@
  *
  */
 
-VALUE_PAIR *rc_avpair_add (const rc_handle *rh, VALUE_PAIR **list, int attrid, void *pval, int len, int vendorpec)
+VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, int attrid, void *pval, int len, int vendorpec)
 {
 	VALUE_PAIR     *vp;
 
@@ -93,7 +93,7 @@ int rc_avpair_assign (VALUE_PAIR *vp, void *pval, int len)
  *
  */
 
-VALUE_PAIR *rc_avpair_new (const rc_handle *rh, int attrid, void *pval, int len, int vendorpec)
+VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void *pval, int len, int vendorpec)
 {
 	VALUE_PAIR     *vp = NULL;
 	DICT_ATTR      *pda;
@@ -165,7 +165,7 @@ VALUE_PAIR *rc_avpair_new (const rc_handle *rh, int attrid, void *pval, int len,
  */
 
 VALUE_PAIR *
-rc_avpair_gen(const rc_handle *rh, VALUE_PAIR *pair, unsigned char *ptr,
+rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char *ptr,
     int length, int vendorpec)
 {
 	int attribute, attrlen, x_len;
@@ -403,7 +403,7 @@ void rc_avpair_free (VALUE_PAIR *pair)
  */
 
 static void
-rc_fieldcpy(char *string, char **uptr, const char *stopat, size_t len)
+rc_fieldcpy(char *string, char **uptr, char const *stopat, size_t len)
 {
 	char *ptr, *estring;
 
@@ -454,7 +454,7 @@ rc_fieldcpy(char *string, char **uptr, const char *stopat, size_t len)
 #define PARSE_MODE_VALUE	2
 #define PARSE_MODE_INVALID	3
 
-int rc_avpair_parse (const rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
+int rc_avpair_parse (rc_handle const *rh, char *buffer, VALUE_PAIR **first_pair)
 {
 	int             mode;
 	char            attrstr[AUTH_ID_LEN];
@@ -645,7 +645,7 @@ int rc_avpair_parse (const rc_handle *rh, char *buffer, VALUE_PAIR **first_pair)
  *
  */
 
-int rc_avpair_tostr (const rc_handle *rh, VALUE_PAIR *pair, char *name, int ln, char *value, int lv)
+int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, char *value, int lv)
 {
 	DICT_VALUE     *dval;
 	char            buffer[32];
@@ -759,7 +759,7 @@ rc_avpair_log(rc_handle *rh, VALUE_PAIR *pair, char *buf, size_t buf_len)
  *
  */
 
-VALUE_PAIR *rc_avpair_readin(const rc_handle *rh, FILE *input)
+VALUE_PAIR *rc_avpair_readin(rc_handle const *rh, FILE *input)
 {
 	VALUE_PAIR *vp = NULL;
 	char buffer[1024], *q;

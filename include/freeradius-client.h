@@ -29,7 +29,7 @@
  * inttypes.h instead.  Comment out the stdint include if you get an error,
  * and uncomment the inttypes.h include.
  */
-#include	<stdint.h> 
+#include	<stdint.h>
 /* #include	<inttypes.h> */
 #include	<stdio.h>
 #include	<time.h>
@@ -381,7 +381,7 @@ typedef struct send_data /* Used to pass information to sendserver() function */
 	uint8_t        seq_nbr;		/* Packet sequence number */
 	char           *server;		/* Name/addrress of RADIUS server */
 	int            svc_port;	/* RADIUS protocol destination port */
-	char	       *secret;		/* Shared secret of RADIUS server */	
+	char	       *secret;		/* Shared secret of RADIUS server */
 	int            timeout;		/* Session timeout in seconds */
 	int	       retries;
 	VALUE_PAIR     *send_pairs;     /* More a/v pairs to send */
@@ -413,17 +413,17 @@ __BEGIN_DECLS
 
 /*	avpair.c		*/
 
-VALUE_PAIR *rc_avpair_add(const rc_handle *, VALUE_PAIR **, int, void *, int, int);
+VALUE_PAIR *rc_avpair_add(rc_handle const *, VALUE_PAIR **, int, void *, int, int);
 int rc_avpair_assign(VALUE_PAIR *, void *, int);
-VALUE_PAIR *rc_avpair_new(const rc_handle *, int, void *, int, int);
-VALUE_PAIR *rc_avpair_gen(const rc_handle *, VALUE_PAIR *, unsigned char *, int, int);
+VALUE_PAIR *rc_avpair_new(rc_handle const *, int, void *, int, int);
+VALUE_PAIR *rc_avpair_gen(rc_handle const *, VALUE_PAIR *, unsigned char *, int, int);
 VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, int, int);
 void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
 void rc_avpair_free(VALUE_PAIR *);
-int rc_avpair_parse(const rc_handle *, char *, VALUE_PAIR **);
-int rc_avpair_tostr(const rc_handle *, VALUE_PAIR *, char *, int, char *, int);
+int rc_avpair_parse(rc_handle const *, char *, VALUE_PAIR **);
+int rc_avpair_tostr(rc_handle const *, VALUE_PAIR *, char *, int, char *, int);
 char *rc_avpair_log(rc_handle *, VALUE_PAIR *, char *buf, size_t buf_len);
-VALUE_PAIR *rc_avpair_readin(const rc_handle *, FILE *);
+VALUE_PAIR *rc_avpair_readin(rc_handle const *, FILE *);
 
 /*	buildreq.c		*/
 
@@ -443,34 +443,34 @@ void rc_map2id_free(rc_handle *);
 
 /*	config.c		*/
 
-rc_handle *rc_read_config(const char *);
-char *rc_conf_str(rc_handle *, const char *);
-int rc_conf_int(rc_handle *, const char *);
-SERVER *rc_conf_srv(rc_handle *, const char *);
+rc_handle *rc_read_config(char const *);
+char *rc_conf_str(rc_handle *, char const *);
+int rc_conf_int(rc_handle *, char const *);
+SERVER *rc_conf_srv(rc_handle *, char const *);
 int rc_find_server(rc_handle *, char *, uint32_t *, char *);
 void rc_config_free(rc_handle *);
-int rc_add_config(rc_handle *, const char *, const char *, const char *, const int);
+int rc_add_config(rc_handle *, char const *, char const *, char const *, int);
 rc_handle *rc_config_init(rc_handle *);
-int test_config(rc_handle *, const char *);
+int test_config(rc_handle *, char const *);
 
 /*	dict.c			*/
 
-int rc_read_dictionary(rc_handle *, const char *);
-DICT_ATTR *rc_dict_getattr(const rc_handle *, int);
-DICT_ATTR *rc_dict_findattr(const rc_handle *, const char *);
-DICT_VALUE *rc_dict_findval(const rc_handle *, const char *);
-DICT_VENDOR *rc_dict_findvend(const rc_handle *, const char *);
-DICT_VENDOR *rc_dict_getvend(const rc_handle *, int);
-DICT_VALUE * rc_dict_getval(const rc_handle *, uint32_t, const char *);
+int rc_read_dictionary(rc_handle *, char const *);
+DICT_ATTR *rc_dict_getattr(rc_handle const *, int);
+DICT_ATTR *rc_dict_findattr(rc_handle const *, char const *);
+DICT_VALUE *rc_dict_findval(rc_handle const *, char const *);
+DICT_VENDOR *rc_dict_findvend(rc_handle const *, char const *);
+DICT_VENDOR *rc_dict_getvend(rc_handle const *, int);
+DICT_VALUE * rc_dict_getval(rc_handle const *, uint32_t, char const *);
 void rc_dict_free(rc_handle *);
 
 /*	ip_util.c		*/
 
-struct hostent *rc_gethostbyname(const char *);
-struct hostent *rc_gethostbyaddr(const char *, size_t, int);
+struct hostent *rc_gethostbyname(char const *);
+struct hostent *rc_gethostbyaddr(char const *, size_t, int);
 uint32_t rc_get_ipaddr(char *);
 int rc_good_ipaddr(char *);
-const char *rc_ip_hostname(uint32_t);
+char const *rc_ip_hostname(uint32_t);
 unsigned short rc_getport(int);
 int rc_own_hostname(char *, int);
 uint32_t rc_own_ipaddress(rc_handle *);
@@ -482,7 +482,7 @@ int rc_get_srcaddr(struct sockaddr *, struct sockaddr *);
 /*	log.c			*/
 
 void rc_openlog(char *);
-void rc_log(int, const char *, ...);
+void rc_log(int, char const *, ...);
 
 /*	sendserver.c		*/
 

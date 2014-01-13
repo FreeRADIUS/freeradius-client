@@ -42,7 +42,7 @@ void rc_openlog(char *ident)
  *
  */
 
-void rc_log(int prio, const char *format, ...)
+void rc_log(int prio, char const *format, ...)
 {
 	char buff[1024];
 	va_list ap;
