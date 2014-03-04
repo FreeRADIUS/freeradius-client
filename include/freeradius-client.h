@@ -18,9 +18,9 @@
 #define FREERADIUS_CLIENT_H
 
 #ifdef CP_DEBUG
-#define		DEBUG(args...)	rc_log(## args)
+#define		DEBUG(args, ...)	rc_log(## args)
 #else
-#define		DEBUG(args...)	;
+#define		DEBUG(args, ...)	;
 #endif
 
 #include	<sys/types.h>
