@@ -151,6 +151,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 
 		    case PW_TYPE_INTEGER:
 		    case PW_TYPE_IPADDR:
+		    case PW_TYPE_DATE:
 			*buf++ = sizeof (uint32_t) + 2;
 			if (vsa_length_ptr != NULL) *vsa_length_ptr += sizeof(uint32_t) + 2;
 			lvalue = htonl (vp->lvalue);
