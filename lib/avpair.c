@@ -280,6 +280,12 @@ rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char *ptr,
 		memcpy((char *)&lvalue, (char *)ptr, 4);
 		pair->lvalue = ntohl(lvalue);
 		break;
+	case PW_TYPE_DATE:
+		if (attrlen != 4) {
+			rc_log(LOG_ERR, "rc_avpair_gen: received DATE "
+			    "attribute with invalid length");
+			goto shithappens;
+		}
 
 	default:
 		rc_log(LOG_WARNING, "rc_avpair_gen: %s has unknown type",
