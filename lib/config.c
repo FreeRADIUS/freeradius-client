@@ -281,7 +281,7 @@ int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val
 			}
 			break;
 		default:
-			rc_log(LOG_CRIT, "rc_read_config: impossible case branch!");
+			rc_log(LOG_CRIT, "rc_add_config: impossible case branch!");
 			abort();
 	}
 	return 0;

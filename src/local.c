@@ -49,7 +49,7 @@ LFUNC auth_local(char *username, char *passwd)
 
 	xpasswd = crypt(passwd, pw->pw_passwd);
 
-	if (*pw->pw_passwd == '\0' || strcmp(xpasswd, pw->pw_passwd)) {
+	if (*pw->pw_passwd == '\0' || !xpasswd || strcmp(xpasswd, pw->pw_passwd)) {
 		rc_log(LOG_NOTICE, "authentication FAILED, type local, username %s", username);
 		printf(SC_LOCAL_FAILED);
 		return NULL;
