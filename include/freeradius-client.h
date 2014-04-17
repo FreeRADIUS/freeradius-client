@@ -56,6 +56,8 @@
 
 #define	MAX_SECRET_LENGTH	(3 * 16) /* MUST be multiple of 16 */
 
+#define MAX_STRING_LEN                 254 /* RFC2138: string 0-253 octets */
+
 #define	VENDOR(x)		(((x) >> 16) & 0xffff)
 #define	ATTRID(x)		((x) & 0xffff)
 
@@ -331,11 +333,28 @@ typedef struct rc_conf rc_handle;
 
 /* Server data structures */
 
+
+typedef struct attr_flags 
+{
+	char         has_tag;     /* attribute allows tags */
+	signed char  tag;
+	uint8_t      encrypt;     /* encryption method */
+} ATTR_FLAGS;
+
+/*
+ *     Values of the encryption flags.
+ */
+#define FLAG_ENCRYPT_NONE               (0)
+#define FLAG_ENCRYPT_USER_PASSWORD      (1)
+#define FLAG_ENCRYPT_TUNNEL_PASSWORD    (2)
+#define FLAG_ENCRYPT_ASCEND_SECRET      (3)
+
 typedef struct dict_attr
 {
 	char              name[NAME_LENGTH + 1];	/* attribute name */
 	int               value;			/* attribute index */
 	int               type;				/* string, int, etc. */
+	ATTR_FLAGS        flags;
 	struct dict_attr *next;
 } DICT_ATTR;
 
@@ -361,6 +380,7 @@ typedef struct value_pair
 	int                type;
 	uint32_t           lvalue;
 	char               strvalue[AUTH_STRING_LEN + 1];
+	ATTR_FLAGS         flags;
 	struct value_pair *next;
 } VALUE_PAIR;
 
@@ -413,7 +433,8 @@ __BEGIN_DECLS
 
 /*	avpair.c		*/
 
-VALUE_PAIR *rc_avpair_add(rc_handle const *, VALUE_PAIR **, int, void *, int, int);
+int rc_tunnel_pwdecode(uint8_t *, int *, const char *, const char *);
+VALUE_PAIR *rc_avpair_add(const rc_handle *, VALUE_PAIR **, int, void *, int, int);
 int rc_avpair_assign(VALUE_PAIR *, void *, int);
 VALUE_PAIR *rc_avpair_new(rc_handle const *, int, void *, int, int);
 VALUE_PAIR *rc_avpair_gen(rc_handle const *, VALUE_PAIR *, unsigned char *, int, int);
