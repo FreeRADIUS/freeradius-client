@@ -30,7 +30,7 @@ struct map2id_s {
  * Returns: zero on success, negative integer on failure
  */
 
-int rc_read_mapfile(rc_handle *rh, char *filename)
+int rc_read_mapfile(rc_handle *rh, char const *filename)
 {
 	char buffer[1024];
 	FILE *mapfd;
@@ -102,7 +102,7 @@ int rc_read_mapfile(rc_handle *rh, char *filename)
  * Returns: port id, zero if no entry found
  */
 
-uint32_t rc_map2id(rc_handle *rh, char *name)
+uint32_t rc_map2id(rc_handle const *rh, char const *name)
 {
 	struct map2id_s *p;
 	char ttyname[PATH_MAX];

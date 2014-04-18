@@ -23,7 +23,7 @@ unsigned char rc_get_id();
  *
  */
 
-void rc_buildreq(rc_handle *rh, SEND_DATA *data, int code, char *server, unsigned short port, 
+void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, unsigned short port,
 		 char *secret, int timeout, int retries)
 {
 	data->server = server;

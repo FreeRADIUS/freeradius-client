@@ -12,10 +12,10 @@
  */
 #include "md5.h"
 
-void rc_md5_calc(unsigned char *output, unsigned char *input,
+void rc_md5_calc(unsigned char *output, unsigned char const *input,
 		     size_t inputlen);
 
-void rc_md5_calc(unsigned char *output, unsigned char *input,
+void rc_md5_calc(unsigned char *output, unsigned char const *input,
 		     size_t inlen)
 {
 	MD5_CTX	context;

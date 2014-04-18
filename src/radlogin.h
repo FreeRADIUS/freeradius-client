@@ -12,14 +12,14 @@
 #ifndef RADLOGIN_H
 #define RADLOGIN_H
 
-typedef void (*LFUNC)(rc_handle *, char *);
+typedef void (*LFUNC)(rc_handle *, char const *);
 
 /* radius.c */
-LFUNC auth_radius(rc_handle *, uint32_t, char *, char *);
-void radius_login(rc_handle *, char *);
+LFUNC auth_radius(rc_handle *, uint32_t, char const *, char const *);
+void radius_login(rc_handle *, char const *);
 
 /* local.c */
-LFUNC auth_local(char *, char *);
-void local_login(rc_handle *, char *);
+LFUNC auth_local(char const *, char const *);
+void local_login(rc_handle *, char const *);
 
 #endif /* RADLOGIN_H */

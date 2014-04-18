@@ -24,7 +24,7 @@
 #define	SA(p)	((struct sockaddr *)(p))
 
 static void rc_random_vector (unsigned char *);
-static int rc_check_reply (AUTH_HDR *, int, char *, unsigned char *, unsigned char);
+static int rc_check_reply (AUTH_HDR *, int, char const *, unsigned char const *, unsigned char);
 
 /*
  * Function: rc_pack_list
@@ -425,7 +425,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
  *
  */
 
-static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char *secret, unsigned char *vector, uint8_t seq_nbr)
+static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char const *secret, unsigned char const *vector, uint8_t seq_nbr)
 {
 	int             secretlen;
 	int             totallen;

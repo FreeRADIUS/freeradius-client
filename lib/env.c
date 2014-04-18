@@ -65,7 +65,7 @@ void rc_free_env(ENV *env)
  *
  */
 
-int rc_add_env(ENV *env, char *name, char *value)
+int rc_add_env(ENV *env, char const *name, char const *value)
 {
 	int i;
 	char *new_env;
@@ -112,7 +112,7 @@ int rc_add_env(ENV *env, char *name, char *value)
  *
  */
 
-int rc_import_env(ENV *env, char **import)
+int rc_import_env(ENV *env, char const **import)
 {
 	char *es;
 

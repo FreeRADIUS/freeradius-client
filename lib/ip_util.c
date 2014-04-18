@@ -130,7 +130,7 @@ struct hostent *rc_gethostbyaddr(char const *addr, size_t length, int format)
  * Returns: 0 on failure
  */
 
-uint32_t rc_get_ipaddr (char *host)
+uint32_t rc_get_ipaddr (char const *host)
 {
 	struct 	hostent *hp;
 
@@ -155,7 +155,7 @@ uint32_t rc_get_ipaddr (char *host)
  *
  */
 
-int rc_good_ipaddr (char *addr)
+int rc_good_ipaddr (char const *addr)
 {
 	int             dot_count;
 	int             digit_count;

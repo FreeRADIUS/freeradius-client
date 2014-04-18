@@ -189,7 +189,7 @@ main (int argc, char **argv)
 	char		passwd[AUTH_PASS_LEN + 1];
 	int 		tries, remaining, c;
 	uint32_t		client_port;
-	void 		(*login_func)(rc_handle *, char *);
+	void 		(*login_func)(rc_handle *, char const *);
 	FILE		*fp;
 	char 		buf[4096];
 	char		tty[1024], *p;

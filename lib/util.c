@@ -37,7 +37,7 @@ static char const * months[] =
 			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 		};
 
-void rc_str2tm (char *valstr, struct tm *tm)
+void rc_str2tm (char const *valstr, struct tm *tm)
 {
 	int             i;
 
@@ -65,7 +65,7 @@ void rc_str2tm (char *valstr, struct tm *tm)
  *
  */
 
-char *rc_getifname(rc_handle *rh, char *tty)
+char *rc_getifname(rc_handle *rh, char const *tty)
 {
 #if defined(BSD4_4) || defined(linux)
 	int		fd;
@@ -106,7 +106,7 @@ char *rc_getifname(rc_handle *rh, char *tty)
  *
  */
 #ifndef _MSC_VER
-char *rc_getstr (rc_handle *rh, char *prompt, int do_echo)
+char *rc_getstr (rc_handle *rh, char const *prompt, int do_echo)
 {
 	int             in, out;
 	char           *p;
