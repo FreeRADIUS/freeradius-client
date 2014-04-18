@@ -159,7 +159,7 @@ char *rc_getstr (rc_handle *rh, char *prompt, int do_echo)
 		}
 	}
 
-	write(out, prompt, strlen(prompt));
+	(void)write(out, prompt, strlen(prompt));
 
 	/* well, this looks ugly, but it handles the following end of line
 	   markers: \r \r\0 \r\n \n \n\r, at least at a second pass */
@@ -183,14 +183,14 @@ char *rc_getstr (rc_handle *rh, char *prompt, int do_echo)
 		if (p < rh->buf + GETSTR_LENGTH)
 		{
 			if (do_echo && !is_term)
-				write(out, &c, 1);
+				(void)write(out, &c, 1);
 			*p++ = c;
 		}
 	}
 
 	*p = '\0';
 
-	if (!do_echo || !is_term) write(out, "\r\n", 2);
+	if (!do_echo || !is_term) (void)write(out, "\r\n", 2);
 
 	if (is_term)
 		tcsetattr (in, TCSAFLUSH, &term_old);
@@ -235,7 +235,7 @@ void rc_mdelay(int msecs)
 char *
 rc_mksid (rc_handle *rh)
 {
-  sprintf (rh->buf1, "%08lX%04X", (unsigned long int) time (NULL), (unsigned int) getpid ());
+  snprintf (rh->buf1, sizeof(rh->buf1), "%08lX%04X", (unsigned long int) time (NULL), (unsigned int) getpid ());
   return rh->buf1;
 }
 

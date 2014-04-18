@@ -197,6 +197,7 @@ static int set_option_auo(char const *filename, int line, OPTION *option, char c
 
 	if ((iptr = malloc(sizeof(iptr))) == NULL) {
 			rc_log(LOG_CRIT, "read_config: out of memory");
+			free(p_dupe);
 			return -1;
 	}
 
@@ -211,6 +212,7 @@ static int set_option_auo(char const *filename, int line, OPTION *option, char c
 			*iptr = AUTH_RADIUS_FST;
 	else {
 		rc_log(LOG_ERR,"%s: auth_order: unknown keyword: %s", filename, p);
+		free(iptr);
 		free(p_dupe);
 		return -1;
 	}
@@ -224,6 +226,7 @@ static int set_option_auo(char const *filename, int line, OPTION *option, char c
 			*iptr = (*iptr) | AUTH_RADIUS_SND;
 		else {
 			rc_log(LOG_ERR,"%s: auth_order: unknown or unexpected keyword: %s", filename, p);
+			free(iptr);
 			free(p_dupe);
 			return -1;
 		}
@@ -323,6 +326,8 @@ rc_config_init(rc_handle *rh)
 	{
                 rc_log(LOG_CRIT, "rc_config_init: error initializing server structs");
 		rc_destroy(rh);
+		if(authservers) free(authservers);
+		if(acctservers) free(acctservers);
                 return NULL;
 	}
 
@@ -419,7 +424,7 @@ rc_read_config(char const *filename)
 		while (isspace(*p))
 			p++;
 		pos = strlen(p) - 1;
-		while(pos >= 0 && isspace(p[pos]))
+		while(pos != 0 && isspace(p[pos]))
 			pos--;
 		p[pos + 1] = '\0';
 
@@ -869,7 +874,7 @@ int rc_find_server (rc_handle *rh, char *server_name, uint32_t *ip_addr, char *s
 	if (result == 0)
 	{
 		memset (buffer, '\0', sizeof (buffer));
-		memset (secret, '\0', sizeof (secret));
+		memset (secret, '\0', MAX_SECRET_LENGTH);
 		rc_log(LOG_ERR, "rc_find_server: couldn't find RADIUS server %s in %s",
 			 server_name, rc_conf_str(rh, "servers"));
 		return -1;
