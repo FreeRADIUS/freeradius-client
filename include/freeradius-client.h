@@ -413,21 +413,21 @@ __BEGIN_DECLS
 
 /*	avpair.c		*/
 
-VALUE_PAIR *rc_avpair_add(rc_handle const *, VALUE_PAIR **, int, void *, int, int);
-int rc_avpair_assign(VALUE_PAIR *, void *, int);
-VALUE_PAIR *rc_avpair_new(rc_handle const *, int, void *, int, int);
-VALUE_PAIR *rc_avpair_gen(rc_handle const *, VALUE_PAIR *, unsigned char *, int, int);
+VALUE_PAIR *rc_avpair_add(rc_handle const *, VALUE_PAIR **, int, void const *, int, int);
+int rc_avpair_assign(VALUE_PAIR *, void const *, int);
+VALUE_PAIR *rc_avpair_new(rc_handle const *, int, void const *, int, int);
+VALUE_PAIR *rc_avpair_gen(rc_handle const *, VALUE_PAIR *, unsigned char const *, int, int);
 VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, int, int);
 void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
 void rc_avpair_free(VALUE_PAIR *);
-int rc_avpair_parse(rc_handle const *, char *, VALUE_PAIR **);
+int rc_avpair_parse(rc_handle const *, char const *, VALUE_PAIR **);
 int rc_avpair_tostr(rc_handle const *, VALUE_PAIR *, char *, int, char *, int);
-char *rc_avpair_log(rc_handle *, VALUE_PAIR *, char *buf, size_t buf_len);
+char *rc_avpair_log(rc_handle const *, VALUE_PAIR *, char *buf, size_t buf_len);
 VALUE_PAIR *rc_avpair_readin(rc_handle const *, FILE *);
 
 /*	buildreq.c		*/
 
-void rc_buildreq(rc_handle *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
+void rc_buildreq(rc_handle const *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
 unsigned char rc_get_id();
 int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
@@ -437,21 +437,21 @@ int rc_check(rc_handle *, char *, char *, unsigned short, char *);
 
 /*	clientid.c		*/
 
-int rc_read_mapfile(rc_handle *, char *);
-uint32_t rc_map2id(rc_handle *, char *);
+int rc_read_mapfile(rc_handle *, char const *);
+uint32_t rc_map2id(rc_handle const *, char const *);
 void rc_map2id_free(rc_handle *);
 
 /*	config.c		*/
 
 rc_handle *rc_read_config(char const *);
-char *rc_conf_str(rc_handle *, char const *);
-int rc_conf_int(rc_handle *, char const *);
-SERVER *rc_conf_srv(rc_handle *, char const *);
-int rc_find_server(rc_handle *, char *, uint32_t *, char *);
+char *rc_conf_str(rc_handle const *, char const *);
+int rc_conf_int(rc_handle const *, char const *);
+SERVER *rc_conf_srv(rc_handle const *, char const *);
+int rc_find_server(rc_handle const *, char const *, uint32_t *, char *);
 void rc_config_free(rc_handle *);
 int rc_add_config(rc_handle *, char const *, char const *, char const *, int);
 rc_handle *rc_config_init(rc_handle *);
-int test_config(rc_handle *, char const *);
+int test_config(rc_handle const *, char const *);
 
 /*	dict.c			*/
 
@@ -468,8 +468,8 @@ void rc_dict_free(rc_handle *);
 
 struct hostent *rc_gethostbyname(char const *);
 struct hostent *rc_gethostbyaddr(char const *, size_t, int);
-uint32_t rc_get_ipaddr(char *);
-int rc_good_ipaddr(char *);
+uint32_t rc_get_ipaddr(char const *);
+int rc_good_ipaddr(char const *);
 char const *rc_ip_hostname(uint32_t);
 unsigned short rc_getport(int);
 int rc_own_hostname(char *, int);
@@ -481,7 +481,7 @@ int rc_get_srcaddr(struct sockaddr *, struct sockaddr *);
 
 /*	log.c			*/
 
-void rc_openlog(char *);
+void rc_openlog(char const *);
 void rc_log(int, char const *, ...);
 
 /*	sendserver.c		*/
@@ -490,9 +490,9 @@ int rc_send_server(rc_handle *, SEND_DATA *, char *);
 
 /*	util.c			*/
 
-void rc_str2tm(char *, struct tm *);
-char *rc_getifname(rc_handle *, char *);
-char *rc_getstr(rc_handle *, char *, int);
+void rc_str2tm(char const *, struct tm *);
+char *rc_getifname(rc_handle *, char const *);
+char *rc_getstr(rc_handle *, char const *, int);
 void rc_mdelay(int);
 char *rc_mksid(rc_handle *);
 rc_handle *rc_new(void);
@@ -504,12 +504,12 @@ double rc_getctime(void);
 
 struct env *rc_new_env(int);
 void rc_free_env(struct env *);
-int rc_add_env(struct env *, char *, char *);
-int rc_import_env(struct env *, char **);
+int rc_add_env(struct env *, char const *, char const *);
+int rc_import_env(struct env *, char const **);
 
 /* md5.c			*/
 
-void rc_md5_calc(unsigned char *, unsigned char *, unsigned int);
+void rc_md5_calc(unsigned char *, unsigned char const *, unsigned int);
 
 __END_DECLS
 

@@ -17,7 +17,7 @@
 
 extern ENV *env;
 
-LFUNC auth_local(char *username, char *passwd)
+LFUNC auth_local(char const *username, char const *passwd)
 {
 	struct passwd	*pw;
 	char		*xpasswd;
@@ -62,7 +62,7 @@ LFUNC auth_local(char *username, char *passwd)
 }
 
 void
-local_login(rc_handle *rh, char *username)
+local_login(rc_handle *rh, char const *username)
 {
 	char *login_local = rc_conf_str(rh, "login_local");
 

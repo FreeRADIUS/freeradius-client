@@ -17,7 +17,7 @@
 
 extern ENV *env;
 
-LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char *username, char *passwd)
+LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char const *username, char const *passwd)
 {
 
 	VALUE_PAIR 	*send, *received, *vp, *service_vp;
@@ -216,7 +216,7 @@ LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char *username, char *pas
 }
 
 void
-radius_login(rc_handle *rh, char *username)
+radius_login(rc_handle *rh, char const *username)
 {
 	char *login_radius = rc_conf_str(rh, "login_radius");
 

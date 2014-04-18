@@ -27,7 +27,7 @@
  * Returns: pointer to option on success, NULL otherwise
  */
 
-static OPTION *find_option(rc_handle *rh, char const *optname, unsigned int type)
+static OPTION *find_option(rc_handle const *rh, char const *optname, unsigned int type)
 {
 	int 	i;
 
@@ -243,7 +243,7 @@ static int set_option_auo(char const *filename, int line, OPTION *option, char c
  * Returns: 0 on success, -1 on failure
  */
 
-int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val, char const *source, int const line)
+int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val, char const *source, int line)
 {
 	OPTION *option;
 
@@ -474,7 +474,7 @@ rc_read_config(char const *filename)
  * Returns: config option value
  */
 
-char *rc_conf_str(rc_handle *rh, char const *optname)
+char *rc_conf_str(rc_handle const *rh, char const *optname)
 {
 	OPTION *option;
 
@@ -489,7 +489,7 @@ char *rc_conf_str(rc_handle *rh, char const *optname)
 	}
 }
 
-int rc_conf_int(rc_handle *rh, char const *optname)
+int rc_conf_int(rc_handle const *rh, char const *optname)
 {
 	OPTION *option;
 
@@ -504,7 +504,7 @@ int rc_conf_int(rc_handle *rh, char const *optname)
 	}
 }
 
-SERVER *rc_conf_srv(rc_handle *rh, char const *optname)
+SERVER *rc_conf_srv(rc_handle const *rh, char const *optname)
 {
 	OPTION *option;
 
@@ -527,7 +527,7 @@ SERVER *rc_conf_srv(rc_handle *rh, char const *optname)
  * Returns: 0 on success, -1 when failure
  */
 
-int test_config(rc_handle *rh, char const *filename)
+int test_config(rc_handle const *rh, char const *filename)
 {
 #if 0
 	struct stat st;
@@ -633,7 +633,7 @@ int test_config(rc_handle *rh, char const *filename)
  *
  */
 
-static int find_match (uint32_t *ip_addr, char *hostname)
+static int find_match (uint32_t *ip_addr, char const *hostname)
 {
 
 	uint32_t           addr;
@@ -707,7 +707,7 @@ rc_ipaddr_local(uint32_t ip_addr)
  */
 
 static int
-rc_is_myname(char *hostname)
+rc_is_myname(char const *hostname)
 {
 	uint32_t 	addr;
 	char 	**paddr;
@@ -737,7 +737,7 @@ rc_is_myname(char *hostname)
  *
  */
 
-int rc_find_server (rc_handle *rh, char *server_name, uint32_t *ip_addr, char *secret)
+int rc_find_server (rc_handle const *rh, char const *server_name, uint32_t *ip_addr, char *secret)
 {
 	int		i;
 	size_t          len;
