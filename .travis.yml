@@ -3,5 +3,8 @@ compiler:
   - clang
   - gcc
 before_script:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq cppcheck
   - ./configure
 script: make
+after_script: cppcheck -q -Iinclude lib src
