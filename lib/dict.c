@@ -75,7 +75,7 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 		{
 			optstr[0] = '\0';
 			/* Read the ATTRIBUTE line */
-			if (sscanf (buffer, "%s%s%s%s%s", dummystr, namestr,
+			if (sscanf (buffer, "%63s%63s%63s%63s%63s", dummystr, namestr,
 				    valstr, typestr, optstr) < 4)
 			{
 				rc_log(LOG_ERR, "rc_read_dictionary: invalid attribute on line %d of dictionary %s",
@@ -173,7 +173,7 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 		else if (strncmp (buffer, "VALUE", 5) == 0)
 		{
 			/* Read the VALUE line */
-			if (sscanf (buffer, "%s%s%s%s", dummystr, attrstr,
+			if (sscanf (buffer, "%63s%63s%63s%63s", dummystr, attrstr,
 				    namestr, valstr) != 4)
 			{
 				rc_log(LOG_ERR,
@@ -232,7 +232,7 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
                 else if (strncmp (buffer, "$INCLUDE", 8) == 0)
                 {
 			/* Read the $INCLUDE line */
-			if (sscanf (buffer, "%s%s", dummystr, namestr) != 2)
+			if (sscanf (buffer, "%63s%63s", dummystr, namestr) != 2)
 			{
 				rc_log(LOG_ERR,
 				 "rc_read_dictionary: invalid include entry on line %d of dictionary %s",
@@ -247,7 +247,7 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 				if (cp != NULL) {
 					ifilename = alloca(AUTH_ID_LEN);
 					*cp = '\0';
-					sprintf(ifilename, "%s/%s", filename, namestr);
+					snprintf(ifilename, AUTH_ID_LEN, "%s/%s", filename, namestr);
 					*cp = '/';
 				}
 			}
@@ -260,7 +260,7 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 		else if (strncmp (buffer, "VENDOR", 6) == 0)
 		{
 			/* Read the VALUE line */
-			if (sscanf (buffer, "%s%s%s", dummystr, attrstr, valstr) != 3)
+			if (sscanf (buffer, "%63s%63s%63s", dummystr, attrstr, valstr) != 3)
 			{
 				rc_log(LOG_ERR,
 				 "rc_read_dictionary: invalid Vendor-Id on line %d of dictionary %s",

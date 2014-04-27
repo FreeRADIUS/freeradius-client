@@ -228,7 +228,7 @@ rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 		buffer[0] = '\0';	/* Initial length. */
 		x_ptr = ptr;
 		for (x_len = attrlen; x_len > 0; x_len--, x_ptr++) {
-			sprintf(hex, "%2.2X", x_ptr[0]);
+			snprintf(hex, sizeof(hex), "%2.2X", x_ptr[0]);
 			strcat(buffer, hex);
 		}
 		if (vendorpec == 0) {
@@ -680,7 +680,7 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 		{
 			if (!(isprint (*ptr)))
 			{
-				sprintf (buffer, "\\%03o", *ptr);
+				snprintf (buffer, sizeof(buffer), "\\%03o", *ptr);
 				strncat(value, buffer, (size_t) lv);
 				lv -= 4;
 				if (lv < 0) break;
@@ -703,7 +703,7 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 		}
 		else
 		{
-			sprintf (buffer, "%ld", (long int)pair->lvalue);
+			snprintf(buffer, sizeof(buffer), "%ld", (long int)pair->lvalue);
 			strncpy(value, buffer, (size_t) lv);
 		}
 		break;

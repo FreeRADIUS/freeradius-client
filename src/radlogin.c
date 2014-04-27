@@ -42,7 +42,7 @@ login_allowed(char *tty)
 	strcpy(fname, rc_conf_str(rh, "nologin"));
 	if (access(fname, F_OK) < 0) {
 		if (tty) {
-			sprintf(fname, "%s.%s", rc_conf_str(rh, "nologin"), tty);
+			snprintf(fname, sizeof(fname), "%s.%s", rc_conf_str(rh, "nologin"), tty);
 			if (access(fname, F_OK) < 0)
 				return 1;
 		} else {

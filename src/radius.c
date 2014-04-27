@@ -156,7 +156,7 @@ LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char const *username, cha
 				int count;
 				if ((count = acount[attr]++) > 0) {
 					char buf[10];
-					sprintf(buf, "_%d", count);
+					snprintf(buf, sizeof(buf), "_%d", count);
 					strcat(name,buf);
 				}
 			}

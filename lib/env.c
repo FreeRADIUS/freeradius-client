@@ -68,6 +68,7 @@ void rc_free_env(ENV *env)
 int rc_add_env(ENV *env, char const *name, char const *value)
 {
 	int i;
+	size_t len;
 	char *new_env;
 
 	for (i = 0; env->env[i] != NULL; i++)
@@ -78,24 +79,26 @@ int rc_add_env(ENV *env, char const *name, char const *value)
 
 	if (env->env[i])
 	{
-		if ((new_env = realloc(env->env[i], strlen(name)+strlen(value)+2)) == NULL)
+		len = strlen(name)+strlen(value)+2;
+		if ((new_env = realloc(env->env[i], len)) == NULL)
 			return -1;
 
 		env->env[i] = new_env;
 
-		sprintf(env->env[i],"%s=%s", name, value);
+		snprintf(env->env[i], len, "%s=%s", name, value);
 	} else {
 		if (env->size == (env->maxsize-1)) {
 			rc_log(LOG_CRIT, "rc_add_env: not enough space for environment (increase ENV_SIZE)");
 			return -1;
 		}
 
-		if ((env->env[env->size] = malloc(strlen(name)+strlen(value)+2)) == NULL) {
+		len = strlen(name)+strlen(value)+2;
+		if ((env->env[env->size] = malloc(len)) == NULL) {
 			rc_log(LOG_CRIT, "rc_add_env: out of memory");
 			return -1;
 		}
 
-		sprintf(env->env[env->size],"%s=%s", name, value);
+		snprintf(env->env[env->size], len, "%s=%s", name, value);
 
 		env->size++;
 

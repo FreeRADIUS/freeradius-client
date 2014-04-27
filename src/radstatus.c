@@ -109,14 +109,20 @@ int main (int argc, char **argv)
 		for(i=0; i<srv->max ; i++)
 		{
 			result = rc_check(rh, srv->name[i], srv->secret[i], srv->port[i], msg);
-			fputs(msg, stdout);
+			if (result == OK_RC)
+				fputs(msg, stdout);
+			else
+				printf(SC_STATUS_FAILED);
 		}
 
 		srv = rc_conf_srv(rh, "acctserver");
 		for(i=0; i<srv->max ; i++)
 		{
 			result = rc_check(rh, srv->name[i], srv->secret[i], srv->port[i], msg);
-			fputs(msg, stdout);
+			if (result == OK_RC)
+				fputs(msg, stdout);
+			else
+				printf(SC_STATUS_FAILED);
 		}
 	}
 

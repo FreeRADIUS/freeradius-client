@@ -154,7 +154,7 @@ main(int argc, char **argv)
         fflush(stdout);
         if (send != NULL)
             rc_avpair_free(send);
-        if (cp == NULL || len <= 0)
+		if (cp == NULL || len == 0)
             break;
     }
     exit(0);
