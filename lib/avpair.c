@@ -155,6 +155,34 @@ VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, in
 }
 
 /*
+ * Function: rc_avpair_copy
+ *
+ * Purpose: Return a copy of the existing list "p" ala strdup().
+ *
+ */
+VALUE_PAIR *rc_avpair_copy(VALUE_PAIR *p)
+{
+	VALUE_PAIR *vp, *fp = NULL, *lp = NULL;
+
+	while (p) {
+		vp = malloc(sizeof(VALUE_PAIR));
+		if (!vp) {
+		    novm("rc_avpair_copy");
+		    return NULL; /* leaks a little but so what */
+		}
+		*vp = *p;
+		if (!fp)
+			fp = vp;
+		if (lp)
+			lp->next = vp;
+		lp = vp;
+		p = p->next;
+	}
+
+	return fp;
+}
+
+/*
  *
  * Function: rc_avpair_gen
  *
@@ -788,3 +816,10 @@ VALUE_PAIR *rc_avpair_readin(rc_handle const *rh, FILE *input)
 
 	return vp;
 }
+
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: whitesmith
+ * End:
+ */

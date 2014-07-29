@@ -177,7 +177,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
  *
  */
 
-int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
+int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, REQUEST_INFO *info)
 {
 	int             sockfd;
 	struct sockaddr_in sinlocal;
@@ -302,7 +302,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		auth->length = htons ((unsigned short) total_length);
 	}
 
-	DEBUG(LOG_ERR, "DEBUG: local %s : 0, remote %s : %u\n", 
+	DEBUG(LOG_ERR, "DEBUG: local %s : 0, remote %s : %u\n",
 		inet_ntoa(sinlocal.sin_addr),
 		inet_ntoa(sinremote.sin_addr), data->svc_port);
 
@@ -380,6 +380,12 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	}
 
 	close (sockfd);
+	if (info)
+	{
+		memcpy(info->secret, secret, sizeof(info->secret));
+		memcpy(info->request_vector, vector,
+		       sizeof(info->request_vector));
+	}
 	memset (secret, '\0', sizeof (secret));
 
 	if (result != OK_RC) return result;

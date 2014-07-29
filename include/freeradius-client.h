@@ -89,6 +89,8 @@ typedef struct pw_auth_hdr
 	uint8_t          data[2];
 } AUTH_HDR;
 
+
+
 struct rc_conf
 {
 	struct _option		*config_options;
@@ -205,8 +207,12 @@ typedef struct rc_conf rc_handle;
 #define PW_ACCT_TERMINATE_CAUSE		49	/* integer */
 #define PW_ACCT_MULTI_SESSION_ID	50	/* string */
 #define PW_ACCT_LINK_COUNT		51	/* integer */
+/* RFC 2869 */
 #define PW_ACCT_INPUT_GIGAWORDS		52	/* integer */
 #define PW_ACCT_OUTPUT_GIGAWORDS	53	/* integer */
+
+/* From RFC 2869 */
+#define PW_ACCT_INTERIM_INTERVAL        85	/* integer */
 
 /* 	Experimental SIP-specific attributes (draft-sterman-aaa-sip-00.txt etc) */
 
@@ -227,6 +233,26 @@ typedef struct rc_conf rc_handle;
 
 #define PW_USER_ID                      222     /* string */
 #define PW_USER_REALM                   223     /* string */
+
+/* Vendor RADIUS attribute-value pairs */
+#define PW_MS_CHAP_CHALLENGE		11	/* string */
+#define PW_MS_CHAP_RESPONSE		1	/* string */
+#define PW_MS_CHAP2_RESPONSE		25	/* string */
+#define PW_MS_CHAP2_SUCCESS		26	/* string */
+#define PW_MS_MPPE_ENCRYPTION_POLICY	7	/* string */
+#define PW_MS_MPPE_ENCRYPTION_TYPE	8	/* string */
+#define PW_MS_MPPE_ENCRYPTION_TYPES PW_MS_MPPE_ENCRYPTION_TYPE
+#define PW_MS_CHAP_MPPE_KEYS		12	/* string */
+#define PW_MS_MPPE_SEND_KEY		16	/* string */
+#define PW_MS_MPPE_RECV_KEY		17	/* string */
+#define PW_MS_PRIMARY_DNS_SERVER	28	/* ipaddr */
+#define PW_MS_SECONDARY_DNS_SERVER	29	/* ipaddr */
+#define PW_MS_PRIMARY_NBNS_SERVER	30	/* ipaddr */
+#define PW_MS_SECONDARY_NBNS_SERVER	31	/* ipaddr */
+
+/* Bandwidth bit rate limits */
+#define PW_RP_UPSTREAM_LIMIT	1
+#define PW_RP_DOWNSTREAM_LIMIT	2
 
 /*	Integer Translations */
 
@@ -329,6 +355,11 @@ typedef struct rc_conf rc_handle;
 #define PW_LOCAL	2
 #define PW_REMOTE	3
 
+/* Vendor codes */
+#define VENDOR_NONE             (-1)
+#define VENDOR_MICROSOFT	311
+#define VENDOR_ROARING_PENGUIN	10055
+
 /* Server data structures */
 
 typedef struct dict_attr
@@ -388,6 +419,16 @@ typedef struct send_data /* Used to pass information to sendserver() function */
 	VALUE_PAIR     *receive_pairs;  /* Where to place received a/v pairs */
 } SEND_DATA;
 
+/*
+ * this is passed into a request call to get the final crypto values out;
+ * this is needed by such things as the MPPPE negotiation.
+ */
+typedef struct request_info
+{
+	char		secret[MAX_SECRET_LENGTH + 1];
+	u_char		request_vector[AUTH_VECTOR_LEN];
+} REQUEST_INFO;
+
 #ifndef MIN
 #define MIN(a, b)     ((a) < (b) ? (a) : (b))
 #endif
@@ -418,6 +459,7 @@ int rc_avpair_assign(VALUE_PAIR *, void const *, int);
 VALUE_PAIR *rc_avpair_new(rc_handle const *, int, void const *, int, int);
 VALUE_PAIR *rc_avpair_gen(rc_handle const *, VALUE_PAIR *, unsigned char const *, int, int);
 VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, int, int);
+VALUE_PAIR *rc_avpair_copy(VALUE_PAIR *);
 void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
 void rc_avpair_free(VALUE_PAIR *);
 int rc_avpair_parse(rc_handle const *, char const *, VALUE_PAIR **);
@@ -429,7 +471,7 @@ VALUE_PAIR *rc_avpair_readin(rc_handle const *, FILE *);
 
 void rc_buildreq(rc_handle const *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
 unsigned char rc_get_id();
-int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *);
+int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *, REQUEST_INFO *);
 int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_acct(rc_handle *, uint32_t, VALUE_PAIR *);
 int rc_acct_proxy(rc_handle *, VALUE_PAIR *);
@@ -486,7 +528,7 @@ void rc_log(int, char const *, ...);
 
 /*	sendserver.c		*/
 
-int rc_send_server(rc_handle *, SEND_DATA *, char *);
+int rc_send_server(rc_handle *, SEND_DATA *, char *, REQUEST_INFO *info);
 
 /*	util.c			*/
 
