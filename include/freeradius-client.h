@@ -113,10 +113,16 @@ typedef struct rc_conf rc_handle;
 #define PW_AUTH_UDP_PORT		1645
 #define PW_ACCT_UDP_PORT		1646
 
-#define PW_TYPE_STRING			0
-#define PW_TYPE_INTEGER			1
-#define PW_TYPE_IPADDR			2
-#define PW_TYPE_DATE			3
+/* this is an internal type value; not sent on wire */
+enum PW_TYPE {
+  PW_TYPE_STRING	=		0,
+  PW_TYPE_INTEGER	=		1,
+  PW_TYPE_IPADDR	=		2,
+  PW_TYPE_DATE		=	        3,
+  PW_TYPE_IPV6_ADDR,			//!< 128 Bit IPv6 Address.
+  PW_TYPE_IPV6_PREFIX,			//!< IPv6 Prefix.
+
+};
 
 /* standard RADIUS codes */
 
@@ -471,7 +477,7 @@ VALUE_PAIR *rc_avpair_readin(rc_handle const *, FILE *);
 
 void rc_buildreq(rc_handle const *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
 unsigned char rc_get_id();
-int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *, REQUEST_INFO *);
+int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_acct(rc_handle *, uint32_t, VALUE_PAIR *);
 int rc_acct_proxy(rc_handle *, VALUE_PAIR *);

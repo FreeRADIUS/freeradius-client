@@ -187,8 +187,7 @@ exit:
  *
  */
 
-int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
-    char *msg)
+int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received, char *msg)
 {
 
 	return rc_aaa(rh, client_port, send, received, msg, 1, PW_ACCESS_REQUEST);

@@ -160,6 +160,24 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 			total_length += sizeof (uint32_t) + 2;
 			break;
 
+		    case PW_TYPE_IPV6_ADDR:
+                        /* RFC3192 tells one how to encode/decode IPv6 types */
+                        *buf++ = sizeof(uint32_t) + 14;     /* set length */
+                        memcpy(buf, vp->strvalue, 16);
+                        buf          += 16;
+                        total_length += sizeof(uint32_t) + 14;
+                        break;
+
+		    case PW_TYPE_IPV6_PREFIX:
+                        /* RFC3192 tells one how to encode/decode IPv6 types */
+                        *buf++ = sizeof(uint32_t) + 16;     /* set length */
+                        *buf++ = 0;                      /* reserved byte */
+                        *buf++ = vp->lvalue;             /* prefix size */
+                        memcpy(buf, vp->strvalue, 16);
+                        buf          += 16;
+                        total_length += sizeof(uint32_t) + 16;
+                        break;
+
 		    default:
 			break;
 		  }
@@ -586,3 +604,9 @@ static void rc_random_vector (unsigned char *vector)
 
 	return;
 }
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: whitesmith
+ * End:
+ */
