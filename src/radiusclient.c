@@ -170,7 +170,7 @@ process(void *rh, VALUE_PAIR *send, int acct, int nas_port)
 
     received = NULL;
     if (acct == 0) {
-        i = rc_auth(rh, nas_port, send, &received, msg);
+        i = rc_auth(rh, nas_port, send, &received, msg, NULL);
         if (received != NULL) {
             printf("%s", rc_avpair_log(rh, received, buf, BUF_LEN));
             rc_avpair_free(received);
@@ -181,3 +181,9 @@ process(void *rh, VALUE_PAIR *send, int acct, int nas_port)
 
     return (i == OK_RC) ? 0 : 1;
 }
+/*
+ * Local Variables:
+ * c-basic-offset:4
+ * c-style: whitesmith
+ * End:
+ */
