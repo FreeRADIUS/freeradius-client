@@ -60,7 +60,7 @@ unsigned char rc_get_id()
  */
 
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
-    char *msg, int add_nas_port, int request_type)
+           char *msg, int add_nas_port, int request_type, REQUEST_INFO *info)
 {
 	SEND_DATA       data;
 	VALUE_PAIR	*adt_vp = NULL;
@@ -161,7 +161,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 			rc_avpair_assign(adt_vp, &dtime, 0);
 		}
 
-		result = rc_send_server (rh, &data, msg, NULL);
+		result = rc_send_server (rh, &data, msg, info);
 		if (result != TIMEOUT_RC)
 			aaaserver->deadtime_ends[i] = -1;
 	}
@@ -188,10 +188,10 @@ exit:
  */
 
 int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
-    char *msg)
+            char *msg, REQUEST_INFO *info)
 {
 
-	return rc_aaa(rh, client_port, send, received, msg, 1, PW_ACCESS_REQUEST);
+        return rc_aaa(rh, client_port, send, received, msg, 1, PW_ACCESS_REQUEST, info);
 }
 
 /*
@@ -210,7 +210,7 @@ int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **
 int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *msg)
 {
 
-	return rc_aaa(rh, 0, send, received, msg, 0, PW_ACCESS_REQUEST);
+	return rc_aaa(rh, 0, send, received, msg, 0, PW_ACCESS_REQUEST, NULL);
 }
 
 
@@ -228,7 +228,7 @@ int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send)
 {
 	char		msg[4096];
 
-	return rc_aaa(rh, client_port, send, NULL, msg, 1, PW_ACCOUNTING_REQUEST);
+	return rc_aaa(rh, client_port, send, NULL, msg, 1, PW_ACCOUNTING_REQUEST, NULL);
 }
 
 /*
@@ -242,7 +242,7 @@ int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
 {
 	char		msg[4096];
 
-	return rc_aaa(rh, 0, send, NULL, msg, 0, PW_ACCOUNTING_REQUEST);
+	return rc_aaa(rh, 0, send, NULL, msg, 0, PW_ACCOUNTING_REQUEST, NULL);
 }
 
 /*
@@ -277,3 +277,9 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 
 	return result;
 }
+/*
+ * Local Variables:
+ * c-basic-offset:8
+ * c-style: whitesmith
+ * End:
+ */
