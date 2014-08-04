@@ -477,7 +477,7 @@ VALUE_PAIR *rc_avpair_readin(rc_handle const *, FILE *);
 
 void rc_buildreq(rc_handle const *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
 unsigned char rc_get_id();
-int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *);
+int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *, REQUEST_INFO *info);
 int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_acct(rc_handle *, uint32_t, VALUE_PAIR *);
 int rc_acct_proxy(rc_handle *, VALUE_PAIR *);
