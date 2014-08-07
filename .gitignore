@@ -25,4 +25,5 @@ Makefile
 
 # Misc
 *.swp
+*~
 

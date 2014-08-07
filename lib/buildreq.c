@@ -60,19 +60,9 @@ unsigned char rc_get_id()
  */
 
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
-    char *msg, int add_nas_port, int request_type)
+           char *msg, int add_nas_port, int request_type, REQUEST_INFO *info)
 {
-	SEND_DATA       data;
-	VALUE_PAIR	*adt_vp = NULL;
-	int		result;
-	int		i, skip_count;
 	SERVER		*aaaserver;
-	int		timeout = rc_conf_int(rh, "radius_timeout");
-	int		retries = rc_conf_int(rh, "radius_retries");
-	int		radius_deadtime = rc_conf_int(rh, "radius_deadtime");
-	double		start_time = 0;
-	double		now = 0;
-	time_t		dtime;
 
 	if (request_type != PW_ACCOUNTING_REQUEST) {
 		aaaserver = rc_conf_srv(rh, "authserver");
@@ -81,6 +71,28 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	}
 	if (aaaserver == NULL)
 		return ERROR_RC;
+
+        return rc_aaa_with_server(rh, aaaserver, client_port, send, received, msg, add_nas_port, request_type, info);
+}
+
+int rc_aaa_with_server(rc_handle *rh,
+                       SERVER *aaaserver,
+                       uint32_t client_port,
+                       VALUE_PAIR *send,
+                       VALUE_PAIR **received,
+                       char *msg, int add_nas_port, int request_type,
+                       REQUEST_INFO *info)
+{
+	SEND_DATA       data;
+	VALUE_PAIR	*adt_vp = NULL;
+	int		result;
+	int		i, skip_count;
+	int		timeout = rc_conf_int(rh, "radius_timeout");
+	int		retries = rc_conf_int(rh, "radius_retries");
+	int		radius_deadtime = rc_conf_int(rh, "radius_deadtime");
+	double		start_time = 0;
+	double		now = 0;
+	time_t		dtime;
 
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
@@ -134,7 +146,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 			rc_avpair_assign(adt_vp, &dtime, 0);
 		}
 
-		result = rc_send_server (rh, &data, msg);
+		result = rc_send_server (rh, &data, msg, NULL);
 		if (result == TIMEOUT_RC && radius_deadtime > 0)
 			aaaserver->deadtime_ends[i] = start_time + (double)radius_deadtime;
 	}
@@ -161,7 +173,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 			rc_avpair_assign(adt_vp, &dtime, 0);
 		}
 
-		result = rc_send_server (rh, &data, msg);
+		result = rc_send_server (rh, &data, msg, info);
 		if (result != TIMEOUT_RC)
 			aaaserver->deadtime_ends[i] = -1;
 	}
@@ -188,10 +200,10 @@ exit:
  */
 
 int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
-    char *msg)
+            char *msg, REQUEST_INFO *info)
 {
 
-	return rc_aaa(rh, client_port, send, received, msg, 1, PW_ACCESS_REQUEST);
+        return rc_aaa(rh, client_port, send, received, msg, 1, PW_ACCESS_REQUEST, info);
 }
 
 /*
@@ -210,7 +222,7 @@ int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **
 int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *msg)
 {
 
-	return rc_aaa(rh, 0, send, received, msg, 0, PW_ACCESS_REQUEST);
+	return rc_aaa(rh, 0, send, received, msg, 0, PW_ACCESS_REQUEST, NULL);
 }
 
 
@@ -228,7 +240,7 @@ int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send)
 {
 	char		msg[4096];
 
-	return rc_aaa(rh, client_port, send, NULL, msg, 1, PW_ACCOUNTING_REQUEST);
+	return rc_aaa(rh, client_port, send, NULL, msg, 1, PW_ACCOUNTING_REQUEST, NULL);
 }
 
 /*
@@ -242,7 +254,7 @@ int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
 {
 	char		msg[4096];
 
-	return rc_aaa(rh, 0, send, NULL, msg, 0, PW_ACCOUNTING_REQUEST);
+	return rc_aaa(rh, 0, send, NULL, msg, 0, PW_ACCOUNTING_REQUEST, NULL);
 }
 
 /*
@@ -271,9 +283,15 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 	rc_avpair_add(rh, &(data.send_pairs), PW_SERVICE_TYPE, &service_type, 0, 0);
 
 	rc_buildreq(rh, &data, PW_STATUS_SERVER, host, port, secret, timeout, retries);
-	result = rc_send_server (rh, &data, msg);
+	result = rc_send_server (rh, &data, msg, NULL);
 
 	rc_avpair_free(data.receive_pairs);
 
 	return result;
 }
+/*
+ * Local Variables:
+ * c-basic-offset:8
+ * c-style: whitesmith
+ * End:
+ */

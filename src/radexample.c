@@ -81,7 +81,7 @@ main (int argc, char **argv)
 	if (rc_avpair_add(rh, &send, PW_SERVICE_TYPE, &service, -1, 0) == NULL)
 		return ERROR_RC;
 
-	result = rc_auth(rh, 0, send, &received, msg);
+	result = rc_auth(rh, 0, send, &received, msg, NULL);
 
 	if (result == OK_RC)
 	{

@@ -117,7 +117,7 @@ LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char const *username, cha
 	if (rc_avpair_add(rh, &send, PW_USER_PASSWORD, passwd, -1, 0) == NULL)
 		return NULL;
 
-	result = rc_auth(rh, client_port, send, &received, msg);
+	result = rc_auth(rh, client_port, send, &received, msg, NULL);
 
 	if (result == OK_RC)
 	{

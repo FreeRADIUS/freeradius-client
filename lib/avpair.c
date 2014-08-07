@@ -77,6 +77,11 @@ int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len)
 			vp->lvalue = * (uint32_t *) pval;
 			break;
 
+	        case PW_TYPE_IPV6_ADDR:
+                        vp->lvalue = 16;
+                        memcpy(vp->strvalue, (char const *)pval, 16);
+                        break;
+
 		default:
 			rc_log(LOG_ERR, "rc_avpair_assign: unknown attribute %d", vp->type);
 			return -1;
@@ -152,6 +157,34 @@ VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, in
 	}
 
 	return vp;
+}
+
+/*
+ * Function: rc_avpair_copy
+ *
+ * Purpose: Return a copy of the existing list "p" ala strdup().
+ *
+ */
+VALUE_PAIR *rc_avpair_copy(VALUE_PAIR *p)
+{
+	VALUE_PAIR *vp, *fp = NULL, *lp = NULL;
+
+	while (p) {
+		vp = malloc(sizeof(VALUE_PAIR));
+		if (!vp) {
+                    rc_log(LOG_CRIT, "rc_avpair_copy: out of memory");
+		    return NULL; /* leaks a little but so what */
+		}
+		*vp = *p;
+		if (!fp)
+			fp = vp;
+		if (lp)
+			lp->next = vp;
+		lp = vp;
+		p = p->next;
+	}
+
+	return fp;
 }
 
 /*
@@ -280,6 +313,37 @@ rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 		memcpy((char *)&lvalue, (char *)ptr, 4);
 		pair->lvalue = ntohl(lvalue);
 		break;
+
+	case PW_TYPE_IPV6_ADDR:
+		if (attrlen != 16+2) {
+			rc_log(LOG_ERR, "rc_avpair_gen: received IPV6_ADDR"
+			    " attribute with invalid length");
+			goto shithappens;
+		}
+                memcpy(pair->strvalue, (char *)ptr, 16);
+		break;
+
+	case PW_TYPE_IPV6_PREFIX:
+                /* first byte is reserved */
+                ptr++;
+
+                /* second byte is prefix length in bits */
+                pair->lvalue = *ptr++;
+
+                /* calculate number of bytes required */
+                lvalue = (pair->lvalue+7)/8;
+
+                if (attrlen < (lvalue+4)) {
+			rc_log(LOG_ERR, "rc_avpair_gen: received IPV6_PREFIX"
+                               " attribute with invalid length: %d vs %d",
+                               lvalue+4, attrlen);
+			goto shithappens;
+		}
+                /* initialize to 0 */
+                memset(pair->strvalue, 0, 16);
+                memcpy(pair->strvalue, (char *)ptr, lvalue);
+		break;
+
 	case PW_TYPE_DATE:
 		if (attrlen != 4) {
 			rc_log(LOG_ERR, "rc_avpair_gen: received DATE "
@@ -568,6 +632,9 @@ int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first
                                 pair->lvalue = rc_get_ipaddr(valstr);
 				break;
 
+			    case PW_TYPE_IPV6_ADDR:
+				break;
+
 			    case PW_TYPE_DATE:
 				timeval = time (0);
 				tm = localtime (&timeval);
@@ -651,7 +718,8 @@ int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first
  *
  */
 
-int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, char *value, int lv)
+int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name,
+                     int ln, char *value, int lv)
 {
 	DICT_VALUE     *dval;
 	char            buffer[32];
@@ -706,6 +774,15 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 			snprintf(buffer, sizeof(buffer), "%ld", (long int)pair->lvalue);
 			strncpy(value, buffer, (size_t) lv);
 		}
+		break;
+
+	    case PW_TYPE_IPV6_ADDR:
+		ptr = (unsigned char *) pair->strvalue;
+                if(lv < INET6_ADDRSTRLEN) {
+                        strncpy(value, "tooshort", (size_t)lv-1);
+                } else {
+                        inet_ntop(AF_INET6, ptr, value, (size_t)lv-1);
+                }
 		break;
 
 	    case PW_TYPE_IPADDR:
@@ -788,3 +865,10 @@ VALUE_PAIR *rc_avpair_readin(rc_handle const *rh, FILE *input)
 
 	return vp;
 }
+
+/*
+ * Local Variables:
+ * c-basic-offset:8
+ * c-style: whitesmith
+ * End:
+ */
