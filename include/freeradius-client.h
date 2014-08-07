@@ -478,6 +478,10 @@ VALUE_PAIR *rc_avpair_readin(rc_handle const *, FILE *);
 void rc_buildreq(rc_handle const *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
 unsigned char rc_get_id();
 int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *, REQUEST_INFO *info);
+int rc_aaa_with_server(rc_handle *rh,SERVER *aaaserver,uint32_t client_port,VALUE_PAIR *send,
+                       VALUE_PAIR **received, char *msg, int add_nas_port, int request_type,
+                       REQUEST_INFO *info);
+
 int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_acct(rc_handle *, uint32_t, VALUE_PAIR *);
 int rc_acct_proxy(rc_handle *, VALUE_PAIR *);

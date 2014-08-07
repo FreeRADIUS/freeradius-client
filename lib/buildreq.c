@@ -62,17 +62,7 @@ unsigned char rc_get_id()
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
            char *msg, int add_nas_port, int request_type, REQUEST_INFO *info)
 {
-	SEND_DATA       data;
-	VALUE_PAIR	*adt_vp = NULL;
-	int		result;
-	int		i, skip_count;
 	SERVER		*aaaserver;
-	int		timeout = rc_conf_int(rh, "radius_timeout");
-	int		retries = rc_conf_int(rh, "radius_retries");
-	int		radius_deadtime = rc_conf_int(rh, "radius_deadtime");
-	double		start_time = 0;
-	double		now = 0;
-	time_t		dtime;
 
 	if (request_type != PW_ACCOUNTING_REQUEST) {
 		aaaserver = rc_conf_srv(rh, "authserver");
@@ -81,6 +71,28 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	}
 	if (aaaserver == NULL)
 		return ERROR_RC;
+
+        return rc_aaa_with_server(rh, aaaserver, client_port, send, received, msg, add_nas_port, request_type, info);
+}
+
+int rc_aaa_with_server(rc_handle *rh,
+                       SERVER *aaaserver,
+                       uint32_t client_port,
+                       VALUE_PAIR *send,
+                       VALUE_PAIR **received,
+                       char *msg, int add_nas_port, int request_type,
+                       REQUEST_INFO *info)
+{
+	SEND_DATA       data;
+	VALUE_PAIR	*adt_vp = NULL;
+	int		result;
+	int		i, skip_count;
+	int		timeout = rc_conf_int(rh, "radius_timeout");
+	int		retries = rc_conf_int(rh, "radius_retries");
+	int		radius_deadtime = rc_conf_int(rh, "radius_deadtime");
+	double		start_time = 0;
+	double		now = 0;
+	time_t		dtime;
 
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
