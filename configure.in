@@ -243,6 +243,26 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+AC_ARG_WITH([nettle], [AS_HELP_STRING([--with-nettle],
+	[use nettle for crypto @<:@default=no@:>@])],
+	[with_nettle=$withval],
+	[with_nettle=no])
+
+if test "$with_nettle" != no; then
+	PKG_CHECK_MODULES(NETTLE, [nettle >= 2.4], [use_nettle=yes], [use_nettle=no])
+
+	if test "$use_nettle" = yes;then
+		CRYPTO_CFLAGS="$NETTLE_CFLAGS"
+		CRYPTO_LIBS="$NETTLE_LIBS"
+		AC_DEFINE([HAVE_NETTLE], 1, [Define to 1 to use nettle for MD5.])
+	fi
+fi
+
+AM_CONDITIONAL(ENABLE_NETTLE, test "$use_nettle" = "yes")
+
+AC_SUBST(CRYPTO_CFLAGS, [$CRYPTO_CFLAGS])
+AC_SUBST(CRYPTO_LIBS, [$CRYPTO_LIBS])
+
 dnl Determine PATH setting
 echo $ac_n "using the following PATH setting for exec'ed programs... $ac_c" 1>&6
 AC_ARG_WITH(secure-path,

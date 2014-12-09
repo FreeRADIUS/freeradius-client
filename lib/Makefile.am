@@ -13,13 +13,20 @@ AUTOMAKE_OPTIONS = foreign
 RC_LOG_FACILITY = @RC_LOG_FACILITY@
 LIBVERSION = @LIBVERSION@
 
-INCLUDES = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir)
+AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir) $(CRYPTO_CFLAGS)
 DEFS = @DEFS@ -DRC_LOG_FACILITY=$(RC_LOG_FACILITY)
 
 CLEANFILES = *~
 
 lib_LTLIBRARIES =   libfreeradius-client.la
 libfreeradius_client_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
-	avpair.c config.c dict.c ip_util.c log.c md5.c util.c  \
-	options.h md5.h
+	avpair.c config.c dict.c ip_util.c log.c util.c  \
+	options.h rc-md5.h rc-md5.c
+
+if !ENABLE_NETTLE
+libfreeradius_client_la_SOURCES += md5.c md5.h
+endif
+
 libfreeradius_client_la_LDFLAGS = -version-info $(LIBVERSION)
+
+libfreeradius_client_la_LIBADD = $(CRYPTO_LIBS)
