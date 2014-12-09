@@ -442,6 +442,9 @@ int rc_acct(rc_handle *, uint32_t, VALUE_PAIR *);
 int rc_acct_proxy(rc_handle *, VALUE_PAIR *);
 int rc_check(rc_handle *, char *, char *, unsigned short, char *);
 
+int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
+    char *msg, int add_nas_port, int request_type);
+
 /*	clientid.c		*/
 
 int rc_read_mapfile(rc_handle *, char const *);
