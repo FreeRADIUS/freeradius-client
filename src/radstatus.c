@@ -47,7 +47,7 @@ int main (int argc, char **argv)
 {
 	int	result = ERROR_RC;
    	int	c,i;
-	char	*p, msg[4096];
+	char	*p, msg[PW_MAX_MSG_SIZE];
 	SERVER	*srv;
 	char	*path_radiusclient_conf = RC_CONFIG_FILE;
 	rc_handle *rh;
