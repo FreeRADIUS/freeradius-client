@@ -226,7 +226,7 @@ int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *
 
 int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send)
 {
-	char		msg[4096];
+	char		msg[PW_MAX_MSG_SIZE];
 
 	return rc_aaa(rh, client_port, send, NULL, msg, 1, PW_ACCOUNTING_REQUEST);
 }
@@ -240,7 +240,7 @@ int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send)
 
 int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
 {
-	char		msg[4096];
+	char		msg[PW_MAX_MSG_SIZE];
 
 	return rc_aaa(rh, 0, send, NULL, msg, 0, PW_ACCOUNTING_REQUEST);
 }

@@ -59,6 +59,8 @@
 #define	VENDOR(x)		(((x) >> 16) & 0xffff)
 #define	ATTRID(x)		((x) & 0xffff)
 
+#define PW_MAX_MSG_SIZE		4096
+
 /* codes for radius_buildreq, radius_getport, etc. */
 #define AUTH			0
 #define ACCT			1
