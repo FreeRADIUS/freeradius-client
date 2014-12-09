@@ -149,6 +149,22 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 			total_length += length + 2;
 			break;
 
+		    case PW_TYPE_IPV6ADDR:
+			length = 16;
+			if (vsa_length_ptr != NULL) *vsa_length_ptr += length + 2;
+			memcpy (buf, vp->strvalue, (size_t) length);
+			buf += length;
+			total_length += length + 2;
+			break;
+
+		    case PW_TYPE_IPV6PREFIX:
+			length = vp->lvalue;
+			if (vsa_length_ptr != NULL) *vsa_length_ptr += length + 2;
+			memcpy (buf, vp->strvalue, (size_t) length);
+			buf += length;
+			total_length += length + 2;
+			break;
+
 		    case PW_TYPE_INTEGER:
 		    case PW_TYPE_IPADDR:
 		    case PW_TYPE_DATE:
