@@ -116,6 +116,7 @@ typedef struct rc_conf rc_handle;
 #define PW_TYPE_IPADDR			2
 #define PW_TYPE_DATE			3
 #define PW_TYPE_IPV6ADDR		4
+#define PW_TYPE_IPV6PREFIX		5
 
 /* standard RADIUS codes */
 

@@ -85,6 +85,15 @@ int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len)
 			vp->lvalue = len;
 			break;
 
+	        case PW_TYPE_IPV6PREFIX:
+			if (len < 2 || len > 18) {
+		        	rc_log(LOG_ERR, "rc_avpair_assign: bad IPv6 prefix length");
+		        	return -1;
+			}
+			memcpy(vp->strvalue, (char const *)pval, len);
+			vp->lvalue = len;
+			break;
+
 		default:
 			rc_log(LOG_ERR, "rc_avpair_assign: unknown attribute %d", vp->type);
 			return -1;
@@ -297,6 +306,15 @@ rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 		memcpy(pair->strvalue, (char *)ptr, 16);
 		pair->lvalue = attrlen;
 		break;
+	case PW_TYPE_IPV6PREFIX:
+		if (attrlen > 18 || attrlen < 2) {
+			rc_log(LOG_ERR, "rc_avpair_gen: received IPV6PREFIX"
+			    " attribute with invalid length: %d", attrlen);
+			goto shithappens;
+		}
+		memcpy(pair->strvalue, (char *)ptr, attrlen);
+		pair->lvalue = attrlen;
+		break;
 	case PW_TYPE_DATE:
 		if (attrlen != 4) {
 			rc_log(LOG_ERR, "rc_avpair_gen: received DATE "
@@ -481,7 +499,7 @@ int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first
 {
 	int             mode;
 	char            attrstr[AUTH_ID_LEN];
-	char            valstr[AUTH_STRING_LEN + 1];
+	char            valstr[AUTH_STRING_LEN + 1], *p;
 	DICT_ATTR      *attr = NULL;
 	DICT_VALUE     *dval;
 	VALUE_PAIR     *pair;
@@ -592,6 +610,26 @@ int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first
 			    		return -1;
 			    	}
 				pair->lvalue = 16;
+				break;
+
+			    case PW_TYPE_IPV6PREFIX:
+			    	p = strchr(valstr, '/');
+			    	if (p == NULL) {
+			    		rc_log(LOG_ERR, "rc_avpair_parse: invalid IPv6 prefix %s", valstr);
+			    		free(pair);
+			    		return -1;
+			    	}
+			    	*p = 0;
+			    	p++;
+			    	pair->strvalue[0] = 0;
+			    	pair->strvalue[1] = atoi(p);
+
+			    	if (inet_pton(AF_INET6, valstr, pair->strvalue+2) == 0) {
+			    		rc_log(LOG_ERR, "rc_avpair_parse: invalid IPv6 prefix %s", valstr);
+			    		free(pair);
+			    		return -1;
+			    	}
+				pair->lvalue = 2+16;
 				break;
 
 			    case PW_TYPE_DATE:
@@ -744,6 +782,21 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 	    		return -1;
 		break;
 
+	    case PW_TYPE_IPV6PREFIX: {
+	    	uint8_t ip[16];
+	    	uint8_t txt[48];
+	    	if (pair->lvalue < 2)
+	    		return -1;
+
+	    	memset(ip, 0, sizeof(ip));
+	    	memcpy(ip, pair->strvalue+2, pair->lvalue-2);
+
+	    	if (inet_ntop(AF_INET6, ip, txt, sizeof(txt)) == NULL)
+	    		return -1;
+		snprintf(value, lv-1, "%s/%u", txt, (unsigned)pair->strvalue[1]);
+
+		break;
+	    }
 	    case PW_TYPE_DATE:
 		strftime (buffer, sizeof (buffer), "%m/%d/%y %H:%M:%S",
 			  gmtime ((time_t *) & pair->lvalue));

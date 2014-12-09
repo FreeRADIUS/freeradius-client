@@ -121,6 +121,10 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 			{
 				type = PW_TYPE_IPV6ADDR;
 			}
+			else if (strcmp (typestr, "ipv6prefix") == 0)
+			{
+				type = PW_TYPE_IPV6PREFIX;
+			}
 			else if (strcmp (typestr, "date") == 0)
 			{
 				type = PW_TYPE_DATE;
