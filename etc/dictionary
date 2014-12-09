@@ -89,10 +89,17 @@ ATTRIBUTE	Connect-Info		77	string
 #
 ATTRIBUTE	NAS-IPv6-Address	95	string
 ATTRIBUTE	Framed-Interface-Id	96	string
-ATTRIBUTE	Framed-IPv6-Prefix	97	string
+ATTRIBUTE	Framed-IPv6-Prefix	97	ipv6prefix
 ATTRIBUTE	Login-IPv6-Host		98	string
 ATTRIBUTE	Framed-IPv6-Route	99	string
 ATTRIBUTE	Framed-IPv6-Pool	100	string
+
+#
+#	RFC6911 IPv6 attributes
+#
+ATTRIBUTE	Framed-IPv6-Address	168	ipv6addr
+ATTRIBUTE	DNS-Server-IPv6-Address	169	ipv6addr
+ATTRIBUTE	Route-IPv6-Information	170	ipv6prefix
 
 #
 #	Experimental Non Protocol Attributes used by Cistron-Radiusd
