@@ -44,6 +44,7 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 	char            buffer[256];
 	int             value;
 	int             type;
+	unsigned attr_vendorspec = 0;
 
 	if ((dictfd = fopen (filename, "r")) == NULL)
 	{
@@ -160,11 +161,14 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 				return -1;
 			}
 			strcpy (attr->name, namestr);
-			attr->value = value;
+			attr->value = value | (attr_vendorspec << 16);
 			attr->type = type;
 
-			if (dvend != NULL)
-				attr->value |= (dvend->vendorpec << 16);
+			if (dvend != NULL) {
+				attr->value = value | (dvend->vendorpec << 16);
+			} else {
+				attr->value = value | (attr_vendorspec << 16);
+			}
 
 			/* Insert it into the list */
 			attr->next = rh->dictionary_attributes;
@@ -256,6 +260,34 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 				fclose(dictfd);
 				return -1;
 			}
+		}
+		else if (strncmp (buffer, "END-VENDOR", 10) == 0)
+		{
+			attr_vendorspec = 0;
+		}
+		else if (strncmp (buffer, "BEGIN-VENDOR", 12) == 0)
+		{
+			DICT_VENDOR *v;
+			/* Read the vendor name */
+			if (sscanf (buffer+12, "%63s", dummystr) != 1)
+			{
+				rc_log(LOG_ERR,
+				 "rc_read_dictionary: invalid Vendor-Id on line %d of dictionary %s",
+					 line_no, filename);
+				fclose(dictfd);
+				return -1;
+			}
+
+			v = rc_dict_findvend(rh, dummystr);
+			if (v == NULL) {
+				rc_log(LOG_ERR,
+				 "rc_read_dictionary: unknown Vendor %s on line %d of dictionary %s",
+					 dummystr, line_no, filename);
+				fclose(dictfd);
+				return -1;
+			}
+
+			attr_vendorspec = v->vendorpec;
 		}
 		else if (strncmp (buffer, "VENDOR", 6) == 0)
 		{
