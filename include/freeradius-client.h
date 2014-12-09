@@ -193,6 +193,11 @@ typedef struct rc_conf rc_handle;
 #define PW_FRAMED_IPV6_ROUTE            99      /* string */
 #define PW_FRAMED_IPV6_POOL             100     /* string */
 
+/* RFC6911 IPv6 attributes */
+#define PW_FRAMED_IPV6_ADDRESS		168	/* ipaddr6 */
+#define PW_DNS_SERVER_IPV6_ADDRESS	169	/* ipaddr6 */
+#define PW_ROUTE_IPV6_INFORMATION	170	/* ipv6prefix */
+
 /*	Accounting */
 
 #define	PW_ACCT_STATUS_TYPE		40	/* integer */
