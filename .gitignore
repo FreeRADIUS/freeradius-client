@@ -23,6 +23,8 @@ libtool
 stamp-h*
 Makefile
 
+Makefile.in
+
 # Misc
 *.swp
 
