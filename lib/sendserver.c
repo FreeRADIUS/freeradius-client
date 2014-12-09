@@ -421,16 +421,18 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 
 	if (result != OK_RC) return result;
 
-	*msg = '\0';
-	pos = 0;
-	vp = data->receive_pairs;
-	while (vp)
-	{
-		if ((vp = rc_avpair_get(vp, PW_REPLY_MESSAGE, 0)))
+	if (msg) {
+		*msg = '\0';
+		pos = 0;
+		vp = data->receive_pairs;
+		while (vp)
 		{
-			strappend(msg, PW_MAX_MSG_SIZE, &pos, vp->strvalue);
-			strappend(msg, PW_MAX_MSG_SIZE, &pos, "\n");
-			vp = vp->next;
+			if ((vp = rc_avpair_get(vp, PW_REPLY_MESSAGE, 0)))
+			{
+				strappend(msg, PW_MAX_MSG_SIZE, &pos, vp->strvalue);
+				strappend(msg, PW_MAX_MSG_SIZE, &pos, "\n");
+				vp = vp->next;
+			}
 		}
 	}
 
