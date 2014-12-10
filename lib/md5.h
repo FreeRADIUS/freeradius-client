@@ -11,6 +11,12 @@
 
 #include "config.h"
 
+#ifdef HAVE_NETTLE
+
+#include <nettle/md5-compat.h>
+
+#else
+
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
 #endif
@@ -74,5 +80,7 @@ void	 MD5Transform(uint32_t [4], uint8_t const [MD5_BLOCK_LENGTH])
 /*		__attribute__((__bounded__(__minbytes__,1,4)))*/
 /*		__attribute__((__bounded__(__minbytes__,2,MD5_BLOCK_LENGTH)))*/;
 /* __END_DECLS */
+
+#endif /* HAVE_NETTLE */
 
 #endif /* _RCRAD_MD5_H */
