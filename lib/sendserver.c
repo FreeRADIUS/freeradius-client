@@ -581,14 +581,20 @@ static void rc_random_vector (unsigned char *vector)
 		while (i > 0)
 		{
 			readcount = read(fd, (char *)pos, i);
-			pos += readcount;
-			i -= readcount;
+			if (readcount >= 0) {
+				pos += readcount;
+				i -= readcount;
+			} else {
+				if (errno != EINTR && errno != EAGAIN)
+					goto fallback;
+			}
 		}
 
 		close(fd);
 		return;
 	} /* else fall through */
 #endif
+ fallback:
 	srand ((unsigned)time (0) + getppid() + getpid()); /* random enough :) */
 	for (i = 0; i < AUTH_VECTOR_LEN;)
 	{
