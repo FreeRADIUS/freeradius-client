@@ -560,7 +560,11 @@ static void rc_random_vector (unsigned char *vector)
 {
 	int             randno;
 	int             i;
-#if defined(HAVE_DEV_URANDOM)
+#if defined(HAVE_GETENTROPY)
+	if (getentropy(vector, AUTH_VECTOR_LEN) >= 0) {
+		return;
+	} /* else fall through */
+#elif defined(HAVE_DEV_URANDOM)
 	int		fd;
 
 /* well, I added this to increase the security for user passwords.

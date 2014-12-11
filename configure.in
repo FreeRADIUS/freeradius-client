@@ -224,6 +224,16 @@ then
 	)
 fi
 
+AC_MSG_CHECKING([for getentropy])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([
+          #include <unistd.h>],[
+                  getentropy(0, 0);
+                 ])],
+                 [AC_MSG_RESULT(yes)
+                  AC_DEFINE([HAVE_GETENTROPY], 1, [Enable the OpenBSD getentropy function])
+                  enable_getrandom=getentropy],
+                 [AC_MSG_RESULT(no)])
+
 AC_MSG_CHECKING([for /dev/urandom])
 if test -c /dev/urandom
 then
