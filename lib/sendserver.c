@@ -595,10 +595,9 @@ static void rc_random_vector (unsigned char *vector)
 	} /* else fall through */
 #endif
  fallback:
-	srand ((unsigned)time (0) + getppid() + getpid()); /* random enough :) */
 	for (i = 0; i < AUTH_VECTOR_LEN;)
 	{
-		randno = rand ();
+		randno = random ();
 		memcpy ((char *) vector, (char *) &randno, sizeof (int));
 		vector += sizeof (int);
 		i += sizeof (int);
