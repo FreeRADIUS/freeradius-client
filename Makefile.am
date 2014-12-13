@@ -16,7 +16,7 @@ INCLUDES = -D_GNU_SOURCE
 ACLOCAL = @ACLOCAL@
 LTLIBOBJS = @LTLIBOBJS@
 
-SUBDIRS = include lib src etc man doc patches login.radius rpm
+SUBDIRS = include lib src etc man doc patches login.radius
 EXTRA_DIST = BUGS CHANGES COPYRIGHT README README.radexample
 
 CLEANFILES = *~
