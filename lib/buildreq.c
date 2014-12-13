@@ -181,7 +181,7 @@ exit:
  * Purpose: Builds an authentication request for port id client_port
  *          with the value_pairs send and submits it to a server
  *
- * Returns: received value_pairs in received, messages from the server in msg
+ * Returns: received value_pairs in received, messages from the server in msg (if non-NULL),
  *          and 0 on success, negative on failure as return value
  *
  */
@@ -201,7 +201,7 @@ int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **
  *	    Works for a proxy; does not add IP address, and does
  *	    does not rely on config file.
  *
- * Returns: received value_pairs in received, messages from the server in msg
+ * Returns: received value_pairs in received, messages from the server in msg (if non-NULL)
  *	    and 0 on success, negative on failure as return value
  *
  */
@@ -225,9 +225,8 @@ int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *
 
 int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send)
 {
-	char		msg[4096];
 
-	return rc_aaa(rh, client_port, send, NULL, msg, 1, PW_ACCOUNTING_REQUEST);
+	return rc_aaa(rh, client_port, send, NULL, NULL, 1, PW_ACCOUNTING_REQUEST);
 }
 
 /*
@@ -239,9 +238,8 @@ int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send)
 
 int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
 {
-	char		msg[4096];
 
-	return rc_aaa(rh, 0, send, NULL, msg, 0, PW_ACCOUNTING_REQUEST);
+	return rc_aaa(rh, 0, send, NULL, NULL, 0, PW_ACCOUNTING_REQUEST);
 }
 
 /*

@@ -28,7 +28,7 @@ main (int argc, char **argv)
 	char            passwd[AUTH_PASS_LEN + 1];
 	VALUE_PAIR 	*send, *received;
 	uint32_t		service;
-	char 		msg[4096], username_realm[256];
+	char 		msg[PW_MAX_MSG_SIZE], username_realm[256];
 	char		*default_realm;
 	rc_handle	*rh;
 

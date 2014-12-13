@@ -186,6 +186,27 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 	return total_length;
 }
 
+/* Function strappend
+ *
+ * Purpose: appends a string to the provided buffer
+ */
+static void strappend(char *dest, unsigned max_size, int *pos, const char *src)
+{
+	unsigned len = strlen(src) + 1;
+
+	if (*pos == -1)
+		return;
+
+	if (len + *pos > max_size) {
+		*pos = -1;
+		return;
+	}
+
+	memcpy(&dest[*pos], src, len);
+	*pos += len-1;
+	return;
+}
+
 /*
  * Function: rc_send_server
  *
@@ -204,7 +225,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	socklen_t       salen;
 	int             result = 0;
 	int             total_length;
-	int             length;
+	int             length, pos;
 	int             retry_max;
 	size_t			secretlen;
 	char            secret[MAX_SECRET_LENGTH + 1];
@@ -400,15 +421,18 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 
 	if (result != OK_RC) return result;
 
-	*msg = '\0';
-	vp = data->receive_pairs;
-	while (vp)
-	{
-		if ((vp = rc_avpair_get(vp, PW_REPLY_MESSAGE, 0)))
+	if (msg) {
+		*msg = '\0';
+		pos = 0;
+		vp = data->receive_pairs;
+		while (vp)
 		{
-			strcat(msg, vp->strvalue);
-			strcat(msg, "\n");
-			vp = vp->next;
+			if ((vp = rc_avpair_get(vp, PW_REPLY_MESSAGE, 0)))
+			{
+				strappend(msg, PW_MAX_MSG_SIZE, &pos, vp->strvalue);
+				strappend(msg, PW_MAX_MSG_SIZE, &pos, "\n");
+				vp = vp->next;
+			}
 		}
 	}
 

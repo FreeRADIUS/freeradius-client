@@ -164,7 +164,7 @@ int
 process(void *rh, VALUE_PAIR *send, int acct, int nas_port)
 {
     VALUE_PAIR *received;
-    char msg[4096];
+    char msg[PW_MAX_MSG_SIZE];
     char buf[BUF_LEN];
     int i;
 

@@ -22,7 +22,7 @@ LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char const *username, cha
 
 	VALUE_PAIR 	*send, *received, *vp, *service_vp;
 	uint32_t		service, ftype, ctype;
-	char 		msg[4096], *p, username_realm[256];
+	char 		msg[PW_MAX_MSG_SIZE], *p, username_realm[256];
 	char            name[2048], value[2048]; /* more than enough */
 	int		result;
 	char		*default_realm, *service_str, *ftype_str;
