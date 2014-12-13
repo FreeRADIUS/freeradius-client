@@ -26,9 +26,12 @@
     sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6))
 #endif
 
-
+#ifdef GETHOSTBYNAME_R
+#if defined (GETHOSTBYNAMERSTYLE_SYSV) || defined (GETHOSTBYNAMERSTYLE_GNU)
 static __thread size_t	hostbuflen=HOSTBUF_SIZE;
 static __thread	char	*tmphostbuf=NULL;
+#endif
+#endif
 
 /*
  * Function: rc_gethostbyname
