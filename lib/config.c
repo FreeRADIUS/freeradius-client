@@ -503,7 +503,12 @@ int rc_conf_int(rc_handle const *rh, char const *optname)
 	option = find_option(rh, optname, OT_INT|OT_AUO);
 
 	if (option != NULL) {
-		return *((int *)option->val);
+		if (option->val) {
+			return *((int *)option->val);
+		} else {
+			rc_log(LOG_ERR, "rc_conf_int: config option %s was not set", optname);
+			return 0;
+		}
 	} else {
 		rc_log(LOG_CRIT, "rc_conf_int: unkown config option requested: %s", optname);
 		abort();
