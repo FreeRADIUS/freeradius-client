@@ -560,7 +560,11 @@ static void rc_random_vector (unsigned char *vector)
 {
 	int             randno;
 	int             i;
-#if defined(HAVE_DEV_URANDOM)
+#if defined(HAVE_GETENTROPY)
+	if (getentropy(vector, AUTH_VECTOR_LEN) >= 0) {
+		return;
+	} /* else fall through */
+#elif defined(HAVE_DEV_URANDOM)
 	int		fd;
 
 /* well, I added this to increase the security for user passwords.
@@ -577,18 +581,23 @@ static void rc_random_vector (unsigned char *vector)
 		while (i > 0)
 		{
 			readcount = read(fd, (char *)pos, i);
-			pos += readcount;
-			i -= readcount;
+			if (readcount >= 0) {
+				pos += readcount;
+				i -= readcount;
+			} else {
+				if (errno != EINTR && errno != EAGAIN)
+					goto fallback;
+			}
 		}
 
 		close(fd);
 		return;
 	} /* else fall through */
 #endif
-	srand ((unsigned)time (0) + getppid() + getpid()); /* random enough :) */
+ fallback:
 	for (i = 0; i < AUTH_VECTOR_LEN;)
 	{
-		randno = rand ();
+		randno = random ();
 		memcpy ((char *) vector, (char *) &randno, sizeof (int));
 		vector += sizeof (int);
 		i += sizeof (int);

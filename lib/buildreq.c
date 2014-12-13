@@ -44,7 +44,6 @@ void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, u
 
 unsigned char rc_get_id()
 {
-	srandom((unsigned int)(time(NULL)+getpid()));
 	return (unsigned char)(random() & UCHAR_MAX);
 }
 
