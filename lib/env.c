@@ -13,12 +13,14 @@
 #include <includes.h>
 #include <freeradius-client.h>
 
-/*
- * Function: rc_new_env
+/**
+ * rc_new_env:
+ * @size: the maximum size of the environment
  *
- * Purpose: allocate space for a new environment
+ * Allocate space for a new environment
  *
- */
+ * Returns: the initialized environment
+ **/
 
 ENV *rc_new_env(int size)
 {
@@ -45,12 +47,13 @@ ENV *rc_new_env(int size)
 	return p;
 }
 
-/*
- * Function: rc_free_env
+/**
+ * rc_free_env:
+ * @env: an initialized environment value 
  *
- * Purpose: free the space used by an env structure
+ * free the space used by an env structure
  *
- */
+ **/
 
 void rc_free_env(ENV *env)
 {
@@ -58,12 +61,14 @@ void rc_free_env(ENV *env)
 	free(env);
 }
 
-/*
- * Function: rc_add_env
+/**
+ * rc_add_env:
+ * @env: an initialized environment value 
  *
- * Purpose: add an environment entry
+ * add an environment entry
  *
- */
+ * Returns: 0 on success or -1 on error
+ **/
 
 int rc_add_env(ENV *env, char const *name, char const *value)
 {
@@ -108,12 +113,14 @@ int rc_add_env(ENV *env, char const *name, char const *value)
 	return 0;
 }
 
-/*
- * Function: rc_import_env
+/**
+ * rc_import_env:
+ * @env: an initialized environment value 
  *
- * Purpose: imports an array of null-terminated strings
+ * imports an array of null-terminated strings
  *
- */
+ * Returns: 0 on success or -1 on error
+ **/
 
 int rc_import_env(ENV *env, char const **import)
 {

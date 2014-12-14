@@ -19,13 +19,16 @@
 #include <freeradius-client.h>
 #include <options.h>
 
-/*
- * Function: find_option
+/*-
+ * find_option:
+ * @rh: a handle to parsed configuration
+ * @optname: the name of the option
+ * @type: the option type
  *
- * Purpose: find an option in the option list
+ * find an option in the option list
  *
  * Returns: pointer to option on success, NULL otherwise
- */
+ -*/
 
 static OPTION *find_option(rc_handle const *rh, char const *optname, unsigned int type)
 {
@@ -43,13 +46,15 @@ static OPTION *find_option(rc_handle const *rh, char const *optname, unsigned in
 	return NULL;
 }
 
-/*
- * Function: set_option_...
+/*-
+ * set_option_...
+ * @filename: the name of the config file (for logging purposes)
+ * @line: the line number in the file
  *
- * Purpose: set a specific option doing type conversions
+ * set a specific option doing type conversions
  *
  * Returns: 0 on success, -1 on failure
- */
+ -*/
 
 static int set_option_str(char const *filename, int line, OPTION *option, char const *p)
 {
@@ -239,12 +244,18 @@ static int set_option_auo(char const *filename, int line, OPTION *option, char c
 }
 
 
-/* Function: rc_add_config
+/** 
+ * rc_add_config:
+ * @rh: a handle to parsed configuration
+ * @option_name: the name of the option
+ * @option_val: the value to be added
+ * @source: typically should be %__FILE__ or %__func__ for logging purposes
+ * @line: %__LINE__ for logging purposes
  *
- * Purpose: allow a config option to be added to rc_handle from inside a program
+ * Allow a config option to be added to rc_handle from inside a program
  *
  * Returns: 0 on success, -1 on failure
- */
+ **/
 
 int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val, char const *source, int line)
 {
@@ -290,14 +301,15 @@ int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val
 	return 0;
 }
 
-/*
- * Function: rc_config_init
+/**
+ * rc_config_init:
+ * @rh: a handle to parsed configuration
  *
- * Purpose: initialize the configuration structure from an external program.  For use when not
+ * initialize the configuration structure from an external program.  For use when not
  * running a standalone client that reads from a config file.
  *
  * Returns: rc_handle on success, NULL on failure
- */
+ **/
 
 rc_handle *
 rc_config_init(rc_handle *rh)
@@ -348,13 +360,14 @@ rc_config_init(rc_handle *rh)
 }
 
 
-/*
- * Function: rc_read_config
+/**
+ * rc_read_config:
+ * @filename: a name of a file
  *
- * Purpose: read the global config file
+ * read the global config file
  *
  * Returns: new rc_handle on success, NULL when failure
- */
+ **/
 
 rc_handle *
 rc_read_config(char const *filename)
@@ -473,13 +486,15 @@ rc_read_config(char const *filename)
 	return rh;
 }
 
-/*
- * Function: rc_conf_str, rc_conf_int, rc_conf_src
+/**
+ * rc_conf_str:
+ * @rh: a handle to parsed configuration
+ * @optname: the name of an option
  *
- * Purpose: get the value of a config option
+ * Get the value of a config option.
  *
  * Returns: config option value
- */
+ **/
 
 char *rc_conf_str(rc_handle const *rh, char const *optname)
 {
@@ -495,6 +510,16 @@ char *rc_conf_str(rc_handle const *rh, char const *optname)
 		return NULL;
 	}
 }
+
+/**
+ * rc_conf_int:
+ * @rh: a handle to parsed configuration
+ * @optname: the name of an option
+ *
+ * Get the value of a config option.
+ *
+ * Returns: config option value
+ **/
 
 int rc_conf_int(rc_handle const *rh, char const *optname)
 {
@@ -516,6 +541,16 @@ int rc_conf_int(rc_handle const *rh, char const *optname)
 	}
 }
 
+/**
+ * rc_conf_srv:
+ * @rh: a handle to parsed configuration
+ * @optname: the name of an option
+ *
+ * Get the value of a config option.
+ *
+ * Returns: config option value
+ **/
+
 SERVER *rc_conf_srv(rc_handle const *rh, char const *optname)
 {
 	OPTION *option;
@@ -531,13 +566,15 @@ SERVER *rc_conf_srv(rc_handle const *rh, char const *optname)
 	}
 }
 
-/*
- * Function: test_config
+/**
+ * test_config:
+ * @rh: a handle to parsed configuration
+ * @filename: a name of a configuration file
  *
- * Purpose: test the configuration the user supplied
+ * Tests the configuration the user supplied.
  *
  * Returns: 0 on success, -1 when failure
- */
+ **/
 
 int test_config(rc_handle const *rh, char const *filename)
 {
@@ -636,14 +673,16 @@ int test_config(rc_handle const *rh, char const *filename)
 	return 0;
 }
 
-/*
- * Function: rc_find_match
+/*-
+ * rc_find_match:
+ * @ip_addr: an IPv4 address
+ * @hostname: the name of the host
  *
- * Purpose: see if ip_addr is one of the ip addresses of hostname
+ * see if ip_addr is one of the ip addresses of hostname
  *
  * Returns: 0 on success, -1 when failure
  *
- */
+ -*/
 
 static int find_match (uint32_t *ip_addr, char const *hostname)
 {
@@ -677,14 +716,15 @@ static int find_match (uint32_t *ip_addr, char const *hostname)
 	return -1;
 }
 
-/*
- * Function: rc_ipaddr_local
+/*-
+ * rc_ipaddr_local:
+ * @ip_addr: an IPv4 address
  *
- * Purpose: checks if provided address is local address
+ * Checks if provided address is local address
  *
  * Returns: 0 if local, 1 if not local, -1 on failure
  *
- */
+ -*/
 
 static int
 rc_ipaddr_local(uint32_t ip_addr)
@@ -709,14 +749,15 @@ rc_ipaddr_local(uint32_t ip_addr)
 	return -1;
 }
 
-/*
- * Function: rc_is_myname
+/*-
+ * rc_is_myname:
+ * @hostname: the name of the host
  *
- * Purpose: check if provided name refers to ourselves
+ * Checks if provided name refers to ourselves
  *
  * Returns: 0 if yes, 1 if no and -1 on failure
  *
- */
+ -*/
 
 static int
 rc_is_myname(char const *hostname)
@@ -740,14 +781,18 @@ rc_is_myname(char const *hostname)
 	return 1;
 }
 
-/*
- * Function: rc_find_server
+/**
+ * rc_find_server:
+ * @rh: a handle to parsed configuration
+ * @server_name: the name of the server
+ * @ip_addr: will hold an IPv4 address
+ * @secret: will hold the server's secret (of %MAX_SECRET_LENGTH)
  *
- * Purpose: locate a server in the rh config or if not found, check for a servers file
+ * Locate a server in the rh config or if not found, check for a servers file
  *
  * Returns: 0 on success, -1 on failure
  *
- */
+ **/
 
 int rc_find_server (rc_handle const *rh, char const *server_name, uint32_t *ip_addr, char *secret)
 {
@@ -889,13 +934,13 @@ int rc_find_server (rc_handle const *rh, char const *server_name, uint32_t *ip_a
 	return 0;
 }
 
-/*
- * Function: rc_config_free
+/**
+ * rc_config_free:
+ * @rh: a handle to parsed configuration
  *
- * Purpose: Free allocated config values
+ * Free allocated config values
  *
- * Arguments: Radius Client handle
- */
+ **/
 
 void
 rc_config_free(rc_handle *rh)

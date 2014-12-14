@@ -12,6 +12,16 @@
  */
 #include "rc-md5.h"
 
+/**
+ * rc_md5_calc:
+ * @output: will hold a 16-byte checksum
+ * @input: pointer to data to hash
+ * @inlen: the length of @input
+ *
+ * This function will hash the provided data using MD5.
+ *
+ **/
+
 void rc_md5_calc(unsigned char *output, unsigned char const *input,
 		     size_t inlen)
 {

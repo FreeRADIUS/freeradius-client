@@ -24,12 +24,6 @@
 
 #define	RC_BUFSIZ	1024
 
-/*
- * Function: rc_str2tm
- *
- * Purpose: Turns printable string into correct tm struct entries.
- *
- */
 
 static char const * months[] =
 		{
@@ -37,6 +31,14 @@ static char const * months[] =
 			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 		};
 
+/**
+ * rc_str2tm:
+ * @valstr: the printable date in 'day month year' format
+ * @tm: the output struct
+ *
+ * Turns printable string into correct tm struct entries.
+ *
+ **/
 void rc_str2tm (char const *valstr, struct tm *tm)
 {
 	int             i;
@@ -58,12 +60,15 @@ void rc_str2tm (char const *valstr, struct tm *tm)
 	tm->tm_year = atoi (&valstr[7]) - 1900;
 }
 
-/*
- * Function: rc_getifname
+/**
+ * rc_getifname:
+ * @rh: a handle to parsed configuration
+ * @tty: the name of the tty
  *
- * Purpose: get the network interface name associated with this tty
+ * get the network interface name associated with this tty
  *
- */
+ * Returns: the network iface name
+ **/
 
 char *rc_getifname(rc_handle *rh, char const *tty)
 {
@@ -99,12 +104,16 @@ char *rc_getifname(rc_handle *rh, char const *tty)
 #endif
 }
 
-/*
- * Function: rc_getstr
+/**
+ * rc_getstr:
+ * @rh: a handle to parsed configuration
+ * @prompt: the prompt to print
+ * @do_echo: whether to echo characters
  *
- * Purpose: Reads in a string from the user (with or witout echo)
+ * Reads in a string from the user (with or witout echo)
  *
- */
+ * Returns: the data user typed or NULL
+ **/
 #ifndef _MSC_VER
 char *rc_getstr (rc_handle *rh, char const *prompt, int do_echo)
 {
@@ -223,14 +232,15 @@ void rc_mdelay(int msecs)
 	select(0, NULL, NULL, NULL, &tv);
 }
 
-/*
- * Function: rc_mksid
+/**
+ * rc_mksid:
+ * @rh: a handle to parsed configuration
  *
- * Purpose: generate a quite unique string
+ * generate a quite unique string
  *
  * Remarks: not that unique at all...
  *
- */
+ **/
 
 char *
 rc_mksid (rc_handle *rh)
@@ -239,12 +249,12 @@ rc_mksid (rc_handle *rh)
   return rh->buf1;
 }
 
-/*
- * Function: rc_new
+/**
+ * rc_new:
  *
- * Purpose: Initialises new Radius Client handle
+ * Initialises new Radius Client handle
  *
- */
+ **/
 
 rc_handle *
 rc_new(void)
@@ -260,12 +270,13 @@ rc_new(void)
 	return rh;
 }
 
-/*
- * Function: rc_destroy
+/**
+ * rc_destroy:
+ * @rh: a handle to parsed configuration
  *
- * Purpose: Destroys Radius Client handle reclaiming all memory
+ * Destroys Radius Client handle reclaiming all memory
  *
- */
+ **/
 
 void
 rc_destroy(rc_handle *rh)
@@ -279,12 +290,15 @@ rc_destroy(rc_handle *rh)
 	free(rh);
 }
 
-/*
- * Function: rc_fgetln
+/**
+ * rc_fgetln:
+ * @fp: a %FILE pointer
+ * @len: output length
  *
- * Purpose: Get next line from the stream.
+ * Get next line from the stream.
  *
- */
+ * Returns: the next line in an allocated buffer
+ **/
 
 char *
 rc_fgetln(FILE *fp, size_t *len)
@@ -327,13 +341,13 @@ rc_fgetln(FILE *fp, size_t *len)
 	return buf;
 }
 
-/*
- * Function: rc_getctime
+/**
+ * rc_getctime:
  *
- * Purpose: Get current time (seconds since epoch) expressed as
+ * Returns: current time (seconds since epoch) expressed as
  * double-precision floating point number.
  *
- */
+ **/
 
 double
 rc_getctime(void)

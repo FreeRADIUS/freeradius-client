@@ -13,16 +13,13 @@
 #include <includes.h>
 #include <freeradius-client.h>
 
-/*
- * Function: rc_openlog
+/**
+ * rc_openlog:
+ * @ident: the name of the program
  *
- * Purpose: open log
+ * Opens system log.
  *
- * Arguments: identification string
- *
- * Returns: nothing
- *
- */
+ **/
 
 void rc_openlog(char const *ident)
 {
@@ -31,16 +28,14 @@ void rc_openlog(char const *ident)
 #endif
 }
 
-/*
- * Function: rc_log
+/**
+ * rc_log:
+ * @prio: the syslog priority
+ * @format: the format of the data to print
  *
- * Purpose: log information
+ * Logs information on system log.
  *
- * Arguments: priority (just like syslog), rest like printf
- *
- * Returns: nothing
- *
- */
+ **/
 
 void rc_log(int prio, char const *format, ...)
 {
@@ -48,8 +43,8 @@ void rc_log(int prio, char const *format, ...)
 	va_list ap;
 
 	va_start(ap,format);
-    vsnprintf(buff, sizeof(buff), format, ap);
-    va_end(ap);
+	vsnprintf(buff, sizeof(buff), format, ap);
+	va_end(ap);
 
 #ifndef _MSC_VER /* TODO: Fix me */
 	syslog(prio, "%s", buff);

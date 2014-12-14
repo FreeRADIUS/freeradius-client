@@ -18,16 +18,22 @@
 #include <includes.h>
 #include <freeradius-client.h>
 
-/*
- * Function: rc_avpair_add
+/**
+ * rc_avpair_add:
+ * @rh: a handle to parsed configuration
+ * @list: a #VALUE_PAIR array of values; initially must be %NULL
+ * @attrid: The attribute of the pair to add (e.g., %PW_USER_NAME)
+ * @pval: the value (e.g., the actual username)
+ * @len: the length of @pval, or -1 if to calculate (in case of strings)
+ * @vendorpec: The vendor ID in case of a vendor specific value - 0 otherwise
  *
- * Purpose: add an attribute-value pair to the given list.
- *
- * Returns: pointer to added a/v pair upon success, NULL pointer upon failure.
+ * Adds an attribute-value pair to the given list.
  *
  * Remarks: Always appends the new pair to the end of the list.
  *
- */
+ * Returns: pointer to added a/v pair upon success, NULL pointer upon failure.
+ *
+ **/
 
 VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, int attrid, void const *pval, int len, int vendorpec)
 {
@@ -44,15 +50,16 @@ VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, int attrid, v
 
 }
 
-/*
- * Function: rc_avpair_assign
+/**
+ * rc_avpair_assign:
+ * @vp: a pointer to a #VALUE_PAIR structure
+ * @pval: the value (e.g., the actual username)
+ * @len: the length of @pval, or -1 if to calculate (in case of strings)
  *
- * Purpose: assign the given value to an attribute-value pair.
+ * Assigns the given value to an attribute-value pair.
  *
- * Returns:  0 on success,
- *	    -1 on failure.
- *
- */
+ * Returns: 0 on success or -1 on failure.
+ **/
 
 int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len)
 {
@@ -101,14 +108,19 @@ int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len)
 	return 0;
 }
 
-/*
- * Function: rc_avpair_new
+/**
+ * rc_avpair_new:
+ * @rh: a handle to parsed configuration
+ * @attrid: The attribute of the pair to add (e.g., %PW_USER_NAME)
+ * @pval: the value (e.g., the actual username)
+ * @len: the length of @pval, or -1 if to calculate (in case of strings)
+ * @vendorpec: The vendor ID in case of a vendor specific value - 0 otherwise
  *
- * Purpose: make a new attribute-value pair with given parameters.
+ * Make a new attribute-value pair with given parameters.
  *
  * Returns: pointer to generated a/v pair when successful, NULL when failure.
  *
- */
+ **/
 
 VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, int len, int vendorpec)
 {
@@ -171,15 +183,19 @@ VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, in
 	return vp;
 }
 
-/*
+/**
+ * rc_avpair_gen:
+ * @rh: a handle to parsed configuration
+ * @pair: a pointer to a #VALUE_PAIR structure
+ * @ptr: the value (e.g., the actual username)
+ * @length: the length of @ptr, or -1 if to calculate (in case of strings)
+ * @vendorpec: The vendor ID in case of a vendor specific value - 0 otherwise
  *
- * Function: rc_avpair_gen
+ * Takes attribute/value pairs from buffer and builds a
+ * value_pair list using allocated memory. Uses recursion.
  *
- * Purpose: takes attribute/value pairs from buffer and builds a
- *	    value_pair list using allocated memory. Uses recursion.
- *
- * Returns: value_pair list or NULL on failure
- */
+ * Returns: value_pair list or %NULL on failure
+ **/
 
 VALUE_PAIR *
 rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
@@ -338,15 +354,17 @@ shithappens:
 	return NULL;
 }
 
-/*
- * Function: rc_avpair_get
+/**
+ * rc_avpair_get:
+ * @vp: a pointer to a #VALUE_PAIR structure
+ * @attrid: The attribute of the pair to find (e.g., %PW_USER_NAME)
+ * @vendorpec: The vendor ID in case of a vendor specific value - 0 otherwise
  *
- * Purpose: Find the first attribute value-pair (which matches the given
- *          attribute) from the specified value-pair list.
+ * Find the first attribute value-pair (which matches the given
+ * attribute) from the specified value-pair list.
  *
- * Returns: found value_pair
- *
- */
+ * Returns: the value pair found
+ **/
 
 VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, int attrid, int vendorpec)
 {
@@ -358,15 +376,18 @@ VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, int attrid, int vendorpec)
 	return vp;
 }
 
-/*
- * Function: rc_avpair_insert
+/**
+ * rc_avpair_insert:
+ * @a: a #VALUE_PAIR array of values
+ * @p: a pointer to a #VALUE_PAIR in @a
+ * @b: The #VALUE_PAIR pointer to add in @a
  *
- * Purpose: Given the address of an existing list "a" and a pointer
- *	    to an entry "p" in that list, add the value pair "b" to
- *	    the "a" list after the "p" entry.  If "p" is NULL, add
- *	    the value pair "b" to the end of "a".
+ * Given the address of an existing list "a" and a pointer
+ * to an entry "p" in that list, add the value pair "b" to
+ * the "a" list after the "p" entry.  If "p" is NULL, add
+ * the value pair "b" to the end of "a".
  *
- */
+ **/
 
 void rc_avpair_insert (VALUE_PAIR **a, VALUE_PAIR *p, VALUE_PAIR *b)
 {
@@ -414,12 +435,13 @@ void rc_avpair_insert (VALUE_PAIR **a, VALUE_PAIR *p, VALUE_PAIR *b)
 	return;
 }
 
-/*
- * Function: rc_avpair_free
+/**
+ * rc_avpair_free:
+ * @pair: a pointer to a #VALUE_PAIR structure
  *
- * Purpose: frees all value_pairs in the list
+ * Frees all value_pairs in the list.
  *
- */
+ **/
 
 void rc_avpair_free (VALUE_PAIR *pair)
 {
@@ -433,15 +455,19 @@ void rc_avpair_free (VALUE_PAIR *pair)
 	}
 }
 
-/*
- * Function: rc_fieldcpy
+/*-
+ * rc_fieldcpy:
+ * @string: the provided string to copy
+ * @uptr: the current position of the buffer
+ * @stopat: characters to which parsing should stop
+ * @len: the maximum length of @string
  *
- * Purpose: Copy a data field from the buffer.  Advance the buffer
- *          past the data field. Ensure that no more than len - 1
- *          bytes are copied and that resulting string is terminated
- *          with '\0'.
+ * Copy a data field from the buffer.  Advance the buffer
+ * past the data field. Ensure that no more than len - 1
+ * bytes are copied and that resulting string is terminated
+ * with '\0'.
  *
- */
+ -*/
 
 static void
 rc_fieldcpy(char *string, char const **uptr, char const *stopat, size_t len)
@@ -480,15 +506,17 @@ rc_fieldcpy(char *string, char const **uptr, char const *stopat, size_t len)
 }
 
 
-/*
- * Function: rc_avpair_parse
+/**
+ * rc_avpair_parse:
+ * @rh: a handle to parsed configuration
+ * @buffer: the buffer to be parsed
+ * @first_pair: an allocated array of values
  *
- * Purpose: parses the buffer to extract the attribute-value pairs.
+ * Parses the buffer to extract the attribute-value pairs.
  *
- * Returns: 0 = successful parse of attribute-value pair,
- *	   -1 = syntax (or other) error detected.
+ * Returns: 0 on successful parse of attribute-value pair, or -1 on syntax (or other) error detected.
  *
- */
+ **/
 
 #define PARSE_MODE_NAME		0
 #define PARSE_MODE_EQUAL	1
@@ -706,14 +734,20 @@ int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first
 	return 0;
 }
 
-/*
- * Function: rc_avpair_tostr
+/**
+ * rc_avpair_tostr:
+ * @rh: a handle to parsed configuration
+ * @pair: a pointer to a #VALUE_PAIR structure
+ * @name: the name of the @pair
+ * @ln: the size of @name
+ * @value: the value of the @pair
+ * @lv: the size of @value
  *
- * Purpose: Translate an av_pair into two strings
+ * Translate an av_pair into two strings.
  *
  * Returns: 0 on success, -1 on failure
  *
- */
+ **/
 
 int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, char *value, int lv)
 {
@@ -812,14 +846,19 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 	return 0;
 }
 
-/*
- * Function: rc_avpair_log
+/**
+ * rc_avpair_log:
+ * @rh: a handle to parsed configuration
+ * @pair: a pointer to a #VALUE_PAIR structure
+ * @buf: will hold the string output of the @pair
+ * @len: the size of @buf
  *
- * Purpose: format sequence of attribute value pairs into printable
+ * Format a sequence of attribute value pairs into a printable
  * string. The caller should provide a storage buffer and the buffer length.
- * Returns pointer to provided storage buffer.
  *
- */
+ * Returns: a pointer to provided storage buffer.
+ *
+ **/
 char *
 rc_avpair_log(rc_handle const *rh, VALUE_PAIR *pair, char *buf, size_t buf_len)
 {
@@ -841,13 +880,17 @@ rc_avpair_log(rc_handle const *rh, VALUE_PAIR *pair, char *buf, size_t buf_len)
 	return buf;
 }
 
-/*
- * Function: rc_avpair_readin
+/**
+ * rc_avpair_readin:
+ * @rh: a handle to parsed configuration
+ * @input: a %FILE handle
  *
- * Purpose: get a sequence of attribute value pairs from the file input
- *	    and make them into a list of value_pairs
+ * Get a sequence of attribute value pairs from the file input
+ * and make them into a list of value_pairs.
  *
- */
+ * Returns: the array of value pairs
+ *
+ **/
 
 VALUE_PAIR *rc_avpair_readin(rc_handle const *rh, FILE *input)
 {
