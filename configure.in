@@ -7,7 +7,7 @@
 # 
 # 
 
-AC_INIT
+AC_INIT([freeradius-client], [1.1.6])
 
 AM_MAINTAINER_MODE
 
@@ -19,7 +19,7 @@ case "$target" in
 	;;
 esac
 
-AM_INIT_AUTOMAKE(radiusclient, 1.1.6)
+AM_INIT_AUTOMAKE([1.12.2 subdir-objects])
 
 LIBVERSION=2:0:0
 AC_SUBST(LIBVERSION)
@@ -352,7 +352,7 @@ dnl AC_SUBST(LTLIBOBJS)
 AC_CONFIG_FILES([
 Makefile
 include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile
-doc/Makefile patches/Makefile
+doc/Makefile doc/manpages/Makefile patches/Makefile
 login.radius/Makefile login.radius/migs/Makefile
 rpm/Makefile
 debian/Makefile
