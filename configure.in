@@ -204,7 +204,7 @@ AC_FUNC_STRFTIME
 AC_FUNC_ALLOCA
 AC_REPLACE_FUNCS(strdup strerror strcasecmp)
 AC_CHECK_FUNCS(flock fcntl uname gethostname sysinfo getdomainname)
-AC_CHECK_FUNCS(stricmp random rand snprintf vsnprintf)
+AC_CHECK_FUNCS(stricmp random rand snprintf vsnprintf strlcpy strlcat)
 
 if test "$ac_cv_func_uname" = 'yes' && test "$cross_compiling" = 'no'
 then

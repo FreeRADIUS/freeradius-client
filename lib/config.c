@@ -18,6 +18,7 @@
 #include <includes.h>
 #include <freeradius-client.h>
 #include <options.h>
+#include "util.h"
 
 /*
  * Function: find_option
@@ -777,13 +778,7 @@ int rc_find_server (rc_handle const *rh, char const *server_name, uint32_t *ip_a
 			    (authservers->secret[i] != NULL) )
 			{
 				memset (secret, '\0', MAX_SECRET_LENGTH);
-				len = strlen (authservers->secret[i]);
-				if (len > MAX_SECRET_LENGTH)
-				{
-					len = MAX_SECRET_LENGTH;
-				}
-				strncpy (secret, authservers->secret[i], (size_t) len);
-				secret[MAX_SECRET_LENGTH] = '\0';
+				strlcpy (secret, authservers->secret[i], MAX_SECRET_LENGTH);
 				return 0;
 			}
 		}
@@ -797,13 +792,7 @@ int rc_find_server (rc_handle const *rh, char const *server_name, uint32_t *ip_a
 			    (acctservers->secret[i] != NULL) )
 			{
 				memset (secret, '\0', MAX_SECRET_LENGTH);
-				len = strlen (acctservers->secret[i]);
-				if (len > MAX_SECRET_LENGTH)
-				{
-					len = MAX_SECRET_LENGTH;
-				}
-				strncpy (secret, acctservers->secret[i], (size_t) len);
-				secret[MAX_SECRET_LENGTH] = '\0';
+				strlcpy (secret, acctservers->secret[i], MAX_SECRET_LENGTH);
 				return 0;
 			}
 		}
@@ -827,26 +816,12 @@ int rc_find_server (rc_handle const *rh, char const *server_name, uint32_t *ip_a
 		if ((h = strtok_r(buffer, " \t\n", &buffer_save)) == NULL) /* first hostname */
 			continue;
 
-		memset (hostnm, '\0', AUTH_ID_LEN);
-		len = strlen (h);
-		if (len > AUTH_ID_LEN)
-		{
-			len = AUTH_ID_LEN;
-		}
-		strncpy (hostnm, h, (size_t) len);
-		hostnm[AUTH_ID_LEN] = '\0';
+		strlcpy (hostnm, h, AUTH_ID_LEN);
 
 		if ((s = strtok_r (NULL, " \t\n", &buffer_save)) == NULL) /* and secret field */
 			continue;
 
-		memset (secret, '\0', MAX_SECRET_LENGTH);
-		len = strlen (s);
-		if (len > MAX_SECRET_LENGTH)
-		{
-			len = MAX_SECRET_LENGTH;
-		}
-		strncpy (secret, s, (size_t) len);
-		secret[MAX_SECRET_LENGTH] = '\0';
+		strlcpy (secret, s, MAX_SECRET_LENGTH);
 
 		if (!strchr (hostnm, '/')) /* If single name form */
 		{

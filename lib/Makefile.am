@@ -21,7 +21,7 @@ CLEANFILES = *~
 lib_LTLIBRARIES =   libfreeradius-client.la
 libfreeradius_client_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
 	avpair.c config.c dict.c ip_util.c log.c util.c  \
-	options.h rc-md5.h rc-md5.c
+	options.h rc-md5.h rc-md5.c util.h
 
 if !ENABLE_NETTLE
 libfreeradius_client_la_SOURCES += md5.c md5.h

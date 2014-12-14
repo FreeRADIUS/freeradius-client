@@ -12,6 +12,7 @@
 #include <config.h>
 #include <includes.h>
 #include <freeradius-client.h>
+#include "util.h"
 
 struct map2id_s {
 	char *name;
@@ -111,7 +112,7 @@ uint32_t rc_map2id(rc_handle const *rh, char const *name)
 	if (*name != '/')
 		strcpy(ttyname, "/dev/");
 
-	strncat(ttyname, name, sizeof(ttyname)-strlen(ttyname)-1);
+	strlcat(ttyname, name, sizeof(ttyname)-strlen(ttyname));
 
 	for(p = rh->map2id_list; p; p = p->next)
 		if (!strcmp(ttyname, p->name)) return p->id;
