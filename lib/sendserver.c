@@ -20,6 +20,7 @@
 #include <includes.h>
 #include <freeradius-client.h>
 #include <pathnames.h>
+#include "util.h"
 
 #define	SA(p)	((struct sockaddr *)(p))
 
@@ -253,7 +254,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	{
 		if(data->secret != NULL)
 		{
-			strncpy(secret, data->secret, MAX_SECRET_LENGTH);
+			strlcpy(secret, data->secret, MAX_SECRET_LENGTH);
 		}
 		/*
 		else

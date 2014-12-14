@@ -17,6 +17,7 @@
 #include <config.h>
 #include <includes.h>
 #include <freeradius-client.h>
+#include "util.h"
 
 /*
  * Function: rc_avpair_add
@@ -128,7 +129,7 @@ VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, in
 	}
 	if ((vp = malloc (sizeof (VALUE_PAIR))) != NULL)
 	{
-		strncpy (vp->name, pda->name, sizeof (vp->name));
+		strlcpy (vp->name, pda->name, sizeof (vp->name));
 		vp->attribute = attrid;
 		vp->next = NULL;
 		vp->type = pda->type;
@@ -731,7 +732,7 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 		return -1;
 	}
 
-	strncpy(name, pair->name, (size_t) ln);
+	strlcpy(name, pair->name, (size_t) ln);
 
 	switch (pair->type)
 	{
@@ -747,7 +748,7 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 			if (!(isprint (*ptr)))
 			{
 				snprintf (buffer, sizeof(buffer), "\\%03o", *ptr);
-				strncat(value, buffer, (size_t) lv);
+				strlcat(value, buffer, (size_t) lv);
 				lv -= 4;
 				if (lv < 0) break;
 			}
@@ -765,22 +766,21 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 		dval = rc_dict_getval (rh, pair->lvalue, pair->name);
 		if (dval != NULL)
 		{
-			strncpy(value, dval->name, (size_t) lv-1);
+			strlcpy(value, dval->name, (size_t) lv);
 		}
 		else
 		{
-			snprintf(buffer, sizeof(buffer), "%ld", (long int)pair->lvalue);
-			strncpy(value, buffer, (size_t) lv);
+			snprintf(value, lv, "%ld", (long int)pair->lvalue);
 		}
 		break;
 
 	    case PW_TYPE_IPADDR:
 		inad.s_addr = htonl(pair->lvalue);
-		strncpy (value, inet_ntoa (inad), (size_t) lv-1);
+		strlcpy (value, inet_ntoa (inad), (size_t) lv);
 		break;
 
 	    case PW_TYPE_IPV6ADDR:
-	    	if (inet_ntop(AF_INET6, pair->strvalue, value, lv-1) == NULL)
+	    	if (inet_ntop(AF_INET6, pair->strvalue, value, lv) == NULL)
 	    		return -1;
 		break;
 
@@ -795,14 +795,13 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 
 	    	if (inet_ntop(AF_INET6, ip, txt, sizeof(txt)) == NULL)
 	    		return -1;
-		snprintf(value, lv-1, "%s/%u", txt, (unsigned)pair->strvalue[1]);
+		snprintf(value, lv, "%s/%u", txt, (unsigned)pair->strvalue[1]);
 
 		break;
 	    }
 	    case PW_TYPE_DATE:
-		strftime (buffer, sizeof (buffer), "%m/%d/%y %H:%M:%S",
+		strftime (value, lv, "%m/%d/%y %H:%M:%S",
 			  gmtime ((time_t *) & pair->lvalue));
-		strncpy(value, buffer, lv-1);
 		break;
 
 	    default:

@@ -17,6 +17,7 @@
 #include <config.h>
 #include <includes.h>
 #include <freeradius-client.h>
+#include "util.h"
 
 #define HOSTBUF_SIZE 1024
 
@@ -258,7 +259,7 @@ rc_own_hostname(char *hostname, int len)
 		rc_log(LOG_ERR,"rc_own_hostname: couldn't get own hostname");
 		return -1;
 	}
-	strncpy(hostname, uts.nodename, len);
+	strlcpy(hostname, uts.nodename, len);
 #elif defined(HAVE_GETHOSTNAME)
 	if (gethostname(hostname, len) < 0)
 	{
@@ -297,8 +298,7 @@ uint32_t rc_own_ipaddress(rc_handle *rh)
 			if (rc_own_hostname(hostname, sizeof(hostname)) < 0)
 				return 0;
 		} else {
-			strncpy(hostname, rc_conf_str(rh, "bindaddr"), sizeof(hostname));
-			hostname[sizeof(hostname) - 1] = '\0';
+			strlcpy(hostname, rc_conf_str(rh, "bindaddr"), sizeof(hostname));
 		}
 		if ((rh->this_host_ipaddr = rc_get_ipaddr (hostname)) == 0) {
 			rc_log(LOG_ERR, "rc_own_ipaddress: couldn't get own IP address");
@@ -334,8 +334,7 @@ uint32_t rc_own_bind_ipaddress(rc_handle *rh)
 	    strcmp(rc_conf_str(rh, "bindaddr"), "*") == 0) {
 		rval = INADDR_ANY;
 	} else {
-		strncpy(hostname, rc_conf_str(rh, "bindaddr"), sizeof(hostname));
-		hostname[sizeof(hostname) - 1] = '\0';
+		strlcpy(hostname, rc_conf_str(rh, "bindaddr"), sizeof(hostname));
 		if ((rval = rc_get_ipaddr (hostname)) == 0) {
 			rc_log(LOG_ERR, "rc_own_ipaddress: couldn't get IP address from bindaddr");
 			rval = INADDR_ANY;
