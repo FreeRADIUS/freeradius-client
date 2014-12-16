@@ -721,7 +721,8 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 	DICT_VALUE     *dval;
 	char            buffer[32];
 	struct in_addr  inad;
-	unsigned char         *ptr;
+	unsigned char  *ptr;
+	unsigned int    pos;
 
 	*name = *value = '\0';
 
@@ -736,6 +737,7 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 	{
 	    case PW_TYPE_STRING:
 	    	lv--;
+	    	pos = 0;
 		ptr = (unsigned char *) pair->strvalue;
 		if (pair->attribute == PW_DIGEST_ATTRIBUTES) {
 			pair->strvalue[*(ptr + 1)] = '\0';
@@ -745,16 +747,22 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 		{
 			if (!(isprint (*ptr)))
 			{
-				snprintf (buffer, sizeof(buffer), "\\%03o", *ptr);
-				strlcat(value, buffer, (size_t) lv);
-				lv -= 4;
-				if (lv < 0) break;
+				if (lv >= 4) {
+					snprintf (&value[pos], lv, "\\%03o", *ptr);
+					pos += 4;
+					lv -= 4;
+				} else {
+					break;
+				}
 			}
 			else
 			{
-				strncat(value, (char *)ptr, 1);
-				lv--;
-				if (lv <= 0) break;
+				if (lv > 0) {
+					value[pos++] = *ptr;
+					lv--;
+				} else {
+					break;
+				}
 			}
 			ptr++;
 		}
