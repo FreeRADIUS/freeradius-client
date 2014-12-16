@@ -56,6 +56,8 @@
 
 #define MAX_SECRET_LENGTH	(3 * 16) /* MUST be multiple of 16 */
 
+#define MAX_STRING_LEN		254 /* RFC2138: string 0-253 octets */
+
 #define VENDOR(x)		(((x) >> 16) & 0xffff)
 #define ATTRID(x)		((x) & 0xffff)
 
