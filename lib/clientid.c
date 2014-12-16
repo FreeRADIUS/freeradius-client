@@ -107,12 +107,15 @@ uint32_t rc_map2id(rc_handle const *rh, char const *name)
 {
 	struct map2id_s *p;
 	char ttyname[PATH_MAX];
+	unsigned pos = 0;
 
 	*ttyname = '\0';
-	if (*name != '/')
+	if (*name != '/') {
 		strcpy(ttyname, "/dev/");
+		pos = 5;
+	}
 
-	strlcat(ttyname, name, sizeof(ttyname)-strlen(ttyname));
+	strlcpy(&ttyname[pos], name, sizeof(ttyname)-pos);
 
 	for(p = rh->map2id_list; p; p = p->next)
 		if (!strcmp(ttyname, p->name)) return p->id;
