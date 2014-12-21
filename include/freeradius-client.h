@@ -101,7 +101,6 @@ struct rc_conf
 	struct dict_value	*dictionary_values;
 	struct dict_vendor	*dictionary_vendors;
 	char			buf[GETSTR_LENGTH];
-	char			buf1[14];
 	char			ifname[512];
 };
 
@@ -533,7 +532,6 @@ int rc_send_server(rc_handle *, SEND_DATA *, char *);
 
 void rc_str2tm(char const *, struct tm *);
 void rc_mdelay(int);
-char *rc_mksid(rc_handle *);
 rc_handle *rc_new(void);
 void rc_destroy(rc_handle *);
 double rc_getctime(void);
