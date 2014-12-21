@@ -74,12 +74,11 @@ rc_handle *rc_new(void)
 {
 	rc_handle *rh;
 
-	rh = malloc(sizeof(*rh));
+	rh = calloc(1, sizeof(*rh));
 	if (rh == NULL) {
                 rc_log(LOG_CRIT, "rc_new: out of memory");
                 return NULL;
         }
-	memset(rh, 0, sizeof(*rh));
 	return rh;
 }
 
