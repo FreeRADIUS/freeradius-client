@@ -2,6 +2,20 @@ $Id: ChangeLog,v 1.6 2010/02/04 10:33:33 aland Exp $
 
 FreeRADIUS-client 1.1.7, January 19, 2015
   o Finally a new release!
+  o Allow "configure --with-nettle" to use nettle MD5
+    implementation.  Patch from Nikos Mavrogiannopoulos.
+  o Clean up generation of random numbers.
+    Patch from Nikos Mavrogiannopoulos.
+  o Update BSD license as permitted by Christos Zoulas.
+  o Define PW_MAX_MSG_SIZE for maximum message sice.
+    Patch from Nikos Mavrogiannopoulos.
+  o Allow the dictionary file parser to understand
+    BEGIN-VENDOR / END-VENDOR as with FreeRADIUS server.
+    Patch from Nikos Mavrogiannopoulos.
+  o Added support for IPv6.
+    Patch from Nikos Mavrogiannopoulos.
+  o Don't crash if a config option is unset.
+    Patch from Nikos Mavrogiannopoulos.
   o Fix encoding of "date" attributes.  Patch from
     Christian Schoch.
   o Build fixes from Sven Neuhaus, Ghennadi Procopciuc,
