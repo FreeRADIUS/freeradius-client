@@ -1,9 +1,26 @@
 $Id: ChangeLog,v 1.6 2010/02/04 10:33:33 aland Exp $
 
-FreeRADIUS-client 1.1.7, (unreleased)
-  o Removed lock file for sequence number.  It isn't needed.
+FreeRADIUS-client 1.1.7, January 19, 2015
+  o Finally a new release!
+  o Fix encoding of "date" attributes.  Patch from
+    Christian Schoch.
+  o Build fixes from Sven Neuhaus, Ghennadi Procopciuc,
+    Daniel Pocock, and gureedo.
+  o Fix memory leaks.  Patches from Alex Massover,
+    William King, gureedo, and FreeSWITCH.
+  o Fixes to retry algorithm.  Patch from Lewis Adam.
+  o Zero out secret fields.  Patch from Scott Neugroschl.
+  o Update the dictionaries.  Patches from Bogdan-Andrei Iancu
+    and gureedo.
+  o Make the library thread-safe.  Based on a patch from
+    Alex Massover.
   o Made rc_avpair_log thread-safe by using a buffer supplied
-    by the caller.
+    by the caller.  Patch from Alex Massover.
+  o Removed lock file for sequence number.  It isn't needed.
+  o Use poll() where possible to avoid issues with FD_SETSIZE.
+    Patch from Alfred E. Heggestad.
+  o Set Acct-Delay-Time in Accounting-Request packets.
+    Patch from Alfred E. Heggestad.
 
 FreeRADIUS-client 1.1.6, March 5, 2008
 
