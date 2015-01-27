@@ -224,7 +224,7 @@ rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 		if (attrlen < 4) {
 			rc_log(LOG_ERR, "rc_avpair_gen: received VSA "
 			    "attribute with invalid length");
-			goto shithappens;
+			goto skipit;
 		}
 		memcpy(&lvalue, ptr, 4);
 		vendorpec = ntohl(lvalue);
@@ -232,7 +232,7 @@ rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 			/* Warn and skip over the unknown VSA */
 			rc_log(LOG_WARNING, "rc_avpair_gen: received VSA "
 			    "attribute with unknown Vendor-Id %d", vendorpec);
-			return pair;
+			goto skipit;
 		}
 		/* Process recursively */
 		return rc_avpair_gen(rh, pair, ptr + 4, attrlen - 4,
@@ -258,7 +258,7 @@ rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 			    "length %d: 0x%s", attribute & 0xffff,
 			    VENDOR(attribute), attrlen + 2, buffer);
 		}
-		goto shithappens;
+		goto skipit;
 	}
 
 	rpair = malloc(sizeof(*rpair));
@@ -286,13 +286,13 @@ rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 		if (attrlen != 4) {
 			rc_log(LOG_ERR, "rc_avpair_gen: received INT "
 			    "attribute with invalid length");
-			goto shithappens;
+			goto skipit;
 		}
 	case PW_TYPE_IPADDR:
 		if (attrlen != 4) {
 			rc_log(LOG_ERR, "rc_avpair_gen: received IPADDR"
 			    " attribute with invalid length");
-			goto shithappens;
+			goto skipit;
 		}
 		memcpy((char *)&lvalue, (char *)ptr, 4);
 		pair->lvalue = ntohl(lvalue);
@@ -301,7 +301,7 @@ rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 		if (attrlen != 16) {
 			rc_log(LOG_ERR, "rc_avpair_gen: received IPV6ADDR"
 			    " attribute with invalid length");
-			goto shithappens;
+			goto skipit;
 		}
 		memcpy(pair->strvalue, (char *)ptr, 16);
 		pair->lvalue = attrlen;
@@ -310,7 +310,7 @@ rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 		if (attrlen > 18 || attrlen < 2) {
 			rc_log(LOG_ERR, "rc_avpair_gen: received IPV6PREFIX"
 			    " attribute with invalid length: %d", attrlen);
-			goto shithappens;
+			goto skipit;
 		}
 		memcpy(pair->strvalue, (char *)ptr, attrlen);
 		pair->lvalue = attrlen;
@@ -319,14 +319,16 @@ rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 		if (attrlen != 4) {
 			rc_log(LOG_ERR, "rc_avpair_gen: received DATE "
 			    "attribute with invalid length");
-			goto shithappens;
+			goto skipit;
 		}
 
 	default:
 		rc_log(LOG_WARNING, "rc_avpair_gen: %s has unknown type",
 		    attr->name);
-		goto shithappens;
+		goto skipit;
 	}
+
+skipit:
 	return pair;
 
 shithappens:
