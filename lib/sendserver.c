@@ -230,8 +230,9 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	size_t			secretlen;
 	char            secret[MAX_SECRET_LENGTH + 1];
 	unsigned char   vector[AUTH_VECTOR_LEN];
-	char            recv_buffer[BUFFER_LEN];
-	char            send_buffer[BUFFER_LEN];
+	uint8_t          recv_buffer[BUFFER_LEN];
+	uint8_t          send_buffer[BUFFER_LEN];
+	uint8_t		*attr;
 	int		retries;
 	VALUE_PAIR 	*vp;
 	struct pollfd	pfd;
@@ -404,6 +405,43 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 		close(sockfd);
 		memset(secret, '\0', sizeof(secret));
 		return ERROR_RC;
+	}
+
+	/*
+	 *	If UDP is larger than RADIUS, shorten it to RADIUS.
+	 */
+	if (length > ntohs(recv_auth->length)) length = ntohs(recv_auth->length);
+
+	/*
+	 *	Verify that it's a valid RADIUS packet before doing ANYTHING with it.
+	 */
+	attr = recv_buffer + AUTH_HDR_LEN;
+	while (attr < (recv_buffer + length)) {
+		if (attr[0] == 0) {
+			rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: attribute zero is invalid",
+			       server_name, data->svc_port);
+			close(sockfd);
+			memset(secret, '\0', sizeof(secret));
+			return ERROR_RC;
+		}
+
+		if (attr[1] < 2) {
+			rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: attribute length is too small",
+			       server_name, data->svc_port);
+			close(sockfd);
+			memset(secret, '\0', sizeof(secret));
+			return ERROR_RC;
+		}
+
+		if ((attr + attr[1]) > (recv_buffer + length)) {
+			rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: attribute overflows the packet",
+			       server_name, data->svc_port);
+			close(sockfd);
+			memset(secret, '\0', sizeof(secret));
+			return ERROR_RC;
+		}
+
+		attr += attr[1];
 	}
 
 	result = rc_check_reply (recv_auth, BUFFER_LEN, secret, vector, data->seq_nbr);
