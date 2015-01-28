@@ -1,6 +1,6 @@
 Summary:        FreeRADIUS Client Software
 Name:		freeradius-client-snapshot
-Version:	1.1.6
+Version:	1.1.7
 Release:	0
 Obsoletes:      radiusc radiusclient radiusclient-ng
 Group:          Productivity/Networking/Radius/Clients
@@ -77,7 +77,7 @@ rm -f %{buildroot}%{_libdir}/*.la
 
 %files
 %defattr(-, root, root)
-%doc doc/* BUGS COPYRIGHT README README.radexample
+%doc doc/* BUGS COPYRIGHT README.rst README.radexample
 %dir %{_sysconfdir}/radiusclient
 %{_sysconfdir}/radiusclient/dictionary
 %{_sysconfdir}/radiusclient/dictionary.*
