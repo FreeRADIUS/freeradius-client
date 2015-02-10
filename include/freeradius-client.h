@@ -178,30 +178,6 @@ typedef struct rc_conf rc_handle;
 #define PW_FRAMED_APPLETALK_LINK	37	/* integer */
 #define PW_FRAMED_APPLETALK_NETWORK	38	/* integer */
 #define PW_FRAMED_APPLETALK_ZONE	39	/* string */
-#define PW_EVENT_TIMESTAMP		55	/* integer */
-#define PW_CHAP_CHALLENGE		60	/* string */
-#define PW_NAS_PORT_TYPE		61	/* integer */
-#define PW_PORT_LIMIT			62	/* integer */
-#define PW_LOGIN_LAT_PORT		63	/* string */
-#define PW_CONNECT_INFO			77	/* string */
-#define PW_MESSAGE_AUTHENTICATOR	80	/* string */
-
-/* RFC3162 IPv6 attributes */
-
-#define PW_NAS_IPV6_ADDRESS		95	/* string */
-#define PW_FRAMED_INTERFACE_ID		96	/* string */
-#define PW_FRAMED_IPV6_PREFIX		97	/* string */
-#define PW_LOGIN_IPV6_HOST		98	/* string */
-#define PW_FRAMED_IPV6_ROUTE		99	/* string */
-#define PW_FRAMED_IPV6_POOL		100	/* string */
-
-/* RFC6911 IPv6 attributes */
-#define PW_FRAMED_IPV6_ADDRESS		168	/* ipaddr6 */
-#define PW_DNS_SERVER_IPV6_ADDRESS	169	/* ipaddr6 */
-#define PW_ROUTE_IPV6_INFORMATION	170	/* ipv6prefix */
-
-/* Accounting */
-
 #define PW_ACCT_STATUS_TYPE		40	/* integer */
 #define PW_ACCT_DELAY_TIME		41	/* integer */
 #define PW_ACCT_INPUT_OCTETS		42	/* integer */
@@ -216,6 +192,58 @@ typedef struct rc_conf rc_handle;
 #define PW_ACCT_LINK_COUNT		51	/* integer */
 #define PW_ACCT_INPUT_GIGAWORDS		52	/* integer */
 #define PW_ACCT_OUTPUT_GIGAWORDS	53	/* integer */
+#define PW_EVENT_TIMESTAMP		55	/* integer */
+#define PW_EGRESS_VLANID		56	/* string */
+#define PW_INGRESS_FILTERS		57	/* integer */
+#define PW_EGRESS_VLAN_NAME		58	/* string */
+#define PW_USER_PRIORITY_TABLE		59	/* string */
+#define PW_CHAP_CHALLENGE		60	/* string */
+#define PW_NAS_PORT_TYPE		61	/* integer */
+#define PW_PORT_LIMIT			62	/* integer */
+#define PW_LOGIN_LAT_PORT		63	/* string */
+#define PW_TUNNEL_TYPE			64	/* string */
+#define PW_TUNNEL_MEDIUM_TYPE		65	/* integer */
+#define PW_TUNNEL_CLIENT_ENDPOINT	66	/* string */
+#define PW_TUNNEL_SERVER_ENDPOINT	67	/* string */
+#define PW_ACCT_TUNNEL_CONNECTION	68	/* string */
+#define PW_TUNNEL_PASSWORD		69	/* string */
+#define PW_ARAP_PASSWORD		70	/* string */
+#define PW_ARAP_FEATURES		71	/* string */
+#define PW_ARAP_ZONE_ACCESS		72	/* integer */
+#define PW_ARAP_SECURITY		73	/* integer */
+#define PW_ARAP_SECURITY_DATA		74	/* string */
+#define PW_PASSWORD_RETRY		75	/* integer */
+#define PW_PROMPT			76	/* integer */
+#define PW_CONNECT_INFO			77	/* string */
+#define PW_CONFIGURATION_TOKEN		78	/* string */
+#define PW_EAP_MESSAGE			79	/* string */
+#define PW_MESSAGE_AUTHENTICATOR	80	/* string */
+#define PW_TUNNEL_PRIVATE_GROUP_ID	81	/* string */
+#define PW_TUNNEL_ASSIGNMENT_ID		82	/* string */
+#define PW_TUNNEL_PREFERENCE		83	/* string */
+#define PW_ARAP_CHALLENGE_RESPONSE	84	/* string */
+#define PW_ACCT_INTERIM_INTERVAL	85	/* integer */
+#define PW_ACCT_TUNNEL_PACKETS_LOST	86	/* integer */
+#define PW_NAS_PORT_ID_STRING		87	/* string */
+#define PW_FRAMED_POOL			88	/* string */
+#define PW_CHARGEABLE_USER_IDENTITY	89	/* string */
+#define PW_CUI				89	/* string */
+#define PW_TUNNEL_CLIENT_AUTH_ID	90	/* string */
+#define PW_TUNNEL_SERVER_AUTH_ID	91	/* string */
+#define PW_NAS_FILTER_RULE		92	/* string */
+#define PW_ORIGINATING_LINE_INFO	94	/* string */
+#define PW_NAS_IPV6_ADDRESS		95	/* string */
+#define PW_FRAMED_INTERFACE_ID		96	/* string */
+#define PW_FRAMED_IPV6_PREFIX		97	/* string */
+#define PW_LOGIN_IPV6_HOST		98	/* string */
+#define PW_FRAMED_IPV6_ROUTE		99	/* string */
+#define PW_FRAMED_IPV6_POOL		100	/* string */
+#define PW_ERROR_CAUSE			101	/* integer */
+#define PW_EAP_KEY_NAME			102	/* string */
+
+#define PW_FRAMED_IPV6_ADDRESS		168	/* ipaddr6 */
+#define PW_DNS_SERVER_IPV6_ADDRESS	169	/* ipaddr6 */
+#define PW_ROUTE_IPV6_INFORMATION	170	/* ipv6prefix */
 
 /* Experimental SIP-specific attributes (draft-sterman-aaa-sip-00.txt etc) */
 
