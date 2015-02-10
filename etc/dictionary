@@ -78,21 +78,52 @@ ATTRIBUTE	Acct-Link-Count		51	integer
 ATTRIBUTE	Acct-Input-Gigawords	52	integer
 ATTRIBUTE	Acct-Output-Gigawords	53	integer
 ATTRIBUTE	Event-Timestamp		55	integer
+ATTRIBUTE	Egress-VLANID		56	string
+ATTRIBUTE	Ingress-Filters		57	integer
+ATTRIBUTE	Egress-VLAN-Name	58	string
+ATTRIBUTE	User-Priority-Table	59	string
 ATTRIBUTE	CHAP-Challenge		60	string
 ATTRIBUTE	NAS-Port-Type		61	integer
 ATTRIBUTE	Port-Limit		62	integer
 ATTRIBUTE	Login-LAT-Port		63	integer
+ATTRIBUTE	Tunnel-Type		64	string
+ATTRIBUTE	Tunnel-Medium-Type	65	string
+ATTRIBUTE	Tunnel-Client-Endpoint	66	string
+ATTRIBUTE	Tunnel-Server-Endpoint	67	string
+ATTRIBUTE	Acct-Tunnel-Connection	68	string
+ATTRIBUTE	Tunnel-Password		69	string
+ATTRIBUTE	ARAP-Password		70	string
+ATTRIBUTE	ARAP-Features		71	string
+ATTRIBUTE	ARAP-Zone-Access	72	integer
+ATTRIBUTE	ARAP-Security		73	integer
+ATTRIBUTE	ARAP-Security-Data	74	string
+ATTRIBUTE	Password-Retry		75	integer
+ATTRIBUTE	Prompt			76	integer
 ATTRIBUTE	Connect-Info		77	string
-
-#
-#	RFC3162 IPv6 attributes
-#
+ATTRIBUTE	Configuration-Token	78	string
+ATTRIBUTE	EAP-Message		79	string
+ATTRIBUTE	Message-Authenticator	80	string
+ATTRIBUTE	Tunnel-Private-Group-ID	81	string
+ATTRIBUTE	Tunnel-Assignment-ID	82	string
+ATTRIBUTE	Tunnel-Preference	83	string
+ATTRIBUTE	ARAP-Challenge-Response	84	string
+ATTRIBUTE	Acct-Interim-Interval	85	integer
+ATTRIBUTE	Acct-Tunnel-Packets-Lost	86	integer
+ATTRIBUTE	NAS-Port-Id-String	87	string
+ATTRIBUTE	Framed-Pool		88	string
+ATTRIBUTE	Chargeable-User-Identity	89	string
+ATTRIBUTE	Tunnel-Client-Auth-ID	90	string
+ATTRIBUTE	Tunnel-Server-Auth-ID	91	string
+ATTRIBUTE	NAS-Filter-Rule		92	string
+ATTRIBUTE	Originating-Line-Info	94	string
 ATTRIBUTE	NAS-IPv6-Address	95	string
 ATTRIBUTE	Framed-Interface-Id	96	string
 ATTRIBUTE	Framed-IPv6-Prefix	97	ipv6prefix
 ATTRIBUTE	Login-IPv6-Host		98	string
 ATTRIBUTE	Framed-IPv6-Route	99	string
 ATTRIBUTE	Framed-IPv6-Pool	100	string
+ATTRIBUTE	Error-Cause		101	integer
+ATTRIBUTE	EAP-Key-Name		102	string
 
 #
 #	RFC6911 IPv6 attributes
