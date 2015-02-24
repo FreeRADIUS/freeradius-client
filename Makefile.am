@@ -17,6 +17,6 @@ ACLOCAL = @ACLOCAL@
 LTLIBOBJS = @LTLIBOBJS@
 
 SUBDIRS = include lib src etc man doc patches login.radius rpm
-EXTRA_DIST = BUGS CHANGES COPYRIGHT README README.radexample
+EXTRA_DIST = BUGS CHANGES COPYRIGHT README.rst README.radexample
 
 CLEANFILES = *~
