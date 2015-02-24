@@ -26,14 +26,17 @@
 static void rc_random_vector (unsigned char *);
 static int rc_check_reply (AUTH_HDR *, int, char const *, unsigned char const *, unsigned char);
 
-/*
- * Function: rc_pack_list
+/*-
+ * rc_pack_list:
+ * @vp: a pointer to a #VALUE_PAIR
+ * @secret: the secret used by the server
+ * @auth: a pointer to #AUTH_HDR
  *
- * Purpose: Packs an attribute value pair list into a buffer.
+ * Packs an attribute value pair list into a buffer.
  *
- * Returns: Number of octets packed.
+ * Returns: The number of octets packed.
  *
- */
+ -*/
 
 static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 {
@@ -186,10 +189,15 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 	return total_length;
 }
 
-/* Function strappend
+/*- 
+ * strappend:
+ * @dest: the destination buffer
+ * @max_size: the maximum size available in the destination buffer
+ * @pos: the current position in the @dest buffer; initially must be zero
+ * @src: the source buffer to append
  *
- * Purpose: appends a string to the provided buffer
- */
+ * Appends a string to the provided buffer
+ -*/
 static void strappend(char *dest, unsigned max_size, int *pos, const char *src)
 {
 	unsigned len = strlen(src) + 1;
@@ -207,12 +215,16 @@ static void strappend(char *dest, unsigned max_size, int *pos, const char *src)
 	return;
 }
 
-/*
- * Function: rc_send_server
+/**
+ * rc_send_server:
+ * @rh: a handle to parsed configuration
+ * @data: a pointer to a #SEND_DATA structure
+ * @msg: must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of any %PW_REPLY_MESSAGE received
  *
- * Purpose: send a request to a RADIUS server and wait for the reply
+ * Sends a request to a RADIUS server and waits for the reply.
  *
- */
+ * Returns: %OK_RC (0) on success, %TIMEOUT_RC on timeout %REJECT_RC on acess reject, or negative on failure as return value
+ **/
 
 int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 {
@@ -493,15 +505,19 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg)
 	return result;
 }
 
-/*
- * Function: rc_check_reply
+/*-
+ * rc_check_reply:
+ * @auth: a pointer to #AUTH_HDR
+ * @bufferlen: the available buffer length
+ * @secret: the secret used by the server
+ * @vector: a random vector of %AUTH_VECTOR_LEN
+ * @seq_nbr: a unique sequence number
  *
- * Purpose: verify items in returned packet.
+ * verify items in returned packet.
  *
- * Returns:	OK_RC       -- upon success,
- *		BADRESP_RC  -- if anything looks funny.
+ * Returns: %OK_RC upon success, %BADRESP_RC if anything looks funny.
  *
- */
+ -*/
 
 static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char const *secret, unsigned char const *vector, uint8_t seq_nbr)
 {
@@ -609,14 +625,13 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char const *secret, un
 
 }
 
-/*
- * Function: rc_random_vector
+/*-
+ * rc_random_vector:
+ * @vector: a buffer with at least %AUTH_VECTOR_LEN bytes
  *
- * Purpose: generates a random vector of AUTH_VECTOR_LEN octets.
+ * Generates a random vector of AUTH_VECTOR_LEN octets.
  *
- * Returns: the vector (call by reference)
- *
- */
+ -*/
 
 static void rc_random_vector (unsigned char *vector)
 {

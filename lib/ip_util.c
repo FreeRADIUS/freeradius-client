@@ -30,13 +30,14 @@
 static __thread size_t	hostbuflen=HOSTBUF_SIZE;
 static __thread	char	*tmphostbuf=NULL;
 
-/*
- * Function: rc_gethostbyname
+/**
+ * rc_gethostbyname:
+ * @hostname: the name of the host
  *
- * Purpose: threadsafe replacement for gethostbyname.
+ * Threadsafe replacement for gethostbyname.
  *
  * Returns: NULL on failure, hostent pointer on success
- */
+ **/
 
 struct hostent *rc_gethostbyname(char const *hostname)
 {
@@ -75,13 +76,16 @@ struct hostent *rc_gethostbyname(char const *hostname)
 	return hp;
 } 
 
-/*
- * Function: rc_gethostbyname
+/**
+ * rc_gethostbyname:
+ * @addr: an address
+ * @length: the length of @addr
+ * @format: %AF_INET or %AF_INET6
  *
- * Purpose: threadsafe replacement for gethostbyname.
+ * Threadsafe replacement for gethostbyname.
  *
  * Returns: NULL on failure, hostent pointer on success
- */
+ **/
 
 struct hostent *rc_gethostbyaddr(char const *addr, size_t length, int format)
 {
@@ -121,14 +125,15 @@ struct hostent *rc_gethostbyaddr(char const *addr, size_t length, int format)
 	return hp;
 } 
 
-/*
- * Function: rc_get_ipaddr
+/**
+ * rc_get_ipaddr:
+ * @host: the name of the host
  *
- * Purpose: return an IP address in host long notation from a host
- *          name or address in dot notation.
+ * Return an IP address in host long notation from a host
+ * name or address in dot notation.
  *
  * Returns: 0 on failure
- */
+ **/
 
 uint32_t rc_get_ipaddr (char const *host)
 {
@@ -146,14 +151,15 @@ uint32_t rc_get_ipaddr (char const *host)
 	return ntohl((*(uint32_t *) hp->h_addr));
 }
 
-/*
- * Function: rc_good_ipaddr
+/**
+ * rc_good_ipaddr:
+ * @addr: an IPv4 address in dot notation
  *
- * Purpose: check for valid IP address in standard dot notation.
+ * Check for valid IP address in standard dot notation.
  *
  * Returns: 0 on success, -1 when failure
  *
- */
+ **/
 
 int rc_good_ipaddr (char const *addr)
 {
@@ -196,13 +202,14 @@ int rc_good_ipaddr (char const *addr)
 	}
 }
 
-/*
- * Function: rc_ip_hostname
+/**
+ * rc_ip_hostname:
+ * @h_ipaddr: an IPv4 address
  *
- * Purpose: Return a printable host name (or IP address in dot notation)
+ * Return a printable host name (or IP address in dot notation)
  *	    for the supplied IP address.
  *
- */
+ **/
 
 char const *rc_ip_hostname (uint32_t h_ipaddr)
 {
@@ -217,12 +224,14 @@ char const *rc_ip_hostname (uint32_t h_ipaddr)
 	return (hp == NULL) ? "unknown" : hp->h_name;
 }
 
-/*
- * Function: rc_getport
+/**
+ * rc_getport:
+ * @type: %AUTH or %ACCT
  *
- * Purpose: get the port number for the supplied request type
+ * get the port number for the supplied request type
  *
- */
+ * Returns: the port number
+ **/
 
 unsigned short rc_getport(int type)
 {
@@ -236,14 +245,16 @@ unsigned short rc_getport(int type)
 	}
 }
 
-/*
- * Function: rc_own_hostname
+/**
+ * rc_own_hostname:
+ * @hostname: will hold the name of the host
+ * @len: the size of @hostname
  *
- * Purpose: get the hostname of this machine
+ * get the hostname of this machine
  *
- * Returns  -1 on failure, 0 on success
+ * Returns: -1 on failure, 0 on success
  *
- */
+ **/
 
 int
 rc_own_hostname(char *hostname, int len)
@@ -278,14 +289,15 @@ rc_own_hostname(char *hostname, int len)
 	return 0;
 }
 
-/*
- * Function: rc_own_ipaddress
+/**
+ * rc_own_ipaddress:
+ * @rh: a handle to parsed configuration
  *
- * Purpose: get the IP address of this host in host order
+ * get the IPv4 address of this host in host order
  *
  * Returns: IP address on success, 0 on failure
  *
- */
+ **/
 
 uint32_t rc_own_ipaddress(rc_handle *rh)
 {
@@ -309,15 +321,15 @@ uint32_t rc_own_ipaddress(rc_handle *rh)
 	return rh->this_host_ipaddr;
 }
 
-/*
- * Function: rc_own_bind_ipaddress
+/**
+ * rc_own_bind_ipaddress:
  *
- * Purpose: get the IP address to be used as a source address
- *          for sending requests in host order
+ * Get the IP address to be used as a source address
+ * for sending requests in host order
  *
- * Returns: IP address
+ * Returns: an IPv4 address
  *
- */
+ **/
 
 uint32_t rc_own_bind_ipaddress(rc_handle *rh)
 {
@@ -347,17 +359,18 @@ uint32_t rc_own_bind_ipaddress(rc_handle *rh)
 	return rval;
 }
 
-/*
- * Function: rc_get_srcaddr
+/**
+ * rc_get_srcaddr:
+ * @lia: local address
+ * @ria: the remove address
  *
- * Purpose: given remote address find local address which the
- *          system will use as a source address for sending
- *          datagrams to that remote address
+ * Given remote address find local address which the
+ * system will use as a source address for sending
+ * datagrams to that remote address
  *
  * Returns: 0 in success, -1 on failure, address is filled into
  *          the first argument.
- *
- */
+ **/
 int
 rc_get_srcaddr(struct sockaddr *lia, struct sockaddr *ria)
 {

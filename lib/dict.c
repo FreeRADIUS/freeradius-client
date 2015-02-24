@@ -18,13 +18,16 @@
 #include <includes.h>
 #include <freeradius-client.h>
 
-/*
- * Function: rc_read_dictionary
+/**
+ * rc_read_dictionary:
+ * @rh: a handle to parsed configuration
+ * @filename: the name of the dictionary file
  *
- * Purpose: Initialize the dictionary.  Read all ATTRIBUTES into
- *	    the dictionary_attributes list.  Read all VALUES into
- *	    the dictionary_values list.
+ * Initialize the dictionary.  Read all ATTRIBUTES into
+ * the dictionary_attributes list.  Read all VALUES into
+ * the dictionary_values list.
  *
+ * Returns: 0 on success, -1 on failure
  */
 
 int rc_read_dictionary (rc_handle *rh, char const *filename)
@@ -349,13 +352,14 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 	return 0;
 }
 
-/*
- * Function: rc_dict_getattr
+/**
+ * rc_dict_getattr:
+ * @rh: a handle to parsed configuration
+ * @attribute: the attribute ID
  *
- * Purpose: Return the full attribute structure based on the
- *	    attribute id number.
+ * Returns: the full attribute structure based on the attribute id number.
  *
- */
+ **/
 
 DICT_ATTR *rc_dict_getattr (rc_handle const *rh, int attribute)
 {
@@ -373,13 +377,14 @@ DICT_ATTR *rc_dict_getattr (rc_handle const *rh, int attribute)
 	return NULL;
 }
 
-/*
- * Function: rc_dict_findattr
+/**
+ * rc_dict_findattr:
+ * @rh: a handle to parsed configuration
+ * @attrname: the attribute name
  *
- * Purpose: Return the full attribute structure based on the
- *	    attribute name.
+ * Returns: the full attribute structure based on the attribute name.
  *
- */
+ **/
 
 DICT_ATTR *rc_dict_findattr (rc_handle const *rh, char const *attrname)
 {
@@ -398,13 +403,14 @@ DICT_ATTR *rc_dict_findattr (rc_handle const *rh, char const *attrname)
 }
 
 
-/*
- * Function: rc_dict_findval
+/**
+ * rc_dict_findval:
+ * @rh: a handle to parsed configuration
+ * @valname: the value name
  *
- * Purpose: Return the full value structure based on the
- *         value name.
+ * Returns: the full value structure based on the value name.
  *
- */
+ **/
 
 DICT_VALUE *rc_dict_findval (rc_handle const *rh, char const *valname)
 {
@@ -422,13 +428,14 @@ DICT_VALUE *rc_dict_findval (rc_handle const *rh, char const *valname)
 	return NULL;
 }
 
-/*
- * Function: rc_dict_findvend
+/**
+ * rc_dict_findvend:
+ * @rh: a handle to parsed configuration
+ * @valname: the vendor name
  *
- * Purpose: Return the full vendor structure based on the
- *          vendor name.
+ * Returns: the full vendor structure based on the vendor name.
  *
- */
+ **/
 
 DICT_VENDOR *
 rc_dict_findvend(rc_handle const *rh, char const *vendorname)
@@ -441,13 +448,14 @@ rc_dict_findvend(rc_handle const *rh, char const *vendorname)
 	return NULL;
 }
 
-/*
- * Function: rc_dict_getvend
+/**
+ * rc_dict_getvend:
+ * @rh: a handle to parsed configuration
+ * @vendorpec: the vendor ID
  *
- * Purpose: Return the full vendor structure based on the
- *          vendor id number.
+ * Returns: the full vendor structure based on the vendor id number.
  *
- */
+ **/
 
 DICT_VENDOR *
 rc_dict_getvend (rc_handle const *rh, int vendorpec)
@@ -460,13 +468,16 @@ rc_dict_getvend (rc_handle const *rh, int vendorpec)
 	return NULL;
 }
 
-/*
- * Function: dict_getval
+/**
+ * dict_getval:
+ * @rh: a handle to parsed configuration
+ * @value: the attribute value
+ * @attrname: the attribute name
  *
- * Purpose: Return the full value structure based on the
- *          actual value and the associated attribute name.
+ * Returns: the full value structure based on the actual 
+ * value and the associated attribute name.
  *
- */
+ **/
 
 DICT_VALUE *
 rc_dict_getval (rc_handle const *rh, uint32_t value, char const *attrname)
@@ -486,13 +497,13 @@ rc_dict_getval (rc_handle const *rh, uint32_t value, char const *attrname)
 	return NULL;
 }
 
-/*
- * Function: rc_dict_free
+/**
+ * rc_dict_free:
+ * @rh: a handle to parsed configuration
  *
- * Purpose: Free allocated av lists
+ * Frees the allocated av lists
  *
- * Arguments: Radius Client handle
- */
+ **/
 
 void
 rc_dict_free(rc_handle *rh)

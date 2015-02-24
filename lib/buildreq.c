@@ -15,13 +15,21 @@
 
 unsigned char rc_get_id();
 
-/*
- * Function: rc_buildreq
+/**
+ * rc_buildreq:
+ * @rh: a handle to parsed configuration
+ * @data: a pointer to a #SEND_DATA structure
+ * @code: one of standard RADIUS codes (e.g., %PW_ACCESS_REQUEST)
+ * @server: the name of the server
+ * @port: the server's port number
+ * @secret: the secret used by the server
+ * @timeout: the timeout in seconds of a message
+ * @retries: the number of retries
  *
- * Purpose: builds a skeleton RADIUS request using information from the
- * 	    config file.
+ * This function builds a skeleton RADIUS request using information
+ * from the config file.
  *
- */
+ **/
 
 void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, unsigned short port,
 		 char *secret, int timeout, int retries)
@@ -35,28 +43,36 @@ void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, u
 	data->code = code;
 }
 
-/*
- * Function: rc_get_id
+/**
+ * rc_get_id:
  *
- * Purpose: generate random id
+ * Generates a random ID.
  *
- */
+ * Returns: the random ID
+ **/
 
 unsigned char rc_get_id()
 {
 	return (unsigned char)(random() & UCHAR_MAX);
 }
 
-/*
- * Function: rc_aaa
+/**
+ * rc_aaa:
+ * @rh: a handle to parsed configuration
+ * @client_port: the client port number to use (may be zero to use any available)
+ * @send: a #VALUE_PAIR array of values (e.g., %PW_USER_NAME)
+ * @received: an allocated array of received values
+ * @msg: must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of any %PW_REPLY_MESSAGE received
+ * @add_nas_port: if non-zero it will include %PW_NAS_PORT in sent pairs
+ * @request_type: one of standard RADIUS codes (e.g., %PW_ACCESS_REQUEST)
  *
- * Purpose: Builds an authentication/accounting request for port id client_port
- *	    with the value_pairs send and submits it to a server
+ * Builds an authentication/accounting request for port id client_port
+ * with the value_pairs send and submits it to a server.
  *
- * Returns: received value_pairs in received, messages from the server in msg
- *	    and 0 on success, negative on failure as return value
+ * Returns: received value_pairs in @received, messages from the server in @msg
+ *	    and %OK_RC (0) on success, negative on failure as return value
  *
- */
+ **/
 
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
     char *msg, int add_nas_port, int request_type)
@@ -175,16 +191,21 @@ exit:
 	return result;
 }
 
-/*
- * Function: rc_auth
+/**
+ * rc_auth:
+ * @rh: a handle to parsed configuration
+ * @client_port: the client port number to use (may be zero to use any available)
+ * @send: a #VALUE_PAIR array of values (e.g., %PW_USER_NAME)
+ * @received: an allocated array of received values
+ * @msg: must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of any %PW_REPLY_MESSAGE received
  *
- * Purpose: Builds an authentication request for port id client_port
- *          with the value_pairs send and submits it to a server
+ * Builds an authentication request for port id client_port
+ * with the value_pairs send and submits it to a server.
  *
- * Returns: received value_pairs in received, messages from the server in msg (if non-NULL),
- *          and 0 on success, negative on failure as return value
+ * Returns: received value_pairs in @received, messages from the server in @msg (if non-NULL),
+ *          and %OK_RC (0) on success, negative on failure as return value
  *
- */
+ **/
 
 int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
     char *msg)
@@ -193,18 +214,23 @@ int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **
 	return rc_aaa(rh, client_port, send, received, msg, 1, PW_ACCESS_REQUEST);
 }
 
-/*
- * Function: rc_auth_proxy
+/**
+ * rc_auth_proxy:
+ * @rh: a handle to parsed configuration
+ * @client_port: the client port number to use (may be zero to use any available)
+ * @send: a #VALUE_PAIR array of values (e.g., %PW_USER_NAME)
+ * @received: an allocated array of received values
+ * @msg: must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of any %PW_REPLY_MESSAGE received
  *
- * Purpose: Builds an authentication request
- *	    with the value_pairs send and submits it to a server.
- *	    Works for a proxy; does not add IP address, and does
- *	    does not rely on config file.
+ * Builds an authentication request
+ * with the value_pairs send and submits it to a server.
+ * Works for a proxy; does not add IP address, and does
+ * does not rely on config file.
  *
- * Returns: received value_pairs in received, messages from the server in msg (if non-NULL)
- *	    and 0 on success, negative on failure as return value
+ * Returns: received value_pairs in @received, messages from the server in @msg (if non-NULL)
+ *	    and %OK_RC (0) on success, negative on failure as return value
  *
- */
+ **/
 
 int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *msg)
 {
@@ -213,15 +239,20 @@ int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *
 }
 
 
-/*
- * Function: rc_acct
+/**
+ * rc_acct:
+ * @rh: a handle to parsed configuration
+ * @client_port: the client port number to use (may be zero to use any available)
+ * @send: a #VALUE_PAIR array of values (e.g., %PW_USER_NAME)
  *
- * Purpose: Builds an accounting request for port id client_port
- *	    with the value_pairs send
+ * Builds an accounting request for port id client_port
+ * with the value_pairs at @send.
  *
  * Remarks: NAS-IP-Address, NAS-Port and Acct-Delay-Time get filled
- *	    in by this function, the rest has to be supplied.
- */
+ * in by this function, the rest has to be supplied.
+ *
+ * Returns: received value_pairs in @received, and %OK_RC (0) on success, negative on failure as return value
+ **/
 
 int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send)
 {
@@ -229,12 +260,15 @@ int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send)
 	return rc_aaa(rh, client_port, send, NULL, NULL, 1, PW_ACCOUNTING_REQUEST);
 }
 
-/*
- * Function: rc_acct_proxy
+/**
+ * rc_acct_proxy:
+ * @rh: a handle to parsed configuration
+ * @send: a #VALUE_PAIR array of values (e.g., %PW_USER_NAME)
  *
- * Purpose: Builds an accounting request with the value_pairs send
+ * Builds an accounting request with the value_pairs at @send.
  *
- */
+ * Returns: %OK_RC (0) on success, negative on failure as return value
+ **/
 
 int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
 {
@@ -242,13 +276,18 @@ int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
 	return rc_aaa(rh, 0, send, NULL, NULL, 0, PW_ACCOUNTING_REQUEST);
 }
 
-/*
- * Function: rc_check
+/**
+ * rc_check:
+ * @rh: a handle to parsed configuration
+ * @host: the name of the server
+ * @secret: the secret used by the server
+ * @port: the server's port number
+ * @msg: must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of any %PW_REPLY_MESSAGE received
  *
- * Purpose: ask the server hostname on the specified port for a
- *	    status message
+ * Asks the server hostname on the specified port for a status message.
  *
- */
+ * Returns: %OK_RC (0) on success, negative on failure as return value
+ **/
 
 int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char *msg)
 {

@@ -10,6 +10,8 @@
 
 AUTOMAKE_OPTIONS = foreign
 
+SUBDIRS = manpages
+
 CLEANFILES = *~
 
 EXTRA_DIST = instop.html

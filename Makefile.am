@@ -20,3 +20,7 @@ SUBDIRS = include lib src etc man doc patches login.radius rpm
 EXTRA_DIST = BUGS CHANGES COPYRIGHT README.rst README.radexample
 
 CLEANFILES = *~
+
+dist-hook:
+	make -C doc/manpages compare-makefile
+
