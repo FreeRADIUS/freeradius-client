@@ -382,8 +382,10 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 
 	for (;;)
 	{
-		sendto (sockfd, (char *) auth, (unsigned int) total_length, (int) 0,
-			SA(auth_addr->ai_addr), auth_addr->ai_addrlen);
+		if (sendto (sockfd, (char *) auth, (unsigned int) total_length, (int) 0,
+			SA(auth_addr->ai_addr), auth_addr->ai_addrlen) == -1) {
+			rc_log(LOG_ERR, "%s: socket: %s", __FUNCTION__, strerror(errno));
+		}
 
 		pfd.fd = sockfd;
 		pfd.events = POLLIN;
