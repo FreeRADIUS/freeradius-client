@@ -34,6 +34,11 @@
 #include	<stdio.h>
 #include	<time.h>
 
+
+/* for struct addrinfo and sockaddr_storage */
+#include <sys/socket.h>
+#include <netdb.h>
+
 #undef __BEGIN_DECLS
 #undef __END_DECLS
 #ifdef __cplusplus
@@ -94,8 +99,9 @@ typedef struct pw_auth_hdr
 struct rc_conf
 {
 	struct _option		*config_options;
-	uint32_t 			this_host_ipaddr;
-	uint32_t			*this_host_bind_ipaddr;
+	struct sockaddr_storage	own_bind_addr;
+	unsigned		own_bind_addr_set;
+
 	struct map2id_s		*map2id_list;
 	struct dict_attr	*dictionary_attributes;
 	struct dict_value	*dictionary_values;
@@ -488,7 +494,6 @@ rc_handle *rc_read_config(char const *);
 char *rc_conf_str(rc_handle const *, char const *);
 int rc_conf_int(rc_handle const *, char const *);
 SERVER *rc_conf_srv(rc_handle const *, char const *);
-int rc_find_server(rc_handle const *, char const *, uint32_t *, char *);
 void rc_config_free(rc_handle *);
 int rc_add_config(rc_handle *, char const *, char const *, char const *, int);
 rc_handle *rc_config_init(rc_handle *);
@@ -507,17 +512,12 @@ void rc_dict_free(rc_handle *);
 
 /* ip_util.c */
 
-struct hostent *rc_gethostbyname(char const *);
-struct hostent *rc_gethostbyaddr(char const *, size_t, int);
-uint32_t rc_get_ipaddr(char const *);
+
 int rc_good_ipaddr(char const *);
-char const *rc_ip_hostname(uint32_t);
 unsigned short rc_getport(int);
 int rc_own_hostname(char *, int);
-uint32_t rc_own_ipaddress(rc_handle *);
-uint32_t rc_own_bind_ipaddress(rc_handle *);
 struct sockaddr;
-int rc_get_srcaddr(struct sockaddr *, struct sockaddr *);
+int rc_get_srcaddr(struct sockaddr *, const struct sockaddr *);
 
 
 /* log.c */
@@ -527,7 +527,7 @@ void rc_log(int, char const *, ...);
 
 /* sendserver.c */
 
-int rc_send_server(rc_handle *, SEND_DATA *, char *);
+int rc_send_server(rc_handle *, SEND_DATA *, char *, unsigned flags);
 
 /* util.c */
 

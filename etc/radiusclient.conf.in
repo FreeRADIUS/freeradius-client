@@ -34,6 +34,8 @@ issue	@pkgsysconfdir@/issue
 # RADIUS listens separated by a colon from the hostname. if
 # no port is specified /etc/services is consulted of the radius
 # service. if this fails also a compiled in default is used.
+# For IPv6 addresses use the '[IPv6]:port:secret' format, or
+# simply '[IPv6]'.
 authserver 	localhost
 
 # RADIUS server to use for accouting requests. All that I
