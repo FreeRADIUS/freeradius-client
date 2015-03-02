@@ -56,46 +56,6 @@ void rc_str2tm (char const *valstr, struct tm *tm)
 	tm->tm_year = atoi (&valstr[7]) - 1900;
 }
 
-/** Get the network interface name associated with this tty
- *
- * @param rh a handle to parsed configuration.
- * @param tty the name of the tty.
- * @return the network iface name.
- */
-char *rc_getifname(rc_handle *rh, char const *tty)
-{
-#if defined(BSD4_4) || defined(linux)
-	int		fd;
-
-	if ((fd = open(tty, O_RDWR|O_NDELAY)) < 0) {
-		rc_log(LOG_ERR, "rc_getifname: can't open %s: %s", tty, strerror(errno));
-		return NULL;
-	}
-#endif
-
-#ifdef BSD4_4
-	strcpy(rh->ifname,ttyname(fd));
-	if (strlen(rh->ifname) < 1) {
-		rc_log(LOG_ERR, "rc_getifname: can't get attached interface of %s: %s", tty, strerror(errno));
-		close(fd);
-		return NULL;
-	}
-#elif linux
-	if (ioctl(fd, SIOCGIFNAME, rh->ifname) < 0) {
-		rc_log(LOG_ERR, "rc_getifname: can't ioctl %s: %s", tty, strerror(errno));
-		close(fd);
-		return NULL;
-	}
-#else
-	return NULL;
-#endif
-
-#if defined(BSD4_4) || defined(linux)
-	close(fd);
-	return rh->ifname;
-#endif
-}
-
 void rc_mdelay(int msecs)
 {
 	struct timeval tv;
