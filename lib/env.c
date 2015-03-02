@@ -13,13 +13,11 @@
 #include <includes.h>
 #include <freeradius-client.h>
 
-/*
- * Function: rc_new_env
+/** Allocate space for a new environment
  *
- * Purpose: allocate space for a new environment
- *
+ * @param size the maximum size of the environment.
+ * @return the initialized environment.
  */
-
 ENV *rc_new_env(int size)
 {
 	ENV *p;
@@ -45,26 +43,21 @@ ENV *rc_new_env(int size)
 	return p;
 }
 
-/*
- * Function: rc_free_env
+/** Free the space used by an env structure
  *
- * Purpose: free the space used by an env structure
- *
+ * @param env an initialized environment value.
  */
-
 void rc_free_env(ENV *env)
 {
 	free(env->env);
 	free(env);
 }
 
-/*
- * Function: rc_add_env
+/** Add an environment entry
  *
- * Purpose: add an environment entry
- *
+ * @param env an initialized environment value.
+ * @return 0 on success or -1 on error.
  */
-
 int rc_add_env(ENV *env, char const *name, char const *value)
 {
 	int i;
@@ -108,13 +101,11 @@ int rc_add_env(ENV *env, char const *name, char const *value)
 	return 0;
 }
 
-/*
- * Function: rc_import_env
+/** Imports an array of null-terminated strings
  *
- * Purpose: imports an array of null-terminated strings
- *
+ * @param env an initialized environment value.
+ * @return 0 on success or -1 on error.
  */
-
 int rc_import_env(ENV *env, char const **import)
 {
 	char *es;

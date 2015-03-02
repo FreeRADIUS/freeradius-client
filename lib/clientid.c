@@ -21,16 +21,12 @@ struct map2id_s {
 	struct map2id_s *next;
 };
 
-/*
- * Function: rc_read_mapfile
+/** Read in the ttyname to port id map file
  *
- * Purpose: Read in the ttyname to port id map file
- *
- * Arguments: the file name of the map file
- *
- * Returns: zero on success, negative integer on failure
+ * @param rh a handle to parsed configuration.
+ * @param filename the file name of the map file.
+ * @return zero on success, negative integer on failure.
  */
-
 int rc_read_mapfile(rc_handle *rh, char const *filename)
 {
 	char buffer[1024];
@@ -93,16 +89,12 @@ int rc_read_mapfile(rc_handle *rh, char const *filename)
 	return 0;
 }
 
-/*
- * Function: rc_map2id
+/** Maps ttyname to port id
  *
- * Purpose: Map ttyname to port id
- *
- * Arguments: full pathname of the tty
- *
- * Returns: port id, zero if no entry found
+ * @param rh a handle to parsed configuration.
+ * @param name full pathname of the tty.
+ * @return port id, or zero if no entry found.
  */
-
 uint32_t rc_map2id(rc_handle const *rh, char const *name)
 {
 	struct map2id_s *p;
@@ -125,16 +117,11 @@ uint32_t rc_map2id(rc_handle const *rh, char const *name)
 	return 0;
 }
 
-/*
- * Function: rc_map2id_free
+/** Free allocated map2id list
  *
- * Purpose: Free allocated map2id list
- *
- * Arguments: Radius Client handle
+ * @param rh a handle to parsed configuration.
  */
-
-void
-rc_map2id_free(rc_handle *rh)
+void rc_map2id_free(rc_handle *rh)
 {
 	struct map2id_s *p, *np;
 

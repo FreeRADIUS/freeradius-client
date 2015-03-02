@@ -31,14 +31,11 @@
 static __thread size_t	hostbuflen=HOSTBUF_SIZE;
 static __thread	char	*tmphostbuf=NULL;
 
-/*
- * Function: rc_gethostbyname
+/** Threadsafe replacement for gethostbyname
  *
- * Purpose: threadsafe replacement for gethostbyname.
- *
- * Returns: NULL on failure, hostent pointer on success
+ * @param hostname the name of the host.
+ * @return NULL on failure, hostent pointer on success.
  */
-
 struct hostent *rc_gethostbyname(char const *hostname)
 {
 	struct 	hostent *hp;
@@ -47,7 +44,7 @@ struct hostent *rc_gethostbyname(char const *hostname)
 	struct 	hostent hostbuf;
 	int	res;
 	int	herr;
-	
+
 	if(!tmphostbuf) tmphostbuf = malloc(hostbuflen);
 #endif
 #endif
@@ -74,16 +71,15 @@ struct hostent *rc_gethostbyname(char const *hostname)
 		return NULL;
 	}
 	return hp;
-} 
+}
 
-/*
- * Function: rc_gethostbyname
+/** Threadsafe replacement for gethostbyname
  *
- * Purpose: threadsafe replacement for gethostbyname.
- *
- * Returns: NULL on failure, hostent pointer on success
+ * @param addr an address
+ * @param length the length of @addr
+ * @param format %AF_INET or %AF_INET6
+ * @return NULL on failure, hostent pointer on success
  */
-
 struct hostent *rc_gethostbyaddr(char const *addr, size_t length, int format)
 {
 	struct 	hostent *hp;
@@ -92,14 +88,14 @@ struct hostent *rc_gethostbyaddr(char const *addr, size_t length, int format)
 	struct	hostent hostbuf;
 	int	res;
 	int	herr;
-	
+
 	if(!tmphostbuf) tmphostbuf = malloc(hostbuflen);
 #endif
 #endif
 
 #ifdef GETHOSTBYADDR_R
 #if defined (GETHOSTBYADDRRSTYLE_GNU)
-	while ((res = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen, 
+	while ((res = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen,
 					&hp, &herr)) == ERANGE)
 	{
 		/* Enlarge the buffer */
@@ -120,17 +116,13 @@ struct hostent *rc_gethostbyaddr(char const *addr, size_t length, int format)
 		return NULL;
 	}
 	return hp;
-} 
+}
 
-/*
- * Function: rc_get_ipaddr
+/** Return an IP address in host long notation from a host name or address in dot notation
  *
- * Purpose: return an IP address in host long notation from a host
- *          name or address in dot notation.
- *
- * Returns: 0 on failure
+ * @param host the name of the host.
+ * @return 0 on failure.
  */
-
 uint32_t rc_get_ipaddr (char const *host)
 {
 	struct 	hostent *hp;
@@ -197,14 +189,11 @@ int rc_good_ipaddr (char const *addr)
 	}
 }
 
-/*
- * Function: rc_ip_hostname
+/** Return a printable host name (or IP address in dot notation) for the supplied IP address
  *
- * Purpose: Return a printable host name (or IP address in dot notation)
- *	    for the supplied IP address.
- *
+ * @param h_ipaddr an IPv4 address.
+ * @return the printable hostname.
  */
-
 char const *rc_ip_hostname (uint32_t h_ipaddr)
 {
 	struct hostent  *hp;
@@ -218,18 +207,16 @@ char const *rc_ip_hostname (uint32_t h_ipaddr)
 	return (hp == NULL) ? "unknown" : hp->h_name;
 }
 
-/*
- * Function: rc_getport
+/** Get the port number for the supplied request type
  *
- * Purpose: get the port number for the supplied request type
- *
+ * @param type %AUTH or %ACCT.
+ * @return the port number.
  */
-
 unsigned short rc_getport(int type)
 {
 	struct servent *svp;
 
-	if ((svp = getservbyname ((type==AUTH)?"radius":"radacct", "udp")) == NULL)
+	if ((svp = getservbyname ((type==AUTH)?"radius" : "radacct", "udp")) == NULL)
 	{
 		return (type==AUTH) ? PW_AUTH_UDP_PORT : PW_ACCT_UDP_PORT;
 	} else {
@@ -237,15 +224,12 @@ unsigned short rc_getport(int type)
 	}
 }
 
-/*
- * Function: rc_own_hostname
+/** Get the hostname of this machine
  *
- * Purpose: get the hostname of this machine
- *
- * Returns  -1 on failure, 0 on success
- *
+ * @param hostname will hold the name of the host.
+ * @param len the size of hostname.
+ * @return -1 on failure, 0 on success.
  */
-
 int
 rc_own_hostname(char *hostname, int len)
 {
@@ -279,15 +263,11 @@ rc_own_hostname(char *hostname, int len)
 	return 0;
 }
 
-/*
- * Function: rc_own_ipaddress
+/** Get the IPv4 address of this host in host order
  *
- * Purpose: get the IP address of this host in host order
- *
- * Returns: IP address on success, 0 on failure
- *
+ * @param rh a handle to parsed configuration.
+ * @return IP address on success, 0 on failure.
  */
-
 uint32_t rc_own_ipaddress(rc_handle *rh)
 {
 	char hostname[256];
@@ -309,16 +289,11 @@ uint32_t rc_own_ipaddress(rc_handle *rh)
 	return rh->this_host_ipaddr;
 }
 
-/*
- * Function: rc_own_bind_ipaddress
+/** Get the IP address to be used as a source address for sending requests in host order
  *
- * Purpose: get the IP address to be used as a source address
- *          for sending requests in host order
- *
- * Returns: IP address
- *
+ * @param rh to configure bind address for.
+ * @return an IPv4 address.
  */
-
 uint32_t rc_own_bind_ipaddress(rc_handle *rh)
 {
 	char hostname[256];
@@ -346,19 +321,16 @@ uint32_t rc_own_bind_ipaddress(rc_handle *rh)
 	return rval;
 }
 
-/*
- * Function: rc_get_srcaddr
+/** Find outbound interface address for a given destination
  *
- * Purpose: given remote address find local address which the
- *          system will use as a source address for sending
- *          datagrams to that remote address
+ * Given remote address find local address which the system will use as a source address for sending
+ * datagrams to that remote address.
  *
- * Returns: 0 in success, -1 on failure, address is filled into
- *          the first argument.
- *
+ * @param lia local address.
+ * @param ria the remove address.
+ * @return 0 in success, -1 on failure, address is filled into the first argument.
  */
-int
-rc_get_srcaddr(struct sockaddr *lia, struct sockaddr *ria)
+int rc_get_srcaddr(struct sockaddr *lia, struct sockaddr *ria)
 {
 	int temp_sock;
 	socklen_t namelen;

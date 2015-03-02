@@ -63,9 +63,9 @@
 #define	MD5_DIGEST_LENGTH		16
 
 typedef struct MD5Context {
-	uint32_t state[4];			/* state */
-	uint32_t count[2];			/* number of bits, mod 2^64 */
-	uint8_t buffer[MD5_BLOCK_LENGTH];	/* input buffer */
+	uint32_t state[4];			//!< State.
+	uint32_t count[2];			//!< Number of bits, mod 2^64.
+	uint8_t buffer[MD5_BLOCK_LENGTH];	//!< Input buffer.
 } MD5_CTX;
 
 /* include <sys/cdefs.h> */

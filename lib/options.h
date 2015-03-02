@@ -12,20 +12,20 @@
 #define OPTION_LEN	64
 
 /* ids for different option types */
-#define OT_STR		(1<<0)	  /* string */
-#define OT_INT		(1<<1)	  /* integer */
-#define OT_SRV		(1<<2)	  /* server list */
-#define OT_AUO		(1<<3)    /* authentication order */
+#define OT_STR		(1<<0)			//!< string.
+#define OT_INT		(1<<1)			//!< integer.
+#define OT_SRV		(1<<2)			//!< server list.
+#define OT_AUO		(1<<3)			//!< authentication order.
 
-#define OT_ANY		((unsigned int)~0) /* used internally */
+#define OT_ANY		((unsigned int)~0)	//!< Used internally.
 
 /* status types */
-#define ST_UNDEF	(1<<0)	  /* option is undefined */
+#define ST_UNDEF	(1<<0)			//!< option is undefined.
 
 typedef struct _option {
-	char name[OPTION_LEN];	  /* name of the option */
-	int type, status;	  /* type and status    */
-	void *val;		  /* pointer to option value */
+	char name[OPTION_LEN];			//!< name of the option.
+	int type, status;			//!< type and status.
+	void *val;				//!< pointer to option value.
 } OPTION;
 
 static OPTION config_options_default[] = {
