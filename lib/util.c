@@ -263,8 +263,6 @@ void rc_destroy(rc_handle *rh)
 	rc_map2id_free(rh);
 	rc_dict_free(rh);
 	rc_config_free(rh);
-	if (rh->this_host_bind_ipaddr != NULL)
-		free(rh->this_host_bind_ipaddr);
 	free(rh);
 }
 

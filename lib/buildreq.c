@@ -11,8 +11,7 @@
 #include <config.h>
 #include <includes.h>
 #include <freeradius-client.h>
-
-unsigned char rc_get_id();
+#include "util.h"
 
 /** Build a skeleton RADIUS request using information from the config file
  *
@@ -73,11 +72,14 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	double		start_time = 0;
 	double		now = 0;
 	time_t		dtime;
+	unsigned	type;
 
 	if (request_type != PW_ACCOUNTING_REQUEST) {
 		aaaserver = rc_conf_srv(rh, "authserver");
+		type = AUTH;
 	} else {
 		aaaserver = rc_conf_srv(rh, "acctserver");
+		type = ACCT;
 	}
 	if (aaaserver == NULL)
 		return ERROR_RC;
@@ -134,7 +136,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 			rc_avpair_assign(adt_vp, &dtime, 0);
 		}
 
-		result = rc_send_server (rh, &data, msg);
+		result = rc_send_server (rh, &data, msg, type);
 		if (result == TIMEOUT_RC && radius_deadtime > 0)
 			aaaserver->deadtime_ends[i] = start_time + (double)radius_deadtime;
 	}
@@ -161,7 +163,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 			rc_avpair_assign(adt_vp, &dtime, 0);
 		}
 
-		result = rc_send_server (rh, &data, msg);
+		result = rc_send_server (rh, &data, msg, type);
 		if (result != TIMEOUT_RC)
 			aaaserver->deadtime_ends[i] = -1;
 	}
@@ -267,7 +269,7 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 	rc_avpair_add(rh, &(data.send_pairs), PW_SERVICE_TYPE, &service_type, 0, 0);
 
 	rc_buildreq(rh, &data, PW_STATUS_SERVER, host, port, secret, timeout, retries);
-	result = rc_send_server (rh, &data, msg);
+	result = rc_send_server (rh, &data, msg, ACCT);
 
 	rc_avpair_free(data.receive_pairs);
 

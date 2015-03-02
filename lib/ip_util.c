@@ -21,190 +21,34 @@
 
 #define HOSTBUF_SIZE 1024
 
-#if !defined(SA_LEN)
-#define SA_LEN(sa) \
-  (((sa)->sa_family == AF_INET) ? \
-    sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6))
-#endif
+ /** Return a struct addrinfo from a host name or address in textual notation.
+  * @param host the name of the host
+  * @param flags should be a combinations of %PW_AI flags
+  * @return address which should be deallocated using freeaddrinfo() or NULL on failure
+  **/
+ 
+struct addrinfo *rc_getaddrinfo (char const *host, unsigned flags)
+ {
+	struct addrinfo hints, *res;
+	int err;
+	const char *service = NULL;
+ 
+	memset(&hints, 0, sizeof(hints));
+	hints.ai_socktype = SOCK_DGRAM;
+	if (flags & PW_AI_PASSIVE)
+		hints.ai_flags = AI_PASSIVE;
 
+	if (flags & PW_AI_AUTH)
+		service = "radius";
+	else if (flags & PW_AI_ACCT)
+		service = "radius-acct";
+ 
+	err = getaddrinfo(host, service, &hints, &res);
+	if (err != 0) {
+ 		return NULL;
+ 	}
 
-static __thread size_t	hostbuflen=HOSTBUF_SIZE;
-static __thread	char	*tmphostbuf=NULL;
-
-/** Threadsafe replacement for gethostbyname
- *
- * @param hostname the name of the host.
- * @return NULL on failure, hostent pointer on success.
- */
-struct hostent *rc_gethostbyname(char const *hostname)
-{
-	struct 	hostent *hp;
-#ifdef GETHOSTBYNAME_R
-#if defined (GETHOSTBYNAMERSTYLE_SYSV) || defined (GETHOSTBYNAMERSTYLE_GNU)
-	struct 	hostent hostbuf;
-	int	res;
-	int	herr;
-
-	if(!tmphostbuf) tmphostbuf = malloc(hostbuflen);
-#endif
-#endif
-
-#ifdef GETHOSTBYNAME_R
-#if defined (GETHOSTBYNAMERSTYLE_GNU)
-	while ((res = gethostbyname_r(hostname, &hostbuf, tmphostbuf, hostbuflen, &hp, &herr)) == ERANGE)
-	{
-		/* Enlarge the buffer */
-		hostbuflen *= 2;
-		tmphostbuf = realloc(tmphostbuf, hostbuflen);
-	}
-	if(res) return NULL;
-#elif defined (GETHOSTBYNAMERSTYLE_SYSV)
-	hp = gethostbyname_r(hostname, &hostbuf, tmphostbuf, hostbuflen, &herr);
-#else
-	hp = gethostbyname(hostname);
-#endif
-#else
-	hp = gethostbyname(hostname);
-#endif
-
-	if (hp == NULL) {
-		return NULL;
-	}
-	return hp;
-}
-
-/** Threadsafe replacement for gethostbyname
- *
- * @param addr an address
- * @param length the length of @addr
- * @param format %AF_INET or %AF_INET6
- * @return NULL on failure, hostent pointer on success
- */
-struct hostent *rc_gethostbyaddr(char const *addr, size_t length, int format)
-{
-	struct 	hostent *hp;
-#ifdef GETHOSTBYADDR_R
-#if defined (GETHOSTBYADDRRSTYLE_SYSV) || defined (GETHOSTBYADDRRSTYLE_GNU)
-	struct	hostent hostbuf;
-	int	res;
-	int	herr;
-
-	if(!tmphostbuf) tmphostbuf = malloc(hostbuflen);
-#endif
-#endif
-
-#ifdef GETHOSTBYADDR_R
-#if defined (GETHOSTBYADDRRSTYLE_GNU)
-	while ((res = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen,
-					&hp, &herr)) == ERANGE)
-	{
-		/* Enlarge the buffer */
-		hostbuflen *= 2;
-		tmphostbuf = realloc(tmphostbuf, hostbuflen);
-	}
-	if(res) return NULL;
-#elif GETHOSTBYADDRSTYLE_SYSV
-	hp = gethostbyaddr_r(addr, length, format, &hostbuf, tmphostbuf, hostbuflen, &herr);
-#else
-	hp = gethostbyaddr((char *)&addr, sizeof(struct in_addr), AF_INET);
-#endif
-#else
-	hp = gethostbyaddr((char *)&addr, sizeof(struct in_addr), AF_INET);
-#endif
-
-	if (hp == NULL) {
-		return NULL;
-	}
-	return hp;
-}
-
-/** Return an IP address in host long notation from a host name or address in dot notation
- *
- * @param host the name of the host.
- * @return 0 on failure.
- */
-uint32_t rc_get_ipaddr (char const *host)
-{
-	struct 	hostent *hp;
-
-	if (rc_good_ipaddr (host) == 0)
-	{
-		return ntohl(inet_addr (host));
-	}
-	else if ((hp = rc_gethostbyname(host)) == NULL)
-	{
-		rc_log(LOG_ERR,"rc_get_ipaddr: couldn't resolve hostname: %s", host);
-		return (uint32_t)0;
-	}
-	return ntohl((*(uint32_t *) hp->h_addr));
-}
-
-/*
- * Function: rc_good_ipaddr
- *
- * Purpose: check for valid IP address in standard dot notation.
- *
- * Returns: 0 on success, -1 when failure
- *
- */
-
-int rc_good_ipaddr (char const *addr)
-{
-	int             dot_count;
-	int             digit_count;
-
-	if (addr == NULL)
-		return -1;
-
-	dot_count = 0;
-	digit_count = 0;
-	while (*addr != '\0' && *addr != ' ')
-	{
-		if (*addr == '.')
-		{
-			dot_count++;
-			digit_count = 0;
-		}
-		else if (!isdigit (*addr))
-		{
-			dot_count = 5;
-		}
-		else
-		{
-			digit_count++;
-			if (digit_count > 3)
-			{
-				dot_count = 5;
-			}
-		}
-		addr++;
-	}
-	if (dot_count != 3)
-	{
-		return -1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
-/** Return a printable host name (or IP address in dot notation) for the supplied IP address
- *
- * @param h_ipaddr an IPv4 address.
- * @return the printable hostname.
- */
-char const *rc_ip_hostname (uint32_t h_ipaddr)
-{
-	struct hostent  *hp;
-	uint32_t           n_ipaddr = htonl (h_ipaddr);
-
-	if ((hp = rc_gethostbyaddr ((char *) &n_ipaddr, sizeof (struct in_addr),
-			    AF_INET)) == NULL) {
-		rc_log(LOG_ERR,"rc_ip_hostname: couldn't look up host by addr: %08lX", h_ipaddr);
-	}
-
-	return (hp == NULL) ? "unknown" : hp->h_name;
+	return res;
 }
 
 /** Get the port number for the supplied request type
@@ -263,64 +107,6 @@ rc_own_hostname(char *hostname, int len)
 	return 0;
 }
 
-/** Get the IPv4 address of this host in host order
- *
- * @param rh a handle to parsed configuration.
- * @return IP address on success, 0 on failure.
- */
-uint32_t rc_own_ipaddress(rc_handle *rh)
-{
-	char hostname[256];
-
-	if (!rh->this_host_ipaddr) {
-		if (rc_conf_str(rh, "bindaddr") == NULL ||
-		    strcmp(rc_conf_str(rh, "bindaddr"), "*") == 0) {
-			if (rc_own_hostname(hostname, sizeof(hostname)) < 0)
-				return 0;
-		} else {
-			strlcpy(hostname, rc_conf_str(rh, "bindaddr"), sizeof(hostname));
-		}
-		if ((rh->this_host_ipaddr = rc_get_ipaddr (hostname)) == 0) {
-			rc_log(LOG_ERR, "rc_own_ipaddress: couldn't get own IP address");
-			return 0;
-		}
-	}
-
-	return rh->this_host_ipaddr;
-}
-
-/** Get the IP address to be used as a source address for sending requests in host order
- *
- * @param rh to configure bind address for.
- * @return an IPv4 address.
- */
-uint32_t rc_own_bind_ipaddress(rc_handle *rh)
-{
-	char hostname[256];
-	uint32_t rval;
-
-	if (rh->this_host_bind_ipaddr != NULL)
-		return *rh->this_host_bind_ipaddr;
-
-	rh->this_host_bind_ipaddr = malloc(sizeof(*rh->this_host_bind_ipaddr));
-	if (rh->this_host_bind_ipaddr == NULL)
-		rc_log(LOG_CRIT, "rc_own_bind_ipaddress: out of memory");
-	if (rc_conf_str(rh, "bindaddr") == NULL ||
-	    strcmp(rc_conf_str(rh, "bindaddr"), "*") == 0) {
-		rval = INADDR_ANY;
-	} else {
-		strlcpy(hostname, rc_conf_str(rh, "bindaddr"), sizeof(hostname));
-		if ((rval = rc_get_ipaddr (hostname)) == 0) {
-			rc_log(LOG_ERR, "rc_own_ipaddress: couldn't get IP address from bindaddr");
-			rval = INADDR_ANY;
-		}
-	}
-	if (rh->this_host_bind_ipaddr != NULL)
-		*rh->this_host_bind_ipaddr = rval;
-
-	return rval;
-}
-
 /** Find outbound interface address for a given destination
  *
  * Given remote address find local address which the system will use as a source address for sending
@@ -330,7 +116,7 @@ uint32_t rc_own_bind_ipaddress(rc_handle *rh)
  * @param ria the remove address.
  * @return 0 in success, -1 on failure, address is filled into the first argument.
  */
-int rc_get_srcaddr(struct sockaddr *lia, struct sockaddr *ria)
+int rc_get_srcaddr(struct sockaddr *lia, const struct sockaddr *ria)
 {
 	int temp_sock;
 	socklen_t namelen;
@@ -358,4 +144,41 @@ int rc_get_srcaddr(struct sockaddr *lia, struct sockaddr *ria)
 
 	close(temp_sock);
 	return 0;
+}
+
+/** rc_own_bind_addr:
+ * @rh: a handle to parsed configuration
+ * @lia: the local address to listen to
+ *
+ * Get the IP address to be used as a source address
+ * for sending requests in host order.
+ *
+ **/
+void rc_own_bind_addr(rc_handle *rh, struct sockaddr_storage *lia)
+{
+	char *txtaddr = rc_conf_str(rh, "bindaddr");
+	struct addrinfo *info;
+
+	if (rh->own_bind_addr_set) {
+		memcpy(lia, &rh->own_bind_addr, SS_LEN(&rh->own_bind_addr));
+		return;
+	}
+
+	memset(lia, 0, sizeof(*lia));
+	if (txtaddr == NULL || txtaddr[0] == '*') {
+		((struct sockaddr_in*)lia)->sin_family = AF_INET;
+		((struct sockaddr_in*)lia)->sin_addr.s_addr = INADDR_ANY;
+	} else {
+		info = rc_getaddrinfo (txtaddr, PW_AI_PASSIVE);
+		if (info == NULL) {
+			rc_log(LOG_ERR, "rc_own_ipaddress: couldn't get IP address from bindaddr");
+			((struct sockaddr_in*)lia)->sin_family = AF_INET;
+			((struct sockaddr_in*)lia)->sin_addr.s_addr = INADDR_ANY;
+			return;
+		}
+
+		memcpy(lia, info->ai_addr, info->ai_addrlen);
+       }
+
+       return;
 }
