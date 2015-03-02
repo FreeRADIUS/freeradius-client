@@ -17,6 +17,7 @@ static char	rcsid[] =
 #include	<includes.h>
 #include	<freeradius-client.h>
 #include	<pathnames.h>
+#include	"common.h"
 
 static char *pname = NULL;
 

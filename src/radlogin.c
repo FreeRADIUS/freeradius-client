@@ -19,6 +19,7 @@ static char	rcsid[] =
 #include	<messages.h>
 #include	<pathnames.h>
 #include	<radlogin.h>
+#include	"common.h"
 
 ENV *env = NULL;
 static char *pname = NULL;

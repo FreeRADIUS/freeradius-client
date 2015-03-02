@@ -533,12 +533,10 @@ int rc_send_server(rc_handle *, SEND_DATA *, char *);
 
 void rc_str2tm(char const *, struct tm *);
 char *rc_getifname(rc_handle *, char const *);
-char *rc_getstr(rc_handle *, char const *, int);
 void rc_mdelay(int);
 char *rc_mksid(rc_handle *);
 rc_handle *rc_new(void);
 void rc_destroy(rc_handle *);
-char *rc_fgetln(FILE *, size_t *);
 double rc_getctime(void);
 
 /* env.c */
