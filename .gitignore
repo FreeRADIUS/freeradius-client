@@ -22,6 +22,7 @@ config.h
 libtool
 stamp-h*
 Makefile
+autom4te.cache
 
 # Misc
 *.swp

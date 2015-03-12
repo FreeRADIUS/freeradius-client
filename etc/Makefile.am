@@ -1,14 +1,10 @@
 #
-# $Id: Makefile.am,v 1.5 2008/01/05 03:04:46 sobomax Exp $
-#
 # Copyright (C) 1997,1998 Lars Fenneberg
 #
 # See the file COPYRIGHT for the respective terms and conditions. 
 # If the file is missing contact me at lf@elemental.net 
 # and I'll send you a copy.
 #
-
-AUTOMAKE_OPTIONS = foreign
 
 CLEANFILES = *~ radiusclient.conf
 

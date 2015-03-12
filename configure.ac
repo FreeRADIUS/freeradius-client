@@ -1,35 +1,21 @@
-# 
-#  $Id: configure.in,v 1.38 2008/03/05 18:02:55 cparker Exp $
-# 
+#
 #  Copyright (C) 1996,1997 Lars Fenneberg
-# 
+#
 #  See the file COPYRIGHT for the respective terms and conditions. 
-# 
-# 
+#
 
-AC_INIT
-
-AM_MAINTAINER_MODE
-
+AC_INIT([radiusclient], [1.1.7])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([src/radlogin.c])
-AC_CANONICAL_TARGET([])
 
-case "$target" in
-	*)
-	;;
-esac
-
-AM_INIT_AUTOMAKE(radiusclient, 1.1.6)
+AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AC_GNU_SOURCE
+AC_PROG_CC
+AM_PROG_AR
+AC_PROG_LIBTOOL
 
 LIBVERSION=2:0:0
 AC_SUBST(LIBVERSION)
-
-pkgsysconfdir=${sysconfdir}/$PACKAGE
-AC_SUBST(pkgsysconfdir)
-
-AC_PROG_LIBTOOL
-
-AC_PROG_CC
 
 dnl Needed for normal compile
 AC_PATH_PROG(AR, ar)
@@ -40,7 +26,7 @@ AC_MSG_CHECKING(whether to include shadow password support)
 AC_ARG_ENABLE(shadow,
 [  --enable-shadow         Enable shadow password support],
 [
-        AC_MSG_RESULT(yes)
+	AC_MSG_RESULT(yes)
 	AC_DEFINE(HAVE_SHADOW_PASSWORDS)
 	shadow_passwords=yes
 ],
@@ -347,8 +333,6 @@ AH_OUTPUT([VERSION], [
 #undef VERSION])
 
 AM_CONFIG_HEADER(config.h)
-dnl LTLIBOBJS=`echo "$LIB@&t@OBJS" | sed 's,\.[[^.]]* ,.lo ,g;s,\.[[^.]]*$,.lo,'`
-dnl AC_SUBST(LTLIBOBJS)
 AC_CONFIG_FILES([
 Makefile
 include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile
@@ -356,6 +340,7 @@ doc/Makefile patches/Makefile
 login.radius/Makefile login.radius/migs/Makefile
 rpm/Makefile
 debian/Makefile
-])
-AC_CONFIG_COMMANDS([default],[[test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h]],[[]])
+stamp-h
+],
+[echo timestamp > stamp-h])
 AC_OUTPUT
