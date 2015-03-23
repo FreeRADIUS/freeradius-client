@@ -14,6 +14,9 @@
  *
  */
 
+#ifndef RC_INCLUDES_H
+# define RC_INCLUDES_H
+
 #include "config.h"
 
 /* AIX requires this to be the first thing in the file.  */
@@ -180,3 +183,5 @@ int sigprocmask (int, sigset_t *, sigset_t *);
 /* rlib/lock.c */
 int do_lock_exclusive(FILE *);
 int do_unlock(FILE *);
+
+#endif

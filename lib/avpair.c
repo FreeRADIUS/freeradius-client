@@ -588,7 +588,13 @@ int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first
 				break;
 
 			    case PW_TYPE_IPADDR:
-                                pair->lvalue = rc_get_ipaddr(valstr);
+			    	if (inet_pton(AF_INET, valstr, &pair->lvalue) == 0) {
+			    		rc_log(LOG_ERR, "rc_avpair_parse: invalid IPv4 address %s", valstr);
+			    		free(pair);
+			    		return -1;
+			    	}
+
+                                pair->lvalue = ntohl(pair->lvalue);
 				break;
 
 			    case PW_TYPE_IPV6ADDR:

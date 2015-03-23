@@ -117,7 +117,41 @@ static int set_option_srv(char const *filename, int line, OPTION *option, char c
 
 	p_pointer = strtok_r(p_dupe, ", \t", &p_save);
 
-	/* Check to see if we have 'servername:port' syntax */
+	/* check to see for '[IPv6]:port' syntax */
+	if ((q = strchr(p_pointer,'[')) != NULL) {
+		*q = '\0';
+		q++;
+		p_pointer = q;
+
+		q = strchr(p_pointer, ']');
+		if (q == NULL) {
+			free(p_dupe);
+			rc_log(LOG_CRIT, "read_config: IPv6 parse error");
+			return -1;
+		}
+		*q = '\0';
+		q++;
+
+		if (q[0] == ':') {
+			q++;
+		}
+
+		/* Check to see if we have '[IPv6]:port:secret' syntax */
+		if((s=strchr(q, ':')) != NULL) {
+			*s = '\0';
+			s++;
+			serv->secret[serv->max] = strdup(s);
+			if (serv->secret[serv->max] == NULL) {
+				rc_log(LOG_CRIT, "read_config: out of memory");
+				if (option->val == NULL) {
+					free(p_dupe);
+					free(serv);
+				}
+				return -1;
+			}
+		}
+
+	} else /* Check to see if we have 'servername:port' syntax */
 	if ((q = strchr(p_pointer,':')) != NULL) {
 		*q = '\0';
 		q++;
@@ -137,6 +171,7 @@ static int set_option_srv(char const *filename, int line, OPTION *option, char c
 			}
 		}
 	}
+
 	if(q && strlen(q) > 0) {
 		serv->port[serv->max] = atoi(q);
 	} else {
@@ -287,6 +322,14 @@ int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val
 			rc_log(LOG_CRIT, "rc_add_config: impossible case branch!");
 			abort();
 	}
+
+	if (strcmp(option->name, "bindaddr") == 0) {
+		memset(&rh->own_bind_addr, 0, sizeof(rh->own_bind_addr));
+		rh->own_bind_addr_set = 0;
+		rc_own_bind_addr(rh, &rh->own_bind_addr);
+		rh->own_bind_addr_set = 1;
+	}
+
 	return 0;
 }
 
@@ -629,62 +672,58 @@ int test_config(rc_handle const *rh, char const *filename)
 	return 0;
 }
 
-/** See if ip_addr is one of the ip addresses of hostname
+/** See if info matches hostname
  *
- * @param ip_addr an IPv4 address.
+ * @param info a struct addrinfo
  * @param hostname the name of the host.
  * @return 0 on success, -1 when failure.
  */
-static int find_match (uint32_t *ip_addr, char const *hostname)
+static int find_match (const struct addrinfo* addr, const struct addrinfo *hostname)
 {
+	const struct addrinfo *ptr, *ptr2;
+	unsigned len1, len2;
 
-	uint32_t           addr;
-	char          **paddr;
-	struct hostent *hp;
+	ptr = addr;
+	while(ptr) {
+		ptr2 = hostname;
+		while(ptr2) {
+			len1 = SA_GET_INLEN(ptr->ai_addr);
+			len2 = SA_GET_INLEN(ptr2->ai_addr);
 
-	if (rc_good_ipaddr (hostname) == 0)
-	{
-		if (*ip_addr == ntohl(inet_addr (hostname)))
-		{
-			return 0;
-		}
-		return -1;
-	}
-
-	if ((hp = rc_gethostbyname(hostname)) == NULL)
-	{
-		return -1;
-	}
-
-	for (paddr = hp->h_addr_list; *paddr; paddr++)
-	{
-		addr = ** (uint32_t **) paddr;
-		if (ntohl(addr) == *ip_addr)
-		{
-			return 0;
-		}
-	}
-	return -1;
+			if (len1 > 0 && 
+			    len1 == len2 && 
+			    memcmp(SA_GET_INADDR(ptr->ai_addr), SA_GET_INADDR(ptr2->ai_addr), len1) == 0) {
+				return 0;
+			}
+			ptr2 = ptr2->ai_next;
+ 		}
+		ptr = ptr->ai_next;
+ 	}
+ 	return -1;
 }
 
 /** Checks if provided address is local address
  *
- * @param ip_addr an IPv4 address.
+ * @param addr an %AF_INET or %AF_INET6 address
  * @return 0 if local, 1 if not local, -1 on failure.
  */
-static int rc_ipaddr_local(uint32_t ip_addr)
+static int rc_ipaddr_local(const struct sockaddr *addr)
 {
 	int temp_sock, res, serrno;
-	struct sockaddr_in sin;
+	struct sockaddr tmpaddr;
 
-	temp_sock = socket(AF_INET, SOCK_DGRAM, 0);
+	memcpy(&tmpaddr, addr, SA_LEN(addr));
+
+	temp_sock = socket(addr->sa_family, SOCK_DGRAM, 0);
 	if (temp_sock == -1)
 		return -1;
-	memset(&sin, '\0', sizeof(sin));
-	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = htonl(ip_addr);
-	sin.sin_port = htons(0);
-	res = bind(temp_sock, (struct sockaddr *)&sin, sizeof(sin));
+
+	if (addr->sa_family == AF_INET) {
+		((struct sockaddr_in*)&tmpaddr)->sin_port = 0;
+	} else {
+		((struct sockaddr_in6*)&tmpaddr)->sin6_port = 0;
+	}
+	res = bind(temp_sock, &tmpaddr, SA_LEN(&tmpaddr));
 	serrno = errno;
 	close(temp_sock);
 	if (res == 0)
@@ -696,42 +735,39 @@ static int rc_ipaddr_local(uint32_t ip_addr)
 
 /** Checks if provided name refers to ourselves
  *
- * @param hostname the name of the host.
+ * @param info an addrinfo of the host to check
  * @return 0 if yes, 1 if no and -1 on failure.
  */
-static int rc_is_myname(char const *hostname)
+static int rc_is_myname(const struct addrinfo *info)
 {
-	uint32_t 	addr;
-	char 	**paddr;
-	struct 	hostent *hp;
+	const struct addrinfo *p;
 	int	res;
 
-	if (rc_good_ipaddr(hostname) == 0)
-		return rc_ipaddr_local(ntohl(inet_addr(hostname)));
-
-	if ((hp = rc_gethostbyname(hostname)) == NULL)
-		return -1;
-	for (paddr = hp->h_addr_list; *paddr; paddr++) {
-		addr = **(uint32_t **)paddr;
-		res = rc_ipaddr_local(ntohl(addr));
-		if (res == 0 || res == -1)
-			return res;
-	}
-	return 1;
+	p = info;
+	while(p != NULL) {
+		res = rc_ipaddr_local(p->ai_addr);
+		if (res == 0 || res == -1) {
+ 			return res;
+		}
+		p = p->ai_next;
+ 	}
+ 	return 1;
 }
 
 /** Locate a server in the rh config or if not found, check for a servers file
  *
  * @param rh a handle to parsed configuration.
  * @param server_name the name of the server.
- * @param ip_addr will hold an IPv4 address.
+ * @param info: will hold a pointer to addrinfo
  * @param secret will hold the server's secret (of %MAX_SECRET_LENGTH).
+ * @param flags %AUTH or %ACCT
+ 
  * @return 0 on success, -1 on failure.
  */
-int rc_find_server (rc_handle const *rh, char const *server_name, uint32_t *ip_addr, char *secret)
+int rc_find_server_addr (rc_handle const *rh, char const *server_name,
+                         struct addrinfo** info, char *secret, unsigned flags)
 {
 	int		i;
-	size_t          len;
 	int             result = 0;
 	FILE           *clientfd;
 	char           *h;
@@ -742,36 +778,39 @@ int rc_find_server (rc_handle const *rh, char const *server_name, uint32_t *ip_a
 	char	       *hostnm_save;
 	SERVER	       *authservers;
 	SERVER	       *acctservers;
+	struct addrinfo *tmpinfo = NULL;
 
 	/* Lookup the IP address of the radius server */
-	if ((*ip_addr = rc_get_ipaddr (server_name)) == (uint32_t) 0)
+	if ((*info = rc_getaddrinfo (server_name, flags==AUTH?PW_AI_AUTH:PW_AI_ACCT)) == NULL)
 		return -1;
 
-	/* Check to see if the server secret is defined in the rh config */
-	if( (authservers = rc_conf_srv(rh, "authserver")) != NULL )
-	{
-		for( i = 0; i < authservers->max; i++ )
+	if (flags == AUTH) {
+		/* Check to see if the server secret is defined in the rh config */
+		if( (authservers = rc_conf_srv(rh, "authserver")) != NULL )
 		{
-			if( (strncmp(server_name, authservers->name[i], strlen(server_name)) == 0) &&
-			    (authservers->secret[i] != NULL) )
+			for( i = 0; i < authservers->max; i++ )
 			{
-				memset (secret, '\0', MAX_SECRET_LENGTH);
-				strlcpy (secret, authservers->secret[i], MAX_SECRET_LENGTH);
-				return 0;
+				if( (strncmp(server_name, authservers->name[i], strlen(server_name)) == 0) &&
+				    (authservers->secret[i] != NULL) )
+				{
+					memset (secret, '\0', MAX_SECRET_LENGTH);
+					strlcpy (secret, authservers->secret[i], MAX_SECRET_LENGTH);
+					return 0;
+				}
 			}
 		}
-	}
-
-	if( (acctservers = rc_conf_srv(rh, "acctserver")) != NULL )
-	{
-		for( i = 0; i < acctservers->max; i++ )
+	} else if (flags == ACCT) {
+		if( (acctservers = rc_conf_srv(rh, "acctserver")) != NULL )
 		{
-			if( (strncmp(server_name, acctservers->name[i], strlen(server_name)) == 0) &&
-			    (acctservers->secret[i] != NULL) )
+			for( i = 0; i < acctservers->max; i++ )
 			{
-				memset (secret, '\0', MAX_SECRET_LENGTH);
-				strlcpy (secret, acctservers->secret[i], MAX_SECRET_LENGTH);
-				return 0;
+				if( (strncmp(server_name, acctservers->name[i], strlen(server_name)) == 0) &&
+				    (acctservers->secret[i] != NULL) )
+				{
+					memset (secret, '\0', MAX_SECRET_LENGTH);
+					strlcpy (secret, acctservers->secret[i], MAX_SECRET_LENGTH);
+					return 0;
+				}
 			}
 		}
 	}
@@ -783,7 +822,7 @@ int rc_find_server (rc_handle const *rh, char const *server_name, uint32_t *ip_a
 	if ((clientfd = fopen (rc_conf_str(rh, "servers"), "r")) == NULL)
 	{
 		rc_log(LOG_ERR, "rc_find_server: couldn't open file: %s: %s", strerror(errno), rc_conf_str(rh, "servers"));
-		return -1;
+		goto fail;
 	}
 
 	while (fgets (buffer, sizeof (buffer), clientfd) != NULL)
@@ -803,30 +842,44 @@ int rc_find_server (rc_handle const *rh, char const *server_name, uint32_t *ip_a
 
 		if (!strchr (hostnm, '/')) /* If single name form */
 		{
-			if (find_match (ip_addr, hostnm) == 0)
+			tmpinfo = rc_getaddrinfo(hostnm, 0);
+			if (tmpinfo)
 			{
-				result++;
-				break;
+				result = find_match (*info, tmpinfo);
+				if (result == 0)
+				{
+					result++;
+					break;
+				}
+
+				freeaddrinfo(tmpinfo);
+				tmpinfo = NULL;
 			}
 		}
 		else /* <name1>/<name2> "paired" form */
 		{
 			strtok_r(hostnm, "/", &hostnm_save);
-			if (rc_is_myname(hostnm) == 0)
-			{	     /* If we're the 1st name, target is 2nd */
-				if (find_match (ip_addr, hostnm_save) == 0)
-				{
-					result++;
-					break;
-				}
-			}
-			else	/* If we were 2nd name, target is 1st name */
+			tmpinfo = rc_getaddrinfo(hostnm, 0);
+			if (tmpinfo)
 			{
-				if (find_match (ip_addr, hostnm) == 0)
-				{
-					result++;
-					break;
+				if (rc_is_myname(tmpinfo) == 0)
+				{	     /* If we're the 1st name, target is 2nd */
+					if (find_match (*info, tmpinfo) == 0)
+					{
+						result++;
+						break;
+					}
 				}
+				else	/* If we were 2nd name, target is 1st name */
+				{
+					if (find_match (*info, tmpinfo) == 0)
+					{
+						result++;
+						break;
+					}
+				}
+				freeaddrinfo(tmpinfo);
+				tmpinfo = NULL;
 			}
 		}
 	}
@@ -837,9 +890,21 @@ int rc_find_server (rc_handle const *rh, char const *server_name, uint32_t *ip_a
 		memset (secret, '\0', MAX_SECRET_LENGTH);
 		rc_log(LOG_ERR, "rc_find_server: couldn't find RADIUS server %s in %s",
 			 server_name, rc_conf_str(rh, "servers"));
-		return -1;
+		goto fail;
 	}
-	return 0;
+	
+	result = 0;
+	goto cleanup;
+
+ fail:
+ 	freeaddrinfo(*info);
+ 	result = -1;
+
+ cleanup:
+ 	if (tmpinfo)
+ 		freeaddrinfo(tmpinfo);
+
+	return result;
 }
 
 /**
