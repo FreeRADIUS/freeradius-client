@@ -5,6 +5,14 @@ compiler:
 before_script:
   - sudo apt-get update -qq
   - sudo apt-get install -qq cppcheck
-  - ./configure
-script: make
+  - sudo apt-get install freeradius
+  - sudo cp tests/docker/freeradius-users /etc/freeradius/users 
+  - sudo cp tests/docker/radius-clients.conf /etc/freeradius/clients.conf
+  - sudo sed -i 's|ipaddr = 0.0.0.0/0|ipaddr = 127.0.0.1|g' /etc/freeradius/clients.conf
+  - sudo sed -i 's|ipv6addr = ::|ipv6addr = ::1|g' /etc/freeradius/clients.conf
+  - sudo killall freeradius
+  - sudo /usr/sbin/freeradius -X >/dev/null 2>&1 &
+  - autoreconf -fvi && ./configure
+
+script: make && SERVER_IP=127.0.0.1 SERVER_IP6=127.0.0.1 make check
 after_script: cppcheck -q -Iinclude lib src
