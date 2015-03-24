@@ -1,0 +1,9 @@
+====================
+How to run the tests
+====================
+
+sh run-server.sh #as root
+# The server IP is on the last line
+
+SERVER_IP=172.17.0.14 SERVER_IP6=172.17.0.14 make check
+
