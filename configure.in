@@ -354,6 +354,8 @@ Makefile
 include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile
 doc/Makefile patches/Makefile
 login.radius/Makefile login.radius/migs/Makefile
+tests/Makefile
+tests/docker/Makefile
 rpm/Makefile
 debian/Makefile
 ])
