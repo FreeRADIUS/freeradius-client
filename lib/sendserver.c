@@ -332,7 +332,8 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 	/*
 	 * Fill in NAS-IP-Address (if needed)
 	 */
-	if (rc_avpair_get(data->send_pairs, PW_NAS_IP_ADDRESS, 0) == NULL) {
+	if (rc_avpair_get(data->send_pairs, PW_NAS_IP_ADDRESS, 0) == NULL &&
+	    rc_avpair_get(data->send_pairs, PW_NAS_IPV6_ADDRESS, 0) == NULL) {
 		if (our_sockaddr.ss_family == AF_INET) {
 			uint32_t ip;
 			ip = *((uint32_t*)(&((struct sockaddr_in*)&our_sockaddr)->sin_addr));
