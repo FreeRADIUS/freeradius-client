@@ -384,8 +384,11 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 
 	for (;;)
 	{
-		if (sendto (sockfd, (char *) auth, (unsigned int) total_length, (int) 0,
-			SA(auth_addr->ai_addr), auth_addr->ai_addrlen) == -1) {
+		do {
+			result = sendto (sockfd, (char *) auth, (unsigned int)total_length, 
+				(int) 0, SA(auth_addr->ai_addr), auth_addr->ai_addrlen);
+		} while (result == -1 && errno == EINTR);
+		if (result == -1) {
 			rc_log(LOG_ERR, "%s: socket: %s", __FUNCTION__, strerror(errno));
 		}
 
@@ -426,9 +429,11 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		}
 	}
 	salen = auth_addr->ai_addrlen;
-	length = recvfrom (sockfd, (char *) recv_buffer,
-			   (int) sizeof (recv_buffer),
-			   (int) 0, SA(auth_addr->ai_addr), &salen);
+	do {
+		length = recvfrom (sockfd, (char *) recv_buffer,
+				   (int) sizeof (recv_buffer),
+				   (int) 0, SA(auth_addr->ai_addr), &salen);
+	} while(length == -1 && errno == EINTR);
 
 	if (length <= 0)
 	{
