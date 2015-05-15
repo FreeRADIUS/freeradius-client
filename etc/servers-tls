@@ -1,0 +1,7 @@
+## Server Name or Client/Server pair		psk:username:hexkey
+## ----------------				---------------
+#
+# Use the following syntax to utilize TLS or DTLS with Pre-shared keys.
+#
+#portmaster.elemental.net			psk:server1:9aae97122ccf629de0bf73e688f57295
+#localhost/localhost				psk:username:9aae97122ccf629de0bf73e688f57295

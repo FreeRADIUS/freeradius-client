@@ -211,19 +211,70 @@ static void strappend(char *dest, unsigned max_size, int *pos, const char *src)
 	return;
 }
 
+static ssize_t plain_sendto(void *ptr, int sockfd, rc_type type,
+			    const void *buf, size_t len, int flags,
+			    const struct sockaddr *dest_addr, socklen_t addrlen)
+{
+	return sendto(sockfd, buf, len, flags, dest_addr, addrlen);
+}
+
+static ssize_t plain_recvfrom(void *ptr, int sockfd, rc_type type,
+			      void *buf, size_t len, int flags,
+			      struct sockaddr *src_addr, socklen_t *addrlen)
+{
+	return recvfrom(sockfd, buf, len, flags, src_addr, addrlen);
+}
+
+static void plain_close_fd(int fd)
+{
+	close(fd);
+}
+
+static int plain_get_fd(void *ptr, rc_type type, struct sockaddr* our_sockaddr)
+{
+	int sockfd;
+
+	sockfd = socket (our_sockaddr->sa_family, SOCK_DGRAM, 0);
+	if (sockfd < 0) {
+		return -1;
+	}
+
+	if (our_sockaddr->sa_family == AF_INET)
+		((struct sockaddr_in*)our_sockaddr)->sin_port = 0;
+	else
+		((struct sockaddr_in6*)our_sockaddr)->sin6_port = 0;
+
+	if (bind(sockfd, SA(our_sockaddr), SA_LEN(our_sockaddr)) < 0)
+	{
+		close (sockfd);
+		return -1;
+	}
+	return sockfd;
+}
+
+const static rc_sockets_override default_socket_funcs = {
+	.get_fd = plain_get_fd,
+	.close_fd = plain_close_fd,
+	.sendto = plain_sendto,
+	.recvfrom = plain_recvfrom
+};
+
+#define SCLOSE(fd) if (sfuncs->close_fd) sfuncs->close_fd(fd)
+
 /** Sends a request to a RADIUS server and waits for the reply
  *
  * @param rh a handle to parsed configuration
  * @param data a pointer to a #SEND_DATA structure
  * @param msg must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of
  *	any %PW_REPLY_MESSAGE received.
- * @param flags must be %AUTH or %ACCT
+ * @param type must be %AUTH or %ACCT
  * @return %OK_RC (0) on success, %TIMEOUT_RC on timeout %REJECT_RC on acess reject, or negative
  *	on failure as return value.
  */
-int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
+int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
+                    unsigned type)
 {
-	int             sockfd;
+	int             sockfd = -1;
 	AUTH_HDR       *auth, *recv_auth;
 	char           *server_name;	/* Name of server to query */
 	struct sockaddr_storage our_sockaddr;
@@ -233,14 +284,15 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 	int             total_length;
 	int             length, pos;
 	int             retry_max;
+	const rc_sockets_override *sfuncs;
 	unsigned	discover_local_ip;
 	size_t		secretlen;
 	char            secret[MAX_SECRET_LENGTH + 1];
 	unsigned char   vector[AUTH_VECTOR_LEN];
 	uint8_t          recv_buffer[BUFFER_LEN];
 	uint8_t          send_buffer[BUFFER_LEN];
-	char		our_addr_txt[50]; /* hold a text IP */
-	char		auth_addr_txt[50]; /* hold a text IP */
+	char		our_addr_txt[50] = ""; /* hold a text IP */
+	char		auth_addr_txt[50] = ""; /* hold a text IP */
 	uint8_t		*attr;
 	int		retries;
 	VALUE_PAIR 	*vp;
@@ -255,7 +307,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 	    (vp->lvalue == PW_ADMINISTRATIVE))
 	{
 		strcpy(secret, MGMT_POLL_SECRET);
-		auth_addr = rc_getaddrinfo(server_name, flags==AUTH?PW_AI_AUTH:PW_AI_ACCT);
+		auth_addr = rc_getaddrinfo(server_name, type==AUTH?PW_AI_AUTH:PW_AI_ACCT);
 		if (auth_addr == NULL)
 			return ERROR_RC;
 	}
@@ -269,12 +321,30 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		else
 		{
 		*/
-		if (rc_find_server_addr (rh, server_name, &auth_addr, secret, flags) != 0)
+		if (rc_find_server_addr (rh, server_name, &auth_addr, secret, type) != 0)
 		{
 			rc_log(LOG_ERR, "rc_send_server: unable to find server: %s", server_name);
 			return ERROR_RC;
 		}
 		/*}*/
+	}
+
+	if (rh->so_set == SOCKETS_UDP) {
+		sfuncs = &default_socket_funcs;
+	} else {
+		sfuncs = &rh->so;
+
+		if (sfuncs->static_secret) {
+			/* any static secret set in sfuncs overrides the configured */
+			strlcpy(secret, sfuncs->static_secret, MAX_SECRET_LENGTH);
+		}
+	}
+
+	if (sfuncs->lock) {
+		if (sfuncs->lock(sfuncs->ptr, type) != 0) {
+			rc_log(LOG_ERR, "%s: lock error", __func__);
+			return ERROR_RC;
+		}
 	}
 
 	rc_own_bind_addr(rh, &our_sockaddr);
@@ -296,27 +366,14 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		}
 	}
 
-	sockfd = socket (our_sockaddr.ss_family, SOCK_DGRAM, 0);
-	if (sockfd < 0)
-	{
-		memset (secret, '\0', sizeof (secret));
-		rc_log(LOG_ERR, "rc_send_server: socket: %s", strerror(errno));
-		result = ERROR_RC;
-		goto cleanup;
-	}
-
-	if (our_sockaddr.ss_family == AF_INET)
-		((struct sockaddr_in*)&our_sockaddr)->sin_port = 0;
-	else
-		((struct sockaddr_in6*)&our_sockaddr)->sin6_port = 0;
-
-	if (bind(sockfd, SA(&our_sockaddr), SS_LEN(&our_sockaddr)) < 0)
-	{
-		close (sockfd);
-		memset (secret, '\0', sizeof (secret));
-		rc_log(LOG_ERR, "rc_send_server: bind: %s: %s", server_name, strerror(errno));
-		result = ERROR_RC;
-		goto cleanup;
+	if (sfuncs->get_fd) {
+		sockfd = sfuncs->get_fd(sfuncs->ptr, type, SA(&our_sockaddr));
+		if (sockfd < 0) {
+			memset (secret, '\0', sizeof (secret));
+			rc_log(LOG_ERR, "rc_send_server: socket: %s", strerror(errno));
+			result = ERROR_RC;
+			goto cleanup;
+		}
 	}
 
 	retry_max = data->retries;	/* Max. numbers to try for reply */
@@ -386,11 +443,13 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 	for (;;)
 	{
 		do {
-			result = sendto (sockfd, (char *) auth, (unsigned int)total_length, 
+			result = sfuncs->sendto (sfuncs->ptr, sockfd, type, (char *) auth, (unsigned int)total_length, 
 				(int) 0, SA(auth_addr->ai_addr), auth_addr->ai_addrlen);
 		} while (result == -1 && errno == EINTR);
 		if (result == -1) {
 			rc_log(LOG_ERR, "%s: socket: %s", __FUNCTION__, strerror(errno));
+			result = ERROR_RC;
+			goto cleanup;
 		}
 
 		pfd.fd = sockfd;
@@ -403,6 +462,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 			if (result != -1 || errno != EINTR)
 				break;
 		}
+
 		if (result == -1)
 		{
 			rc_log(LOG_ERR, "rc_send_server: poll: %s", strerror(errno));
@@ -411,8 +471,49 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 			result = ERROR_RC;
 			goto cleanup;
 		}
-		if (result == 1 && (pfd.revents & POLLIN) != 0)
-			break;
+
+		if (result == 1 && (pfd.revents & POLLIN) != 0) {
+			salen = auth_addr->ai_addrlen;
+			do {
+				length = sfuncs->recvfrom (sfuncs->ptr, sockfd, type, 
+						   (char *) recv_buffer,
+						   (int) sizeof (recv_buffer),
+						   (int) 0, SA(auth_addr->ai_addr), &salen);
+			} while(length == -1 && errno == EINTR);
+
+			if (length <= 0)
+			{
+				int e = errno;
+				rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: %s", server_name,\
+					 data->svc_port, strerror(e));
+				if (length == -1 && (e == EAGAIN || e == EINTR))
+					continue;
+				SCLOSE (sockfd);
+				memset (secret, '\0', sizeof (secret));
+				result = ERROR_RC;
+				goto cleanup;
+			}
+
+			recv_auth = (AUTH_HDR *)recv_buffer;
+
+			if (length < AUTH_HDR_LEN || length < ntohs(recv_auth->length)) {
+				rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: reply is too short",
+					server_name, data->svc_port);
+				SCLOSE(sockfd);
+				memset(secret, '\0', sizeof(secret));
+				result = ERROR_RC;
+				goto cleanup;
+			}
+
+			result = rc_check_reply (recv_auth, BUFFER_LEN, secret, vector, data->seq_nbr);
+			if (result != BADRESPID_RC) {
+				/* if a message that doesn't match our ID was received, then ignore
+				 * it, and try to receive more, until timeout. That is because in
+				 * DTLS the channel is shared, and we may receive duplicates or
+				 * out-of-order packets. */
+				break;
+			}
+		}
 
 		/*
 		 * Timed out waiting for response.  Retry "retry_max" times
@@ -423,38 +524,11 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 			rc_log(LOG_ERR,
 				"rc_send_server: no reply from RADIUS server %s:%u",
 				 auth_addr_txt, data->svc_port);
-			close (sockfd);
+			SCLOSE (sockfd);
 			memset (secret, '\0', sizeof (secret));
 			result = TIMEOUT_RC;
 			goto cleanup;
 		}
-	}
-	salen = auth_addr->ai_addrlen;
-	do {
-		length = recvfrom (sockfd, (char *) recv_buffer,
-				   (int) sizeof (recv_buffer),
-				   (int) 0, SA(auth_addr->ai_addr), &salen);
-	} while(length == -1 && errno == EINTR);
-
-	if (length <= 0)
-	{
-		rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: %s", server_name,\
-			 data->svc_port, strerror(errno));
-		close (sockfd);
-		memset (secret, '\0', sizeof (secret));
-		result = ERROR_RC;
-		goto cleanup;
-	}
-
-	recv_auth = (AUTH_HDR *)recv_buffer;
-
-	if (length < AUTH_HDR_LEN || length < ntohs(recv_auth->length)) {
-		rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: reply is too short",
-		    server_name, data->svc_port);
-		close(sockfd);
-		memset(secret, '\0', sizeof(secret));
-		result = ERROR_RC;
-		goto cleanup;
 	}
 
 	/*
@@ -494,8 +568,6 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		attr += attr[1];
 	}
 
-	result = rc_check_reply (recv_auth, BUFFER_LEN, secret, vector, data->seq_nbr);
-
 	length = ntohs(recv_auth->length)  - AUTH_HDR_LEN;
 	if (length > 0) {
 		data->receive_pairs = rc_avpair_gen(rh, NULL, recv_auth->data,
@@ -504,12 +576,8 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		data->receive_pairs = NULL;
 	}
 
-	close (sockfd);
+	SCLOSE (sockfd);
 	memset (secret, '\0', sizeof (secret));
-
-	if (result != OK_RC) {
-		goto cleanup;
-	}
 
 	if (msg) {
 		*msg = '\0';
@@ -545,6 +613,12 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
  cleanup:
  	if (auth_addr)
  		freeaddrinfo(auth_addr);
+
+	if (sfuncs->unlock) {
+		if (sfuncs->unlock(sfuncs->ptr, type) != 0) {
+			rc_log(LOG_ERR, "%s: unlock error", __func__);
+		}
+	}
 
 	return result;
 }
@@ -589,9 +663,8 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char const *secret, un
 	if (auth->id != seq_nbr)
 	{
 		rc_log(LOG_ERR, "rc_check_reply: received non-matching id in RADIUS server response");
-		return BADRESP_RC;
+		return BADRESPID_RC;
 	}
-
 	/* Verify the reply digest */
 	memcpy ((char *) reply_digest, (char *) auth->vector, AUTH_VECTOR_LEN);
 	memcpy ((char *) auth->vector, (char *) vector, AUTH_VECTOR_LEN);

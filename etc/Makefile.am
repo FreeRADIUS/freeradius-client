@@ -10,16 +10,16 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-CLEANFILES = *~ radiusclient.conf
+CLEANFILES = *~ radiusclient.conf radiusclient-tls.conf
 
 sbindir = @sbindir@
 pkgsysconfdir = @pkgsysconfdir@
 pkgsysconf_DATA = issue port-id-map radiusclient.conf \
 	dictionary dictionary.ascend dictionary.compat dictionary.merit \
-	dictionary.sip
+	dictionary.sip radiusclient-tls.conf
 
 EXTRA_DIST = issue port-id-map dictionary dictionary.ascend \
-	dictionary.compat dictionary.merit servers radiusclient.conf.in \
+	dictionary.compat dictionary.merit servers servers-tls radiusclient.conf.in \
 	dictionary.sip
 
 radiusclient.conf: radiusclient.conf.in
@@ -27,10 +27,18 @@ radiusclient.conf: radiusclient.conf.in
 	    -e 's|@pkgsysconf''dir@|$(pkgsysconfdir)|g' \
 	    <$(srcdir)/radiusclient.conf.in >radiusclient.conf
 
-install-data-local: servers
+install-data-local: servers servers-tls
 	$(mkinstalldirs) $(DESTDIR)$(pkgsysconfdir); \
-        echo " $(INSTALL) -m 600 $(srcdir)/servers $(DESTDIR)$(pkgsysconfdir)/servers"; \
-        $(INSTALL) -m 600 $(srcdir)/servers $(DESTDIR)$(pkgsysconfdir)/servers
+	echo " $(INSTALL) -m 600 $(srcdir)/servers $(DESTDIR)$(pkgsysconfdir)/servers"; \
+	echo " $(INSTALL) -m 600 $(srcdir)/servers-tls $(DESTDIR)$(pkgsysconfdir)/servers-tls"
+	$(INSTALL) -m 600 $(srcdir)/servers $(DESTDIR)$(pkgsysconfdir)/servers
+	$(INSTALL) -m 600 $(srcdir)/servers-tls $(DESTDIR)$(pkgsysconfdir)/servers-tls
+
+radiusclient-tls.conf: radiusclient-tls.conf.in
+	sed -e 's|@sbin''dir@|$(sbindir)|g' \
+	    -e 's|@pkgsysconf''dir@|$(pkgsysconfdir)|g' \
+	    <$(srcdir)/radiusclient-tls.conf.in >radiusclient-tls.conf
 
 uninstall-local:
 	rm -f $(DESTDIR)$(pkgsysconfdir)/servers
+	rm -f $(DESTDIR)$(pkgsysconfdir)/servers-tls
