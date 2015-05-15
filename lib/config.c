@@ -586,13 +586,17 @@ int test_config(rc_handle const *rh, char const *filename)
 	struct stat st;
 	char	    *file;
 #endif
+	SERVER *srv;
 
-	if (!(rc_conf_srv(rh, "authserver")->max))
+	srv = rc_conf_srv(rh, "authserver");
+	if (!srv || !srv->max)
 	{
 		rc_log(LOG_ERR,"%s: no authserver specified", filename);
 		return -1;
 	}
-	if (!(rc_conf_srv(rh, "acctserver")->max))
+
+	srv = rc_conf_srv(rh, "acctserver");
+	if (!srv || !srv->max)
 	{
 		rc_log(LOG_ERR,"%s: no acctserver specified", filename);
 		return -1;
