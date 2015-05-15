@@ -323,13 +323,6 @@ int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val
 			abort();
 	}
 
-	if (strcmp(option->name, "bindaddr") == 0) {
-		memset(&rh->own_bind_addr, 0, sizeof(rh->own_bind_addr));
-		rh->own_bind_addr_set = 0;
-		rc_own_bind_addr(rh, &rh->own_bind_addr);
-		rh->own_bind_addr_set = 1;
-	}
-
 	return 0;
 }
 
@@ -372,7 +365,6 @@ rc_handle *rc_config_init(rc_handle *rh)
                 return NULL;
 	}
 
-
 	authservers->max = 0;
 	acctservers->max = 0;
 
@@ -386,6 +378,38 @@ rc_handle *rc_config_init(rc_handle *rh)
 	acct->val = acctservers;
 	auth->val = authservers;
 	return rh;
+}
+
+static int apply_config(rc_handle *rh)
+{
+	const char *txt;
+	int ret;
+
+	memset(&rh->own_bind_addr, 0, sizeof(rh->own_bind_addr));
+	rh->own_bind_addr_set = 0;
+	rc_own_bind_addr(rh, &rh->own_bind_addr);
+	rh->own_bind_addr_set = 1;
+#ifdef HAVE_GNUTLS
+	txt = rc_conf_str(rh, "serv-auth-type");
+	if (txt != NULL) {
+		if (strcasecmp(txt, "dtls") == 0) {
+		    	ret = rc_init_tls(rh, SEC_FLAG_DTLS);
+		} else if (strcasecmp(txt, "tls") == 0) {
+		    	ret = rc_init_tls(rh, 0);
+		} else {
+			rc_log(LOG_CRIT, "unknown server authentication type: %s", txt);
+			return -1;
+		}
+
+	    	if (ret < 0) {
+	    		rc_log(LOG_CRIT, "error initializing %s", txt);
+			return -1;
+		}
+	}
+#endif
+
+	return 0;	
+
 }
 
 /** Read the global config file
@@ -580,7 +604,7 @@ SERVER *rc_conf_srv(rc_handle const *rh, char const *optname)
  * @param filename a name of a configuration file.
  * @return 0 on success, -1 when failure.
  */
-int test_config(rc_handle const *rh, char const *filename)
+int test_config(rc_handle *rh, char const *filename)
 {
 #if 0
 	struct stat st;
@@ -599,11 +623,6 @@ int test_config(rc_handle const *rh, char const *filename)
 	if (!srv || !srv->max)
 	{
 		rc_log(LOG_ERR,"%s: no acctserver specified", filename);
-		return -1;
-	}
-	if (!rc_conf_str(rh, "servers"))
-	{
-		rc_log(LOG_ERR,"%s: no servers file specified", filename);
 		return -1;
 	}
 	if (!rc_conf_str(rh, "dictionary"))
@@ -670,6 +689,10 @@ int test_config(rc_handle const *rh, char const *filename)
 	if (rc_conf_str(rh, "nologin") == NULL)
 	{
 		rc_log(LOG_ERR,"%s: nologin not specified", filename);
+		return -1;
+	}
+
+	if (apply_config(rh) == -1) {
 		return -1;
 	}
 
@@ -764,12 +787,12 @@ static int rc_is_myname(const struct addrinfo *info)
  * @param server_name the name of the server.
  * @param info: will hold a pointer to addrinfo
  * @param secret will hold the server's secret (of %MAX_SECRET_LENGTH).
- * @param flags %AUTH or %ACCT
+ * @param type %AUTH or %ACCT
  
  * @return 0 on success, -1 on failure.
  */
 int rc_find_server_addr (rc_handle const *rh, char const *server_name,
-                         struct addrinfo** info, char *secret, unsigned flags)
+                         struct addrinfo** info, char *secret, rc_type type)
 {
 	int		i;
 	int             result = 0;
@@ -783,12 +806,13 @@ int rc_find_server_addr (rc_handle const *rh, char const *server_name,
 	SERVER	       *authservers;
 	SERVER	       *acctservers;
 	struct addrinfo *tmpinfo = NULL;
+	const char      *fservers;
 
 	/* Lookup the IP address of the radius server */
-	if ((*info = rc_getaddrinfo (server_name, flags==AUTH?PW_AI_AUTH:PW_AI_ACCT)) == NULL)
+	if ((*info = rc_getaddrinfo (server_name, type==AUTH?PW_AI_AUTH:PW_AI_ACCT)) == NULL)
 		return -1;
 
-	if (flags == AUTH) {
+	if (type == AUTH) {
 		/* Check to see if the server secret is defined in the rh config */
 		if( (authservers = rc_conf_srv(rh, "authserver")) != NULL )
 		{
@@ -803,7 +827,7 @@ int rc_find_server_addr (rc_handle const *rh, char const *server_name,
 				}
 			}
 		}
-	} else if (flags == ACCT) {
+	} else if (type == ACCT) {
 		if( (acctservers = rc_conf_srv(rh, "acctserver")) != NULL )
 		{
 			for( i = 0; i < acctservers->max; i++ )
@@ -823,71 +847,74 @@ int rc_find_server_addr (rc_handle const *rh, char const *server_name,
 	 * servers file to define the secret(s)
 	 */
 
-	if ((clientfd = fopen (rc_conf_str(rh, "servers"), "r")) == NULL)
-	{
-		rc_log(LOG_ERR, "rc_find_server: couldn't open file: %s: %s", strerror(errno), rc_conf_str(rh, "servers"));
-		goto fail;
-	}
-
-	while (fgets (buffer, sizeof (buffer), clientfd) != NULL)
-	{
-		if (*buffer == '#')
-			continue;
-
-		if ((h = strtok_r(buffer, " \t\n", &buffer_save)) == NULL) /* first hostname */
-			continue;
-
-		strlcpy (hostnm, h, AUTH_ID_LEN);
-
-		if ((s = strtok_r (NULL, " \t\n", &buffer_save)) == NULL) /* and secret field */
-			continue;
-
-		strlcpy (secret, s, MAX_SECRET_LENGTH);
-
-		if (!strchr (hostnm, '/')) /* If single name form */
+	fservers = rc_conf_str(rh, "servers");
+	if (fservers != NULL) {
+		if ((clientfd = fopen (fservers, "r")) == NULL)
 		{
-			tmpinfo = rc_getaddrinfo(hostnm, 0);
-			if (tmpinfo)
-			{
-				result = find_match (*info, tmpinfo);
-				if (result == 0)
-				{
-					result++;
-					break;
-				}
-
-				freeaddrinfo(tmpinfo);
-				tmpinfo = NULL;
-			}
+			rc_log(LOG_ERR, "rc_find_server: couldn't open file: %s: %s", strerror(errno), rc_conf_str(rh, "servers"));
+			goto fail;
 		}
-		else /* <name1>/<name2> "paired" form */
+
+		while (fgets (buffer, sizeof (buffer), clientfd) != NULL)
 		{
-			strtok_r(hostnm, "/", &hostnm_save);
-			tmpinfo = rc_getaddrinfo(hostnm, 0);
-			if (tmpinfo)
+			if (*buffer == '#')
+				continue;
+
+			if ((h = strtok_r(buffer, " \t\n", &buffer_save)) == NULL) /* first hostname */
+				continue;
+
+			strlcpy (hostnm, h, AUTH_ID_LEN);
+
+			if ((s = strtok_r (NULL, " \t\n", &buffer_save)) == NULL) /* and secret field */
+				continue;
+
+			strlcpy (secret, s, MAX_SECRET_LENGTH);
+
+			if (!strchr (hostnm, '/')) /* If single name form */
 			{
-				if (rc_is_myname(tmpinfo) == 0)
-				{	     /* If we're the 1st name, target is 2nd */
-					if (find_match (*info, tmpinfo) == 0)
+				tmpinfo = rc_getaddrinfo(hostnm, 0);
+				if (tmpinfo)
+				{
+					result = find_match (*info, tmpinfo);
+					if (result == 0)
 					{
 						result++;
 						break;
 					}
+
+					freeaddrinfo(tmpinfo);
+					tmpinfo = NULL;
 				}
-				else	/* If we were 2nd name, target is 1st name */
-				{
-					if (find_match (*info, tmpinfo) == 0)
-					{
-						result++;
-						break;
+			}
+			else /* <name1>/<name2> "paired" form */
+			{
+				strtok_r(hostnm, "/", &hostnm_save);
+				tmpinfo = rc_getaddrinfo(hostnm, 0);
+				if (tmpinfo)
+ 				{
+					if (rc_is_myname(tmpinfo) == 0)
+					{	     /* If we're the 1st name, target is 2nd */
+						if (find_match (*info, tmpinfo) == 0)
+						{
+							result++;
+							break;
+						}
 					}
-				}
-				freeaddrinfo(tmpinfo);
-				tmpinfo = NULL;
+					else	/* If we were 2nd name, target is 1st name */
+ 					{
+						if (find_match (*info, tmpinfo) == 0)
+						{
+							result++;
+							break;
+						}
+ 					}
+					freeaddrinfo(tmpinfo);
+					tmpinfo = NULL;
+ 				}
 			}
 		}
+		fclose (clientfd);
 	}
-	fclose (clientfd);
 	if (result == 0)
 	{
 		memset (buffer, '\0', sizeof (buffer));

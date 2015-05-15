@@ -72,7 +72,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	double		start_time = 0;
 	double		now = 0;
 	time_t		dtime;
-	unsigned	type;
+	rc_type		type;
 
 	if (request_type != PW_ACCOUNTING_REQUEST) {
 		aaaserver = rc_conf_srv(rh, "authserver");

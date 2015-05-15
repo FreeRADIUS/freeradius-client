@@ -37,6 +37,11 @@ static OPTION config_options_default[] = {
 {"login_timeout",	OT_INT, ST_UNDEF, NULL},
 {"nologin",		OT_STR, ST_UNDEF, NULL},
 {"issue",		OT_STR, ST_UNDEF, NULL},
+{"serv-auth-type",	OT_STR, ST_UNDEF, NULL},
+{"tls-verify-hostname",	OT_STR, ST_UNDEF, NULL},
+{"tls-ca-file",	OT_STR, ST_UNDEF, NULL},
+{"tls-cert-file",	OT_STR, ST_UNDEF, NULL},
+{"tls-key-file",	OT_STR, ST_UNDEF, NULL},
 /* RADIUS specific options */
 {"authserver",		OT_SRV, ST_UNDEF, NULL},
 {"acctserver",		OT_SRV, ST_UNDEF, NULL},
@@ -50,6 +55,10 @@ static OPTION config_options_default[] = {
 {"radius_retries",	OT_INT,	ST_UNDEF, NULL},
 {"radius_deadtime",	OT_INT, ST_UNDEF, NULL},
 {"bindaddr",		OT_STR, ST_UNDEF, NULL},
+/* TLS-specific options */
+{"tls-ca-file",		OT_STR, ST_UNDEF, NULL},
+{"tls-cert-file",	OT_STR, ST_UNDEF, NULL},
+{"tls-key-file",	OT_STR, ST_UNDEF, NULL},
 /* local options */
 {"login_local",		OT_STR, ST_UNDEF, NULL},
 };

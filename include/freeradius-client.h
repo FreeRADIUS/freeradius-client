@@ -59,7 +59,7 @@
 #define NAME_LENGTH		32
 #define GETSTR_LENGTH		128	//!< must be bigger than AUTH_PASS_LEN.
 
-#define MAX_SECRET_LENGTH	(3 * 16) /* MUST be multiple of 16 */
+#define MAX_SECRET_LENGTH	(6 * 16) /* MUST be multiple of 16 */
 
 #define VENDOR(x)		(((x) >> 16) & 0xffff)
 #define ATTRID(x)		((x) & 0xffff)
@@ -67,8 +67,16 @@
 #define PW_MAX_MSG_SIZE		4096
 
 /* codes for radius_buildreq, radius_getport, etc. */
-#define AUTH			0
-#define ACCT			1
+typedef enum rc_type {
+	AUTH = 0,
+	ACCT = 1
+} rc_type;
+
+typedef enum rc_sockets_type {
+	SOCKETS_UDP = 0,
+	SOCKETS_TLS = 1,
+	SOCKETS_DTLS = 2
+} rc_sockets_type;
 
 /* defines for config.c */
 
@@ -96,6 +104,19 @@ typedef struct pw_auth_hdr
 	uint8_t		data[2];
 } AUTH_HDR;
 
+typedef struct rc_sockets_override {
+	void *ptr;
+	const char *static_secret;
+	int (*get_fd)(void *ptr, rc_type, struct sockaddr* our_sockaddr);
+	void (*close_fd)(int fd);
+	ssize_t (*sendto)(void *ptr, int sockfd, rc_type, const void *buf, size_t len, int flags,
+	                  const struct sockaddr *dest_addr, socklen_t addrlen);
+	ssize_t (*recvfrom)(void *ptr, int sockfd, rc_type, void *buf, size_t len, int flags,
+	                    struct sockaddr *src_addr, socklen_t *addrlen);
+	int (*lock)(void *ptr, rc_type);
+	int (*unlock)(void *ptr, rc_type);
+} rc_sockets_override;
+
 struct rc_conf
 {
 	struct _option		*config_options;
@@ -109,6 +130,9 @@ struct rc_conf
 	char			buf[GETSTR_LENGTH];
 	char			buf1[14];
 	char			ifname[512];
+
+	rc_sockets_override	so;
+	rc_sockets_type		so_set;
 };
 
 typedef struct rc_conf rc_handle;
@@ -413,6 +437,7 @@ typedef struct value_pair
 
 /* Define return codes from "SendServer" utility */
 
+#define BADRESPID_RC	-3
 #define BADRESP_RC	-2
 #define ERROR_RC	-1
 #define OK_RC		0
@@ -497,7 +522,7 @@ SERVER *rc_conf_srv(rc_handle const *, char const *);
 void rc_config_free(rc_handle *);
 int rc_add_config(rc_handle *, char const *, char const *, char const *, int);
 rc_handle *rc_config_init(rc_handle *);
-int test_config(rc_handle const *, char const *);
+int test_config(rc_handle *, char const *);
 
 /* dict.c */
 
@@ -509,6 +534,14 @@ DICT_VENDOR *rc_dict_findvend(rc_handle const *, char const *);
 DICT_VENDOR *rc_dict_getvend(rc_handle const *, int);
 DICT_VALUE * rc_dict_getval(rc_handle const *, uint32_t, char const *);
 void rc_dict_free(rc_handle *);
+
+/*	tls.c			*/
+
+#define SEC_FLAG_DTLS 1
+int rc_init_tls(rc_handle * rh, unsigned flags);
+int rc_check_tls(rc_handle * rh);
+void rc_deinit_tls(rc_handle * rh);
+
 
 /* ip_util.c */
 
@@ -527,7 +560,7 @@ void rc_log(int, char const *, ...);
 
 /* sendserver.c */
 
-int rc_send_server(rc_handle *, SEND_DATA *, char *, unsigned flags);
+int rc_send_server(rc_handle *, SEND_DATA *, char *, unsigned /*rc_type*/flags);
 
 /* util.c */
 

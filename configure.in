@@ -206,6 +206,11 @@ AC_REPLACE_FUNCS(strdup strerror strcasecmp)
 AC_CHECK_FUNCS(flock fcntl uname gethostname sysinfo getdomainname)
 AC_CHECK_FUNCS(stricmp random rand snprintf vsnprintf strlcpy)
 
+AC_CHECK_FUNCS([pthread_mutex_lock],,)
+if test "$ac_cv_func_pthread_mutex_lock" != "yes";then
+	AC_LIB_HAVE_LINKFLAGS(pthread,, [#include <pthread.h>], [pthread_mutex_lock (0);])
+fi
+
 if test "$ac_cv_func_uname" = 'yes' && test "$cross_compiling" = 'no'
 then
 	AC_MSG_CHECKING([for field domainname in struct utsname])
@@ -243,22 +248,43 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls],
+	[enable support for DTLS @<:@default=no@:>@])],
+	[with_tls=$withval],
+	[with_tls=no])
+
+default_nettle_val=no
+if test "$with_tls" != no; then
+	PKG_CHECK_MODULES([LIBGNUTLS], [gnutls >= 3.1.0], [use_gnutls=yes], [use_gnutls=no])
+
+	if test "$use_gnutls" = yes;then
+		CRYPTO_CFLAGS="$CRYPTO_CFLAGS $LIBGNUTLS_CFLAGS"
+		CRYPTO_LIBS="$CRYPTO_LIBS $LIBGNUTLS_LIBS"
+		AC_DEFINE([HAVE_GNUTLS], 1, [Define to 1 to use gnutls for TLS and DTLS.])
+	fi
+	default_nettle_val=yes
+fi
+
+AM_CONDITIONAL(ENABLE_GNUTLS, test "$use_gnutls" = "yes")
+
 AC_ARG_WITH([nettle], [AS_HELP_STRING([--with-nettle],
 	[use nettle for crypto @<:@default=no@:>@])],
 	[with_nettle=$withval],
-	[with_nettle=no])
+	[with_nettle=$default_nettle_val])
 
 if test "$with_nettle" != no; then
 	PKG_CHECK_MODULES(NETTLE, [nettle >= 2.4], [use_nettle=yes], [use_nettle=no])
 
 	if test "$use_nettle" = yes;then
-		CRYPTO_CFLAGS="$NETTLE_CFLAGS"
-		CRYPTO_LIBS="$NETTLE_LIBS"
+		CRYPTO_CFLAGS="$CRYPTO_CFLAGS $NETTLE_CFLAGS"
+		CRYPTO_LIBS="$CRYPTO_LIBS $NETTLE_LIBS"
 		AC_DEFINE([HAVE_NETTLE], 1, [Define to 1 to use nettle for MD5.])
 	fi
 fi
 
 AM_CONDITIONAL(ENABLE_NETTLE, test "$use_nettle" = "yes")
+
+CRYPTO_LIBS="$CRYPTO_LIBS $LIBS"
 
 AC_SUBST(CRYPTO_CFLAGS, [$CRYPTO_CFLAGS])
 AC_SUBST(CRYPTO_LIBS, [$CRYPTO_LIBS])
