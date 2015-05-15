@@ -11,11 +11,17 @@ EXPOSE 1812
 EXPOSE 1812/udp
 EXPOSE 1813
 EXPOSE 1813/udp
+EXPOSE 2083
+EXPOSE 2083/udp
 EXPOSE 22
 
 RUN mkdir /etc/ocserv
 
 ADD radius-clients.conf /etc/raddb/clients.conf
 ADD freeradius-users /etc/raddb/users
+ADD tls.conf /etc/raddb/sites-enabled/tls
+ADD cert-rsa.pem /etc/raddb/cert-rsa.pem
+ADD key-rsa.pem /etc/raddb/key-rsa.pem
+ADD ca.pem /etc/raddb/ca.pem
 
 CMD sshd-keygen;/usr/sbin/sshd;radiusd;sleep 360
