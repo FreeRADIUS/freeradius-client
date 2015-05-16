@@ -21,6 +21,7 @@ fi
 sed 's/localhost/'$SERVER_IP'/g' <$srcdir/dtls/radiusclient-tls.conf >radiusclient-tls-temp.conf 
 sed 's/localhost/'$SERVER_IP'/g' <$srcdir/servers >servers-tls-temp
 
+# Test whether a TLS session will succeed
 ../src/radiusclient -f radiusclient-tls-temp.conf  User-Name=test Password=test >$TMPFILE
 if test $? != 0;then
 	echo "Error in PAP auth"
@@ -45,6 +46,13 @@ grep "^Framed-Route                     = '192.168.100.5/24'$" $TMPFILE >/dev/nu
 if test $? != 0;then
 	echo "Error in data received by server (Framed-Route)"
 	cat $TMPFILE
+	exit 1
+fi
+
+# Test whether a TLS invalidated session for some reason will reconnect
+./tls-restart -f radiusclient-tls-temp.conf  User-Name=test Password=test >$TMPFILE
+if test $? != 0;then
+	echo "Error in session restart"
 	exit 1
 fi
 
