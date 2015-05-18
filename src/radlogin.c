@@ -182,6 +182,63 @@ version(void)
 	exit(ERROR_RC);
 }
 
+/** Tests the configuration the user supplied
+ *
+ * @param rh a handle to parsed configuration.
+ * @param filename a name of a configuration file.
+ * @return 0 on success, -1 when failure.
+ */
+int radlogin_test_config(rc_handle const *rh, char const *filename)
+{
+#if 0
+	struct stat st;
+	char	    *file;
+#endif
+
+#if 0
+	file = rc_conf_str(rh, "login_local");
+	if (stat(file, &st) == 0)
+	{
+		if (!S_ISREG(st.st_mode)) {
+			rc_log(LOG_ERR,"%s: not a regular file: %s", filename, file);
+			return -1;
+		}
+	} else {
+		rc_log(LOG_ERR,"%s: file not found: %s", filename, file);
+		return -1;
+	}
+	file = rc_conf_str(rh, "login_radius");
+	if (stat(file, &st) == 0)
+	{
+		if (!S_ISREG(st.st_mode)) {
+			rc_log(LOG_ERR,"%s: not a regular file: %s", filename, file);
+			return -1;
+		}
+	} else {
+		rc_log(LOG_ERR,"%s: file not found: %s", filename, file);
+		return -1;
+	}
+#endif
+
+	if (rc_conf_int(rh, "login_tries") <= 0)
+	{
+		rc_log(LOG_ERR,"%s: login_tries <= 0 is illegal", filename);
+		return -1;
+	}
+	if (rc_conf_int(rh, "login_timeout") <= 0)
+	{
+		rc_log(LOG_ERR,"%s: login_timeout <= 0 is illegal", filename);
+		return -1;
+	}
+	if (rc_conf_str(rh, "nologin") == NULL)
+	{
+		rc_log(LOG_ERR,"%s: nologin not specified", filename);
+		return -1;
+	}
+
+	return 0;
+}
+
 int
 main (int argc, char **argv)
 {
@@ -233,6 +290,9 @@ main (int argc, char **argv)
 	}
 
 	if ((rh = rc_read_config(path_radiusclient_conf)) == NULL)
+		exit(ERROR_RC);
+
+	if (radlogin_test_config(rh, path_radiusclient_conf) < 0)
 		exit(ERROR_RC);
 
 	if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0)
