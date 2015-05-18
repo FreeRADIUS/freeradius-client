@@ -1,14 +1,10 @@
 #
-# $Id: Makefile.am,v 1.7 2010/02/04 10:27:09 aland Exp $
-#
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
 # See the file COPYRIGHT for the respective terms and conditions. 
 # If the file is missing contact me at lf@elemental.net 
 # and I'll send you a copy.
 #
-
-AUTOMAKE_OPTIONS = foreign
 
 RC_LOG_FACILITY = @RC_LOG_FACILITY@
 LIBVERSION = @LIBVERSION@

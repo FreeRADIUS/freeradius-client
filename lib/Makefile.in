@@ -15,8 +15,6 @@
 @SET_MAKE@
 
 #
-# $Id: Makefile.am,v 1.7 2010/02/04 10:27:09 aland Exp $
-#
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
 # See the file COPYRIGHT for the respective terms and conditions. 
@@ -88,16 +86,18 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-target_triplet = @target@
 @ENABLE_NETTLE_FALSE@am__append_1 = md5.c md5.h
 subdir = lib
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(top_srcdir)/mkinstalldirs $(top_srcdir)/depcomp
+	$(top_srcdir)/depcomp
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
@@ -134,7 +134,7 @@ am__DEPENDENCIES_1 =
 libfreeradius_client_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__libfreeradius_client_la_SOURCES_DIST = buildreq.c clientid.c env.c \
 	sendserver.c avpair.c config.c dict.c ip_util.c log.c util.c \
-	options.h rc-md5.h rc-md5.c md5.c md5.h
+	options.h rc-md5.h rc-md5.c util.h md5.c md5.h
 @ENABLE_NETTLE_FALSE@am__objects_1 = md5.lo
 am_libfreeradius_client_la_OBJECTS = buildreq.lo clientid.lo env.lo \
 	sendserver.lo avpair.lo config.lo dict.lo ip_util.lo log.lo \
@@ -253,7 +253,6 @@ LIBVERSION = @LIBVERSION@
 LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
-MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
@@ -325,7 +324,6 @@ mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
 pdfdir = @pdfdir@
-pkgsysconfdir = @pkgsysconfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
@@ -333,28 +331,23 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
-target = @target@
 target_alias = @target_alias@
-target_cpu = @target_cpu@
-target_os = @target_os@
-target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = foreign
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir) $(CRYPTO_CFLAGS)
 CLEANFILES = *~
 lib_LTLIBRARIES = libfreeradius-client.la
 libfreeradius_client_la_SOURCES = buildreq.c clientid.c env.c \
 	sendserver.c avpair.c config.c dict.c ip_util.c log.c util.c \
-	options.h rc-md5.h rc-md5.c $(am__append_1)
+	options.h rc-md5.h rc-md5.c util.h $(am__append_1)
 libfreeradius_client_la_LDFLAGS = -version-info $(LIBVERSION)
 libfreeradius_client_la_LIBADD = $(CRYPTO_LIBS)
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -379,9 +372,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
