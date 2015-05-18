@@ -603,10 +603,6 @@ SERVER *rc_conf_srv(rc_handle const *rh, char const *optname)
  */
 int test_config(rc_handle *rh, char const *filename)
 {
-#if 0
-	struct stat st;
-	char	    *file;
-#endif
 	SERVER *srv;
 
 	srv = rc_conf_srv(rh, "authserver");
@@ -643,49 +639,9 @@ int test_config(rc_handle *rh, char const *filename)
 		rc_log(LOG_ERR,"%s: radius_deadtime is illegal", filename);
 		return -1;
 	}
-#if 0
-	file = rc_conf_str(rh, "login_local");
-	if (stat(file, &st) == 0)
-	{
-		if (!S_ISREG(st.st_mode)) {
-			rc_log(LOG_ERR,"%s: not a regular file: %s", filename, file);
-			return -1;
-		}
-	} else {
-		rc_log(LOG_ERR,"%s: file not found: %s", filename, file);
-		return -1;
-	}
-	file = rc_conf_str(rh, "login_radius");
-	if (stat(file, &st) == 0)
-	{
-		if (!S_ISREG(st.st_mode)) {
-			rc_log(LOG_ERR,"%s: not a regular file: %s", filename, file);
-			return -1;
-		}
-	} else {
-		rc_log(LOG_ERR,"%s: file not found: %s", filename, file);
-		return -1;
-	}
-#endif
-
-	if (rc_conf_int(rh, "login_tries") <= 0)
-	{
-		rc_log(LOG_ERR,"%s: login_tries <= 0 is illegal", filename);
-		return -1;
-	}
-	if (rc_conf_int(rh, "login_timeout") <= 0)
-	{
-		rc_log(LOG_ERR,"%s: login_timeout <= 0 is illegal", filename);
-		return -1;
-	}
 	if (rc_conf_str(rh, "mapfile") == NULL)
 	{
 		rc_log(LOG_ERR,"%s: mapfile not specified", filename);
-		return -1;
-	}
-	if (rc_conf_str(rh, "nologin") == NULL)
-	{
-		rc_log(LOG_ERR,"%s: nologin not specified", filename);
 		return -1;
 	}
 
