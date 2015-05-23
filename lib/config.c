@@ -351,32 +351,29 @@ rc_handle *rc_config_init(rc_handle *rh)
         }
         memcpy(rh->config_options, &config_options_default, sizeof(config_options_default));
 
-	acct = find_option(rh, "acctserver", OT_ANY);
 	auth = find_option(rh, "authserver", OT_ANY);
-	authservers = malloc(sizeof(SERVER));
-	acctservers = malloc(sizeof(SERVER));
-
-	if(authservers == NULL || acctservers == NULL)
-	{
-                rc_log(LOG_CRIT, "rc_config_init: error initializing server structs");
-		rc_destroy(rh);
-		if(authservers) free(authservers);
-		if(acctservers) free(acctservers);
-                return NULL;
+	if (auth) {
+		authservers = calloc(1, sizeof(SERVER));
+		if(authservers == NULL) {
+	                rc_log(LOG_CRIT, "rc_config_init: error initializing server structs");
+			rc_destroy(rh);
+	                return NULL;
+		}
+		auth->val = authservers;
 	}
 
-	authservers->max = 0;
-	acctservers->max = 0;
-
-	for(i=0; i < SERVER_MAX; i++)
-	{
-		authservers->name[i] = NULL;
-		authservers->secret[i] = NULL;
-		acctservers->name[i] = NULL;
-		acctservers->secret[i] = NULL;
+	acct = find_option(rh, "acctserver", OT_ANY);
+	if (acct) {
+		acctservers = calloc(1, sizeof(SERVER));
+		if(acctservers == NULL) {
+	                rc_log(LOG_CRIT, "rc_config_init: error initializing server structs");
+			rc_destroy(rh);
+			if(authservers) free(authservers);
+	                return NULL;
+		}
+		acct->val = acctservers;
 	}
-	acct->val = acctservers;
-	auth->val = authservers;
+
 	return rh;
 }
 
@@ -622,8 +619,8 @@ int test_config(rc_handle *rh, char const *filename)
 	srv = rc_conf_srv(rh, "acctserver");
 	if (!srv || !srv->max)
 	{
-		rc_log(LOG_ERR,"%s: no acctserver specified", filename);
-		return -1;
+		/* it is allowed not to have acct servers */
+		rc_log(LOG_DEBUG,"%s: no acctserver specified", filename);
 	}
 	if (!rc_conf_str(rh, "dictionary"))
 	{

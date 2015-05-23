@@ -107,14 +107,14 @@ typedef struct pw_auth_hdr
 typedef struct rc_sockets_override {
 	void *ptr;
 	const char *static_secret;
-	int (*get_fd)(void *ptr, rc_type, struct sockaddr* our_sockaddr);
+	int (*get_fd)(void *ptr, struct sockaddr* our_sockaddr);
 	void (*close_fd)(int fd);
-	ssize_t (*sendto)(void *ptr, int sockfd, rc_type, const void *buf, size_t len, int flags,
+	ssize_t (*sendto)(void *ptr, int sockfd, const void *buf, size_t len, int flags,
 	                  const struct sockaddr *dest_addr, socklen_t addrlen);
-	ssize_t (*recvfrom)(void *ptr, int sockfd, rc_type, void *buf, size_t len, int flags,
+	ssize_t (*recvfrom)(void *ptr, int sockfd, void *buf, size_t len, int flags,
 	                    struct sockaddr *src_addr, socklen_t *addrlen);
-	int (*lock)(void *ptr, rc_type);
-	int (*unlock)(void *ptr, rc_type);
+	int (*lock)(void *ptr);
+	int (*unlock)(void *ptr);
 } rc_sockets_override;
 
 struct rc_conf
@@ -541,6 +541,7 @@ void rc_dict_free(rc_handle *);
 int rc_init_tls(rc_handle * rh, unsigned flags);
 int rc_check_tls(rc_handle * rh);
 void rc_deinit_tls(rc_handle * rh);
+int rc_tls_fd(rc_handle * rh);
 
 
 /* ip_util.c */
