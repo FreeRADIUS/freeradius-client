@@ -74,7 +74,8 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	time_t		dtime;
 	rc_type		type;
 
-	if (request_type != PW_ACCOUNTING_REQUEST) {
+	if (rh->so_set == SOCKETS_TLS || rh->so_set == SOCKETS_DTLS ||
+	    request_type != PW_ACCOUNTING_REQUEST) {
 		aaaserver = rc_conf_srv(rh, "authserver");
 		type = AUTH;
 	} else {
@@ -258,8 +259,14 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 	uint32_t		service_type;
 	int		timeout = rc_conf_int(rh, "radius_timeout");
 	int		retries = rc_conf_int(rh, "radius_retries");
+	rc_type		type;
 
 	data.send_pairs = data.receive_pairs = NULL;
+
+	if (rh->so_set == SOCKETS_TLS || rh->so_set == SOCKETS_DTLS)
+		type = AUTH;
+	else
+		type = ACCT;
 
 	/*
 	 * Fill in Service-Type
@@ -269,7 +276,7 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 	rc_avpair_add(rh, &(data.send_pairs), PW_SERVICE_TYPE, &service_type, 0, 0);
 
 	rc_buildreq(rh, &data, PW_STATUS_SERVER, host, port, secret, timeout, retries);
-	result = rc_send_server (rh, &data, msg, ACCT);
+	result = rc_send_server (rh, &data, msg, type);
 
 	rc_avpair_free(data.receive_pairs);
 

@@ -23,11 +23,9 @@ authserver 	localhost:2083
 # For DTLS with PSK authentication, the following format is valid:
 #authserver 	localhost:2083:psk@username@hexkey
 
-# RADIUS server to use for accouting requests. All that I
-# said for authserver applies, too. 
+# In TLS/DTLS the acct server directive is ignored.
 #
 acctserver 	localhost:2083
-#acctserver 	localhost:2083:psk@username@hexkey
 
 # file holding PSKs used for the communication
 # between the RADIUS client and server. They should

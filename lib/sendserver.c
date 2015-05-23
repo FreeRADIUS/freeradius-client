@@ -211,14 +211,14 @@ static void strappend(char *dest, unsigned max_size, int *pos, const char *src)
 	return;
 }
 
-static ssize_t plain_sendto(void *ptr, int sockfd, rc_type type,
+static ssize_t plain_sendto(void *ptr, int sockfd,
 			    const void *buf, size_t len, int flags,
 			    const struct sockaddr *dest_addr, socklen_t addrlen)
 {
 	return sendto(sockfd, buf, len, flags, dest_addr, addrlen);
 }
 
-static ssize_t plain_recvfrom(void *ptr, int sockfd, rc_type type,
+static ssize_t plain_recvfrom(void *ptr, int sockfd, 
 			      void *buf, size_t len, int flags,
 			      struct sockaddr *src_addr, socklen_t *addrlen)
 {
@@ -230,7 +230,7 @@ static void plain_close_fd(int fd)
 	close(fd);
 }
 
-static int plain_get_fd(void *ptr, rc_type type, struct sockaddr* our_sockaddr)
+static int plain_get_fd(void *ptr, struct sockaddr* our_sockaddr)
 {
 	int sockfd;
 
@@ -341,7 +341,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 	}
 
 	if (sfuncs->lock) {
-		if (sfuncs->lock(sfuncs->ptr, type) != 0) {
+		if (sfuncs->lock(sfuncs->ptr) != 0) {
 			rc_log(LOG_ERR, "%s: lock error", __func__);
 			return ERROR_RC;
 		}
@@ -367,7 +367,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 	}
 
 	if (sfuncs->get_fd) {
-		sockfd = sfuncs->get_fd(sfuncs->ptr, type, SA(&our_sockaddr));
+		sockfd = sfuncs->get_fd(sfuncs->ptr, SA(&our_sockaddr));
 		if (sockfd < 0) {
 			memset (secret, '\0', sizeof (secret));
 			rc_log(LOG_ERR, "rc_send_server: socket: %s", strerror(errno));
@@ -443,7 +443,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 	for (;;)
 	{
 		do {
-			result = sfuncs->sendto (sfuncs->ptr, sockfd, type, (char *) auth, (unsigned int)total_length, 
+			result = sfuncs->sendto (sfuncs->ptr, sockfd, (char *) auth, (unsigned int)total_length, 
 				(int) 0, SA(auth_addr->ai_addr), auth_addr->ai_addrlen);
 		} while (result == -1 && errno == EINTR);
 		if (result == -1) {
@@ -475,7 +475,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 		if (result == 1 && (pfd.revents & POLLIN) != 0) {
 			salen = auth_addr->ai_addrlen;
 			do {
-				length = sfuncs->recvfrom (sfuncs->ptr, sockfd, type, 
+				length = sfuncs->recvfrom (sfuncs->ptr, sockfd, 
 						   (char *) recv_buffer,
 						   (int) sizeof (recv_buffer),
 						   (int) 0, SA(auth_addr->ai_addr), &salen);
@@ -615,7 +615,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
  		freeaddrinfo(auth_addr);
 
 	if (sfuncs->unlock) {
-		if (sfuncs->unlock(sfuncs->ptr, type) != 0) {
+		if (sfuncs->unlock(sfuncs->ptr) != 0) {
 			rc_log(LOG_ERR, "%s: unlock error", __func__);
 		}
 	}
