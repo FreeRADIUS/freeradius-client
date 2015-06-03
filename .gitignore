@@ -13,6 +13,7 @@ lib/.deps
 src/.libs
 src/.deps
 etc/radiusclient.conf
+etc/radiusclient-tls.conf
 
 # Configure and Automake
 config.status
