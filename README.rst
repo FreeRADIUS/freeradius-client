@@ -1,6 +1,14 @@
 The radcli library
 ==================
 
+0. BRANCH STATE
+---------------
+|BuildStatus|_
+
+.. |BuildStatus| image:: https://travis-ci.org/nmav/libradcli.png
+.. _BuildStatus: https://travis-ci.org/nmav/libradcli
+
+
 1. INTRODUCTION
 ---------------
 The radcli library is a library for writing RADIUS Clients. The library's
