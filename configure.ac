@@ -27,6 +27,7 @@ AC_SUBST(LIBVERSION)
 pkgsysconfdir=${sysconfdir}/$PACKAGE
 AC_SUBST(pkgsysconfdir)
 
+PKG_PROG_PKG_CONFIG
 AC_PROG_LIBTOOL
 
 AC_PROG_CC
@@ -255,7 +256,7 @@ AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls],
 	[with_tls=$withval],
 	[with_tls=no])
 
-default_nettle_val=no
+default_nettle_val=yes
 if test "$with_tls" != no; then
 	PKG_CHECK_MODULES([LIBGNUTLS], [gnutls >= 3.1.0], [use_gnutls=yes], [use_gnutls=no])
 
@@ -270,7 +271,7 @@ fi
 
 AM_CONDITIONAL(ENABLE_GNUTLS, test "$use_gnutls" = "yes")
 
-AC_ARG_WITH([nettle], [AS_HELP_STRING([--with-nettle],
+AC_ARG_WITH([nettle], [AS_HELP_STRING([--without-nettle],
 	[use nettle for crypto @<:@default=no@:>@])],
 	[with_nettle=$withval],
 	[with_nettle=$default_nettle_val])
