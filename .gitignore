@@ -27,6 +27,9 @@ autom4te.cache/
 compile
 test-driver
 config.rpath
+aclocal.m4
+config.h.in
+configure m4
 
 # Misc
 *.swp
