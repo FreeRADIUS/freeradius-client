@@ -1,0 +1,14 @@
+# Process this file with autoconf to produce a pkg-config metadata file.
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libradcli
+Description: A small radius client library
+URL: https://github.com/nmav/freeradius-client
+Version: @VERSION@
+Libs: -L${libdir} -lfreeradius-client
+@REQUIRES_PRIVATE@
+Cflags: -I${includedir}

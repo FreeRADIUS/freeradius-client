@@ -18,6 +18,11 @@ DEFS = @DEFS@ -DRC_LOG_FACILITY=$(RC_LOG_FACILITY)
 
 CLEANFILES = *~
 
+# Pkg-config script.
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = libradcli.pc
+DISTCLEANFILES = $(pkgconfig_DATA)
+
 lib_LTLIBRARIES =   libfreeradius-client.la
 libfreeradius_client_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
 	avpair.c config.c dict.c ip_util.c log.c util.c  \

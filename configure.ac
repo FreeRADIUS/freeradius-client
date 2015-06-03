@@ -248,6 +248,8 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+REQUIRES_PRIVATE="Requires.private: "
+
 AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls],
 	[enable support for DTLS @<:@default=no@:>@])],
 	[with_tls=$withval],
@@ -261,6 +263,7 @@ if test "$with_tls" != no; then
 		CRYPTO_CFLAGS="$CRYPTO_CFLAGS $LIBGNUTLS_CFLAGS"
 		CRYPTO_LIBS="$CRYPTO_LIBS $LIBGNUTLS_LIBS"
 		AC_DEFINE([HAVE_GNUTLS], 1, [Define to 1 to use gnutls for TLS and DTLS.])
+		REQUIRES_PRIVATE="${REQUIRES_PRIVATE} gnutls,"
 	fi
 	default_nettle_val=yes
 fi
@@ -279,6 +282,7 @@ if test "$with_nettle" != no; then
 		CRYPTO_CFLAGS="$CRYPTO_CFLAGS $NETTLE_CFLAGS"
 		CRYPTO_LIBS="$CRYPTO_LIBS $NETTLE_LIBS"
 		AC_DEFINE([HAVE_NETTLE], 1, [Define to 1 to use nettle for MD5.])
+		REQUIRES_PRIVATE="${REQUIRES_PRIVATE} nettle"
 	fi
 fi
 
@@ -288,6 +292,7 @@ CRYPTO_LIBS="$CRYPTO_LIBS $LIBS"
 
 AC_SUBST(CRYPTO_CFLAGS, [$CRYPTO_CFLAGS])
 AC_SUBST(CRYPTO_LIBS, [$CRYPTO_LIBS])
+AC_SUBST(REQUIRES_PRIVATE)
 
 dnl Determine PATH setting
 echo $ac_n "using the following PATH setting for exec'ed programs... $ac_c" 1>&6
@@ -380,6 +385,7 @@ Makefile
 include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile
 doc/Makefile patches/Makefile
 login.radius/Makefile login.radius/migs/Makefile
+lib/libradcli.pc
 tests/Makefile
 tests/docker/Makefile
 ])
