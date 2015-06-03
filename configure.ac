@@ -10,8 +10,10 @@
 AC_INIT
 
 AM_MAINTAINER_MODE
+AC_INIT([libradcl], [1.2.0], [n.mavrogiannopoulos@gmail.com])
 
 AC_CONFIG_SRCDIR([src/radlogin.c])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_TARGET([])
 
 case "$target" in
@@ -19,7 +21,7 @@ case "$target" in
 	;;
 esac
 
-AM_INIT_AUTOMAKE(radiusclient, 1.1.6)
+AM_INIT_AUTOMAKE([1.12.2 -Wall -Wno-override])
 
 LIBVERSION=2:0:0
 AC_SUBST(LIBVERSION)

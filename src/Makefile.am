@@ -12,7 +12,7 @@ pkgsysconfdir=@pkgsysconfdir@
 
 DEFS = @DEFS@ -DRC_CONFIG_FILE=\"${pkgsysconfdir}/radiusclient.conf\" \
 	      -DRC_SECURE_PATH=\"@RC_SECURE_PATH@\"
-INCLUDES = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir)
+AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir)
 LDADD = ../lib/libfreeradius-client.la
 
 CLEANFILES = *~
