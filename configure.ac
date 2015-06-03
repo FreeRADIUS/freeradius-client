@@ -7,12 +7,10 @@
 # 
 # 
 
-AC_INIT
-
-AM_MAINTAINER_MODE
 AC_INIT([libradcl], [1.2.0], [n.mavrogiannopoulos@gmail.com])
 
-AC_CONFIG_SRCDIR([src/radlogin.c])
+AM_MAINTAINER_MODE
+
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_TARGET([])
 
