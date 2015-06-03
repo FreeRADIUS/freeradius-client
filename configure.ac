@@ -385,7 +385,6 @@ AC_CONFIG_FILES([
 Makefile
 include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile
 doc/Makefile patches/Makefile
-login.radius/Makefile login.radius/migs/Makefile
 lib/libradcli.pc
 tests/Makefile
 tests/docker/Makefile
