@@ -14,7 +14,9 @@ src/.libs
 src/.deps
 etc/radiusclient.conf
 etc/radiusclient-tls.conf
+lib/libradcli.pc
 m4
+.deps
 
 # Configure and Automake
 configure
@@ -32,6 +34,12 @@ test-driver
 config.rpath
 aclocal.m4
 config.h.in
+config.guess
+config.sub
+depcomp
+install-sh
+ltmain.sh
+missing
 
 # Misc
 *.swp
