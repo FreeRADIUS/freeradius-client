@@ -7,7 +7,7 @@ includedir=@includedir@
 
 Name: libradcli
 Description: A small radius client library
-URL: https://github.com/nmav/freeradius-client
+URL: https://github.com/nmav/libradcli
 Version: @VERSION@
 Libs: -L${libdir} -lfreeradius-client
 @REQUIRES_PRIVATE@
