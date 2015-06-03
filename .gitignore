@@ -14,8 +14,10 @@ src/.libs
 src/.deps
 etc/radiusclient.conf
 etc/radiusclient-tls.conf
+m4
 
 # Configure and Automake
+configure
 config.status
 config.cache
 config.log
@@ -30,8 +32,8 @@ test-driver
 config.rpath
 aclocal.m4
 config.h.in
-configure m4
 
 # Misc
 *.swp
+*~
 
