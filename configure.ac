@@ -7,7 +7,7 @@
 # 
 # 
 
-AC_INIT([libradcl], [1.2.0], [n.mavrogiannopoulos@gmail.com])
+AC_INIT([libradcli], [1.2.0], [n.mavrogiannopoulos@gmail.com])
 
 AM_MAINTAINER_MODE
 
