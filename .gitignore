@@ -22,6 +22,11 @@ config.h
 libtool
 stamp-h*
 Makefile
+Makefile.in
+autom4te.cache/
+compile
+test-driver
+config.rpath
 
 # Misc
 *.swp
