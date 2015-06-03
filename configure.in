@@ -382,8 +382,6 @@ doc/Makefile patches/Makefile
 login.radius/Makefile login.radius/migs/Makefile
 tests/Makefile
 tests/docker/Makefile
-rpm/Makefile
-debian/Makefile
 ])
 AC_CONFIG_COMMANDS([default],[[test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h]],[[]])
 AC_OUTPUT
