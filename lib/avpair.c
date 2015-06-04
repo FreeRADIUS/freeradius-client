@@ -93,7 +93,7 @@ int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len)
 			break;
 
 		default:
-			rc_log(LOG_ERR, "rc_avpair_assign: unknown attribute %d", vp->type);
+			rc_log(LOG_ERR, "rc_avpair_assign: no attribute %d in dictionary", vp->type);
 			return -1;
 	}
 	return 0;
@@ -116,12 +116,12 @@ VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, in
 	attrid = attrid | (vendorpec << 16);
 	if ((pda = rc_dict_getattr (rh, attrid)) == NULL)
 	{
-		rc_log(LOG_ERR,"rc_avpair_new: unknown attribute %d", attrid);
+		rc_log(LOG_ERR,"rc_avpair_new: no attribute %d in dictionary", attrid);
 		return NULL;
 	}
 	if (vendorpec != 0 && rc_dict_getvend(rh, vendorpec) == NULL)
 	{
-		rc_log(LOG_ERR,"rc_avpair_new: unknown Vendor-Id %d", vendorpec);
+		rc_log(LOG_ERR,"rc_avpair_new: no Vendor-Id %d in dictionary", vendorpec);
 		return NULL;
 	}
 	if ((vp = malloc (sizeof (VALUE_PAIR))) != NULL)
