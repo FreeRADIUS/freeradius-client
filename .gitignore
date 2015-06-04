@@ -14,7 +14,9 @@ src/.libs
 src/.deps
 etc/radiusclient.conf
 etc/radiusclient-tls.conf
-lib/libradcli.pc
+lib/radcli.pc
+tests/*.log
+tests/*.trs
 .deps
 
 # Configure and Automake
