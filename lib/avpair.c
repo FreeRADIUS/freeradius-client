@@ -15,7 +15,7 @@
  */
 #include <config.h>
 #include <includes.h>
-#include <freeradius-client.h>
+#include <radcli.h>
 #include "util.h"
 
 /** Adds an attribute-value pair to the given list

@@ -18,7 +18,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <freeradius-client.h>
+#include <radcli.h>
 #include <pathnames.h>
 #include "util.h"
 

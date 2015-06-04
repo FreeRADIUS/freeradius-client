@@ -18,7 +18,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <freeradius-client.h>
+#include <radcli.h>
 #include "util.h"
 
 #define	RC_BUFSIZ	1024

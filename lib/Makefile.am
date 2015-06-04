@@ -23,15 +23,18 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = radcli.pc
 DISTCLEANFILES = $(pkgconfig_DATA)
 
-lib_LTLIBRARIES =   libfreeradius-client.la
-libfreeradius_client_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
+lib_LTLIBRARIES =  libradcli.la
+libradcli_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
 	avpair.c config.c dict.c ip_util.c log.c util.c  \
 	options.h rc-md5.h rc-md5.c util.h tls.c
 
 if !ENABLE_NETTLE
-libfreeradius_client_la_SOURCES += md5.c md5.h
+libradcli_la_SOURCES += md5.c md5.h
 endif
 
-libfreeradius_client_la_LDFLAGS = -version-info $(LIBVERSION)
+libradcli_la_LDFLAGS = -version-info $(LIBVERSION)
 
-libfreeradius_client_la_LIBADD = $(CRYPTO_LIBS)
+libradcli_la_LIBADD = $(CRYPTO_LIBS)
+
+install-data-local:
+	cd $(libdir) && ln -s libradcli.so libfreeradius-client.so

@@ -21,7 +21,14 @@ esac
 
 AM_INIT_AUTOMAKE([1.12.2 -Wall -Wno-override])
 
-LIBVERSION=2:0:0
+# Library code modified:                              REVISION++
+# Interfaces changed/added/removed:   CURRENT++       REVISION=0
+# Interfaces added:                             AGE++
+# Interfaces removed:                           AGE=0
+LT_CURRENT=3
+LT_REVISION=0
+LT_AGE=0
+LIBVERSION=$LT_CURRENT:$LT_REVISION:$LT_AGE
 AC_SUBST(LIBVERSION)
 
 pkgsysconfdir=${sysconfdir}/$PACKAGE

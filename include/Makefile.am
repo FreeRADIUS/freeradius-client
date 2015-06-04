@@ -12,4 +12,5 @@
 AUTOMAKE_OPTIONS = foreign
 
 noinst_HEADERS = pathnames.h messages.h includes.h
-include_HEADERS = freeradius-client.h
+include_HEADERS = radcli.h freeradius-client.h
+

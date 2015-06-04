@@ -25,7 +25,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <freeradius-client.h>
+#include <radcli.h>
 #include "util.h"
 
 #ifdef HAVE_GNUTLS

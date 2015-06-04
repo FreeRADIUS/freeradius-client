@@ -11,7 +11,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <freeradius-client.h>
+#include <radcli.h>
 
 /** Allocate space for a new environment
  *

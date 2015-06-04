@@ -10,7 +10,7 @@
  */
 #include <config.h>
 #include <includes.h>
-#include <freeradius-client.h>
+#include <radcli.h>
 #include "util.h"
 
 /** Build a skeleton RADIUS request using information from the config file
