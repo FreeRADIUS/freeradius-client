@@ -9,8 +9,6 @@
 
 AC_INIT([radcli], [1.2.0], [n.mavrogiannopoulos@gmail.com])
 
-AM_MAINTAINER_MODE
-
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_TARGET([])
 
@@ -20,16 +18,6 @@ case "$target" in
 esac
 
 AM_INIT_AUTOMAKE([1.12.2 -Wall -Wno-override])
-
-# Library code modified:                              REVISION++
-# Interfaces changed/added/removed:   CURRENT++       REVISION=0
-# Interfaces added:                             AGE++
-# Interfaces removed:                           AGE=0
-LT_CURRENT=3
-LT_REVISION=0
-LT_AGE=0
-LIBVERSION=$LT_CURRENT:$LT_REVISION:$LT_AGE
-AC_SUBST(LIBVERSION)
 
 pkgsysconfdir=${sysconfdir}/$PACKAGE
 AC_SUBST(pkgsysconfdir)
@@ -57,6 +45,16 @@ AC_ARG_ENABLE(shadow,
 	shadow_passwords=no
 ]
 )
+
+# Library code modified:                              REVISION++
+# Interfaces changed/added/removed:   CURRENT++       REVISION=0
+# Interfaces added:                             AGE++
+# Interfaces removed:                           AGE=0
+V_CURRENT=3
+V_REVISION=0
+V_AGE=0
+LIBVERSION="$V_CURRENT:$V_REVISION:$V_AGE"
+AC_SUBST(LIBVERSION)
 
 dnl Check if we need -lsocket.
 AC_CHECK_LIB(socket, socket)
@@ -258,10 +256,10 @@ fi
 
 REQUIRES_PRIVATE="Requires.private: "
 
-AC_ARG_WITH([tls], [AS_HELP_STRING([--with-tls],
+AC_ARG_WITH([tls], [AS_HELP_STRING([--without-tls],
 	[enable support for DTLS @<:@default=no@:>@])],
 	[with_tls=$withval],
-	[with_tls=no])
+	[with_tls=yes])
 
 default_nettle_val=yes
 if test "$with_tls" != no; then
