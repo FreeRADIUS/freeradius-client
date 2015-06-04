@@ -128,6 +128,7 @@ ATTRIBUTE	EAP-Key-Name		102	string
 #
 #	RFC6911 IPv6 attributes
 #
+ATTRIBUTE       Delegated-IPv6-Prefix   123     ipv6prefix
 ATTRIBUTE	Framed-IPv6-Address	168	ipv6addr
 ATTRIBUTE	DNS-Server-IPv6-Address	169	ipv6addr
 ATTRIBUTE	Route-IPv6-Information	170	ipv6prefix
