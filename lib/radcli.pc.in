@@ -5,7 +5,7 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: libradcli
+Name: radcli
 Description: A small radius client library
 URL: https://github.com/nmav/libradcli
 Version: @VERSION@

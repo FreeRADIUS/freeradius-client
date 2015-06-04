@@ -7,7 +7,7 @@
 # 
 # 
 
-AC_INIT([libradcli], [1.2.0], [n.mavrogiannopoulos@gmail.com])
+AC_INIT([radcli], [1.2.0], [n.mavrogiannopoulos@gmail.com])
 
 AM_MAINTAINER_MODE
 
@@ -385,7 +385,7 @@ AC_CONFIG_FILES([
 Makefile
 include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile
 doc/Makefile
-lib/libradcli.pc
+lib/radcli.pc
 tests/Makefile
 tests/docker/Makefile
 ])

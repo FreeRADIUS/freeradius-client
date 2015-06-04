@@ -20,7 +20,7 @@ CLEANFILES = *~
 
 # Pkg-config script.
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libradcli.pc
+pkgconfig_DATA = radcli.pc
 DISTCLEANFILES = $(pkgconfig_DATA)
 
 lib_LTLIBRARIES =   libfreeradius-client.la
