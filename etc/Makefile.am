@@ -14,7 +14,7 @@ CLEANFILES = *~ radiusclient.conf radiusclient-tls.conf
 
 sbindir = @sbindir@
 pkgsysconfdir = @pkgsysconfdir@
-pkgsysconf_DATA = issue port-id-map radiusclient.conf \
+pkgsysconf_DATA = port-id-map radiusclient.conf \
 	dictionary dictionary.ascend dictionary.compat dictionary.merit \
 	dictionary.sip radiusclient-tls.conf
 

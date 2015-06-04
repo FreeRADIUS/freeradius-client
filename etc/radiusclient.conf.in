@@ -25,14 +25,8 @@ servers		@pkgsysconfdir@/servers
 # just like in the normal RADIUS distributions
 dictionary 	@pkgsysconfdir@/dictionary
 
-# program to call for a RADIUS authenticated login
-login_radius	@sbindir@/login.radius
-
-# file which holds sequence number for communication with the
-# RADIUS server
-seqfile		/var/run/radius.seq
-
 # file which specifies mapping between ttyname and NAS-Port attribute
+# Not required by all applications.
 mapfile		@pkgsysconfdir@/port-id-map
 
 # default authentication realm to append to all usernames if no
