@@ -17,7 +17,7 @@ AM_CPPFLAGS = -D_GNU_SOURCE
 ACLOCAL = @ACLOCAL@
 LTLIBOBJS = @LTLIBOBJS@
 
-SUBDIRS = include lib src etc man doc patches tests
+SUBDIRS = include lib src etc man doc tests
 EXTRA_DIST = BUGS CHANGES COPYRIGHT README.rst README.radexample
 
 CLEANFILES = *~
