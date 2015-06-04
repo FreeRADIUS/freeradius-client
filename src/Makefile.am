@@ -17,7 +17,7 @@ LDADD = ../lib/libfreeradius-client.la
 
 CLEANFILES = *~
 
-sbin_PROGRAMS = radstatus radacct radexample radiusclient radembedded
+noinst_PROGRAMS = radstatus radacct radexample radiusclient radembedded
 radacct_SOURCES = radacct.c
 radstatus_SOURCES = radstatus.c
 radexample_SOURCES = radexample.c common.c common.h
