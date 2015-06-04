@@ -5,8 +5,8 @@
 SUBDIRS = docker
 EXTRA_DIST = radiusclient-ipv6.conf servers-ipv6 \
 	radiusclient.conf servers README \
-	dtls/ca.pem dtls/cert-rsa.pem dtls/clicert.pem \
-	dtls/clikey.pem dtls/key-rsa.pem dtls/radiusclient-tls.conf \
+	dtls/ca.pem dtls/clicert.pem \
+	dtls/clikey.pem dtls/radiusclient-tls.conf \
 	dtls/radsecproxy.conf
 
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir)

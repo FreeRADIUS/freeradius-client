@@ -18,7 +18,7 @@ pkgsysconf_DATA = port-id-map radiusclient.conf \
 	dictionary dictionary.ascend dictionary.compat dictionary.merit \
 	dictionary.sip radiusclient-tls.conf
 
-EXTRA_DIST = issue port-id-map dictionary dictionary.ascend \
+EXTRA_DIST = port-id-map dictionary dictionary.ascend \
 	dictionary.compat dictionary.merit servers servers-tls radiusclient.conf.in \
 	dictionary.sip
 
