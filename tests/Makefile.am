@@ -22,6 +22,7 @@ TESTS += tls-tests.sh
 check_PROGRAMS += tls-restart
 
 tls_restart_SOURCES = tls-restart.c
+tls_restart_LDADD = ../src/libtools.a ../lib/libradcli.la
 endif
 
 

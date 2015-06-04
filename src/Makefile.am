@@ -17,9 +17,18 @@ LDADD = ../lib/libradcli.la
 
 CLEANFILES = *~
 
+noinst_LIBRARIES = libtools.a
+libtools_a_SOURCES = common.c common.h
+
 noinst_PROGRAMS = radstatus radacct radexample radiusclient radembedded
 radacct_SOURCES = radacct.c
 radstatus_SOURCES = radstatus.c
-radexample_SOURCES = radexample.c common.c common.h
-radiusclient_SOURCES = radiusclient.c common.c common.h
+
+radexample_SOURCES = radexample.c
+radexample_LDADD = ../lib/libradcli.la libtools.a
+
+radiusclient_SOURCES = radiusclient.c
+radiusclient_LDADD = ../lib/libradcli.la libtools.a
+
+
 radembedded_SOURCES = radembedded.c
