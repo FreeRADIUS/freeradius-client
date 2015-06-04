@@ -17,7 +17,7 @@ case "$target" in
 	;;
 esac
 
-AM_INIT_AUTOMAKE([1.12.2 -Wall -Wno-override])
+AM_INIT_AUTOMAKE([1.11.3 -Wall -Wno-override])
 
 pkgsysconfdir=${sysconfdir}/$PACKAGE
 AC_SUBST(pkgsysconfdir)
