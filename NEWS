@@ -1,0 +1,11 @@
+* Version 1.2.0 (unreleased)
+- Initial version of the fork. That changes the name of the library to
+  libradcli.so, and the header to radcli.h. A compatibility header with
+  freeradius-client library is also installed.
+- Adds support for TLS (RFC6614) and DTLS (RFC7360) without
+  requiring any code changes for existing applications. It adds
+  new configuration options: serv-auth-type, tls-ca-file,
+  tls-key-file, tls-cert-file, tls-verify-hostname.
+- Removed the requirement for legacy options to be present in the configuration
+  file. That includes: auth_order, login_tries, login_timeout, nologin, issue,
+  login_radius, seqfile
