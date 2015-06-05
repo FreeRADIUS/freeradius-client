@@ -180,8 +180,52 @@ int sigprocmask (int, sigset_t *, sigset_t *);
 # endif
 #endif
 
-/* rlib/lock.c */
-int do_lock_exclusive(FILE *);
-int do_unlock(FILE *);
+#define AUTH_VECTOR_LEN		16
+#define GETSTR_LENGTH		128	//!< must be bigger than AUTH_PASS_LEN.
+
+typedef enum rc_sockets_type {
+	SOCKETS_UDP = 0,
+	SOCKETS_TLS = 1,
+	SOCKETS_DTLS = 2
+} rc_sockets_type;
+
+typedef struct pw_auth_hdr
+{
+	uint8_t		code;
+	uint8_t		id;
+	uint16_t	length;
+	uint8_t		vector[AUTH_VECTOR_LEN];
+	uint8_t		data[2];
+} AUTH_HDR;
+
+typedef struct rc_sockets_override {
+	void *ptr;
+	const char *static_secret;
+	int (*get_fd)(void *ptr, struct sockaddr* our_sockaddr);
+	void (*close_fd)(int fd);
+	ssize_t (*sendto)(void *ptr, int sockfd, const void *buf, size_t len, int flags,
+	                  const struct sockaddr *dest_addr, socklen_t addrlen);
+	ssize_t (*recvfrom)(void *ptr, int sockfd, void *buf, size_t len, int flags,
+	                    struct sockaddr *src_addr, socklen_t *addrlen);
+	int (*lock)(void *ptr);
+	int (*unlock)(void *ptr);
+} rc_sockets_override;
+
+struct rc_conf
+{
+	struct _option		*config_options;
+	struct sockaddr_storage	own_bind_addr;
+	unsigned		own_bind_addr_set;
+
+	struct map2id_s		*map2id_list;
+	struct dict_attr	*dictionary_attributes;
+	struct dict_value	*dictionary_values;
+	struct dict_vendor	*dictionary_vendors;
+	char			buf[GETSTR_LENGTH];
+	char			ifname[512];
+
+	rc_sockets_override	so;
+	rc_sockets_type		so_set;
+};
 
 #endif

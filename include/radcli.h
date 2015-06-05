@@ -49,7 +49,6 @@
 # define __END_DECLS /* empty */
 #endif
 
-#define AUTH_VECTOR_LEN		16
 #define AUTH_PASS_LEN		(3 * 16) /* multiple of 16 */
 #define AUTH_ID_LEN		64
 #define AUTH_STRING_LEN		253	 /* maximum of 253 */
@@ -57,7 +56,6 @@
 #define BUFFER_LEN		8192
 
 #define NAME_LENGTH		32
-#define GETSTR_LENGTH		128	//!< must be bigger than AUTH_PASS_LEN.
 
 #define MAX_SECRET_LENGTH	(6 * 16) /* MUST be multiple of 16 */
 
@@ -72,12 +70,6 @@ typedef enum rc_type {
 	ACCT = 1
 } rc_type;
 
-typedef enum rc_sockets_type {
-	SOCKETS_UDP = 0,
-	SOCKETS_TLS = 1,
-	SOCKETS_DTLS = 2
-} rc_sockets_type;
-
 /* defines for config.c */
 
 #define SERVER_MAX 8
@@ -87,6 +79,9 @@ typedef enum rc_sockets_type {
 #define AUTH_LOCAL_SND	(1<<2)
 #define AUTH_RADIUS_SND	(1<<3)
 
+struct rc_conf;
+typedef struct rc_conf rc_handle;
+
 typedef struct server {
 	int max;
 	char *name[SERVER_MAX];
@@ -94,47 +89,6 @@ typedef struct server {
 	char *secret[SERVER_MAX];
 	double deadtime_ends[SERVER_MAX];
 } SERVER;
-
-typedef struct pw_auth_hdr
-{
-	uint8_t		code;
-	uint8_t		id;
-	uint16_t	length;
-	uint8_t		vector[AUTH_VECTOR_LEN];
-	uint8_t		data[2];
-} AUTH_HDR;
-
-typedef struct rc_sockets_override {
-	void *ptr;
-	const char *static_secret;
-	int (*get_fd)(void *ptr, struct sockaddr* our_sockaddr);
-	void (*close_fd)(int fd);
-	ssize_t (*sendto)(void *ptr, int sockfd, const void *buf, size_t len, int flags,
-	                  const struct sockaddr *dest_addr, socklen_t addrlen);
-	ssize_t (*recvfrom)(void *ptr, int sockfd, void *buf, size_t len, int flags,
-	                    struct sockaddr *src_addr, socklen_t *addrlen);
-	int (*lock)(void *ptr);
-	int (*unlock)(void *ptr);
-} rc_sockets_override;
-
-struct rc_conf
-{
-	struct _option		*config_options;
-	struct sockaddr_storage	own_bind_addr;
-	unsigned		own_bind_addr_set;
-
-	struct map2id_s		*map2id_list;
-	struct dict_attr	*dictionary_attributes;
-	struct dict_value	*dictionary_values;
-	struct dict_vendor	*dictionary_vendors;
-	char			buf[GETSTR_LENGTH];
-	char			ifname[512];
-
-	rc_sockets_override	so;
-	rc_sockets_type		so_set;
-};
-
-typedef struct rc_conf rc_handle;
 
 #define AUTH_HDR_LEN			20
 #define CHAP_VALUE_LENGTH		16

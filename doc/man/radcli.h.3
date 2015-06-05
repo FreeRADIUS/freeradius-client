@@ -75,29 +75,6 @@ int            rc_tls_fd(rc_handle *);
 .RS
 .nf
 \fB
-struct rc_conf {
-  struct _option         *\fIconfig_options\fP;
-  struct sockaddr_storage \fIown_bind_addr\fP;
-  unsigned                \fIown_bind_addr_set\fP;
-  struct map2id_s        *\fImap2id_list\fP;
-  struct dict_attr       *\fIdictionary_attributes\fP;
-  struct dict_value      *\fIdictionary_values\fP;
-  struct dict_vendor     *\fIdictionary_vendors\fP;
-  char                    \fIbuf\fP;
-  char                    \fIifname\fP;
-  rc_sockets_override     \fIso\fP;
-  rc_sockets_type         \fIso_set\fP;
-};
-\fP
-.fi
-.RE
-.SS ""
-.PP
-.sp
-.sp
-.RS
-.nf
-\fB
 struct send_data {
   uint8_t      \fIcode\fP;          // RADIUS packet code. 
   uint8_t      \fIseq_nbr\fP;       // Packet sequence number. 
