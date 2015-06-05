@@ -12,8 +12,6 @@
 #include	<pathnames.h>
 #include	"common.h"
 
-static char *pname = NULL;
-
 int
 main (int argc, char **argv)
 {
@@ -26,9 +24,8 @@ main (int argc, char **argv)
 	char		*default_realm;
 	rc_handle	*rh;
 
-	pname = (pname = strrchr(argv[0],'/'))?pname+1:argv[0];
-
-	rc_openlog(pname);
+	/* Don't needed if you already used openlog() */
+	rc_openlog("my-prog-name");
 
 	if ((rh = rc_read_config2(RC_CONFIG_FILE, RC_CONFIG_LOAD_ALL)) == NULL)
 		return ERROR_RC;

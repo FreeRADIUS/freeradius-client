@@ -12,13 +12,17 @@
 #include <radcli.h>
 
 /**
- * @defgroup log-api Logging API
- * @brief System log handling functions
+ * @defgroup misc-api Miscellaneous API
+ * @brief Miscellaneous functions
  *
  * @{
  */
 
 /** Opens system log
+ *
+ * This function is a wrapper over openlog() in
+ * systems which support it. Don't call it if you already
+ * call openlog().
  *
  * @param ident the name of the program.
  */
