@@ -52,15 +52,11 @@ int            rc_get_srcaddr(struct sockaddr *, const struct sockaddr *);
 unsigned short rc_getport(int);
 int            rc_init_tls(rc_handle *, unsigned);
 void           rc_log(int, char const *, ...);
-uint32_t       rc_map2id(rc_handle const *, char const *);
-void           rc_map2id_free(rc_handle *);
-void           rc_md5_calc(unsigned char *, unsigned char const *, size_t);
 rc_handle     *rc_new(void);
 void           rc_openlog(char const *);
 int            rc_own_hostname(char *, int);
 rc_handle     *rc_read_config(char const *);
 int            rc_read_dictionary(rc_handle *, char const *);
-int            rc_read_mapfile(rc_handle *, char const *);
 int            rc_send_server(rc_handle *, SEND_DATA *, char *, unsigned);
 void           rc_str2tm(char const *, struct tm *);
 int            rc_test_config(rc_handle *, char const *);
@@ -111,6 +107,6 @@ struct value_pair {
 .PP
 .nh
 .ad l
-\fIrc_aaa\fP(3), \fIrc_acct\fP(3), \fIrc_acct_proxy\fP(3), \fIrc_add_config\fP(3), \fIrc_auth\fP(3), \fIrc_auth_proxy\fP(3), \fIrc_avpair_add\fP(3), \fIrc_avpair_assign\fP(3), \fIrc_avpair_free\fP(3), \fIrc_avpair_gen\fP(3), \fIrc_avpair_get\fP(3), \fIrc_avpair_insert\fP(3), \fIrc_avpair_log\fP(3), \fIrc_avpair_new\fP(3), \fIrc_avpair_parse\fP(3), \fIrc_avpair_readin\fP(3), \fIrc_avpair_tostr\fP(3), \fIrc_buildreq\fP(3), \fIrc_check\fP(3), \fIrc_check_tls\fP(3), \fIrc_conf_int\fP(3), \fIrc_conf_srv\fP(3), \fIrc_conf_str\fP(3), \fIrc_config_free\fP(3), \fIrc_config_init\fP(3), \fIrc_deinit_tls\fP(3), \fIrc_destroy\fP(3), \fIrc_dict_findattr\fP(3), \fIrc_dict_findval\fP(3), \fIrc_dict_findvend\fP(3), \fIrc_dict_free\fP(3), \fIrc_dict_getattr\fP(3), \fIrc_dict_getval\fP(3), \fIrc_dict_getvend\fP(3), \fIrc_find_server_addr\fP(3), \fIrc_get_srcaddr\fP(3), \fIrc_getport\fP(3), \fIrc_init_tls\fP(3), \fIrc_log\fP(3), \fIrc_map2id\fP(3), \fIrc_map2id_free\fP(3), \fIrc_md5_calc\fP(3), \fIrc_new\fP(3), \fIrc_openlog\fP(3), \fIrc_own_hostname\fP(3), \fIrc_read_config\fP(3), \fIrc_read_dictionary\fP(3), \fIrc_read_mapfile\fP(3), \fIrc_send_server\fP(3), \fIrc_str2tm\fP(3), \fIrc_test_config\fP(3), \fIrc_tls_fd\fP(3)
+\fIrc_aaa\fP(3), \fIrc_acct\fP(3), \fIrc_acct_proxy\fP(3), \fIrc_add_config\fP(3), \fIrc_auth\fP(3), \fIrc_auth_proxy\fP(3), \fIrc_avpair_add\fP(3), \fIrc_avpair_assign\fP(3), \fIrc_avpair_free\fP(3), \fIrc_avpair_gen\fP(3), \fIrc_avpair_get\fP(3), \fIrc_avpair_insert\fP(3), \fIrc_avpair_log\fP(3), \fIrc_avpair_new\fP(3), \fIrc_avpair_parse\fP(3), \fIrc_avpair_readin\fP(3), \fIrc_avpair_tostr\fP(3), \fIrc_buildreq\fP(3), \fIrc_check\fP(3), \fIrc_check_tls\fP(3), \fIrc_conf_int\fP(3), \fIrc_conf_srv\fP(3), \fIrc_conf_str\fP(3), \fIrc_config_free\fP(3), \fIrc_config_init\fP(3), \fIrc_deinit_tls\fP(3), \fIrc_destroy\fP(3), \fIrc_dict_findattr\fP(3), \fIrc_dict_findval\fP(3), \fIrc_dict_findvend\fP(3), \fIrc_dict_free\fP(3), \fIrc_dict_getattr\fP(3), \fIrc_dict_getval\fP(3), \fIrc_dict_getvend\fP(3), \fIrc_find_server_addr\fP(3), \fIrc_get_srcaddr\fP(3), \fIrc_getport\fP(3), \fIrc_init_tls\fP(3), \fIrc_log\fP(3), \fIrc_new\fP(3), \fIrc_openlog\fP(3), \fIrc_own_hostname\fP(3), \fIrc_read_config\fP(3), \fIrc_read_dictionary\fP(3), \fIrc_send_server\fP(3), \fIrc_str2tm\fP(3), \fIrc_test_config\fP(3), \fIrc_tls_fd\fP(3)
 .ad
 .hy
