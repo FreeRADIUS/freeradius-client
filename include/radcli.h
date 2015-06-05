@@ -441,7 +441,7 @@ __BEGIN_DECLS
  * This library implements the needed standards for the client side
  * of the protocol, in a way the minimum configuration and modification
  * is needed for the clients. The approach is to rely on a small
- * external radius configuration file, read using rc_read_config(),
+ * external radius configuration file, read using rc_read_config2(),
  * and then using rc_auth() or rc_acct() to communicate with the server.
  * Check radexample.c for a functional example.
  *
