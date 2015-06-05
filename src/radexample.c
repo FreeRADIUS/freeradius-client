@@ -33,10 +33,7 @@ main (int argc, char **argv)
 
 	rc_openlog(pname);
 
-	if ((rh = rc_read_config(RC_CONFIG_FILE)) == NULL)
-		return ERROR_RC;
-
-	if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0)
+	if ((rh = rc_read_config2(RC_CONFIG_FILE, RC_CONFIG_LOAD_ALL)) == NULL)
 		return ERROR_RC;
 
 	default_realm = rc_conf_str(rh, "default_realm");

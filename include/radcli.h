@@ -484,6 +484,9 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val, char const *source, int line);
 rc_handle *rc_config_init(rc_handle *rh);
 rc_handle *rc_read_config(char const *filename);
+
+#define RC_CONFIG_LOAD_ALL 1 //!< Load any other configuration files, such as dictionary, when needed
+rc_handle *rc_read_config2(char const *filename, unsigned flags);
 char *rc_conf_str(rc_handle const *rh, char const *optname);
 int rc_conf_int(rc_handle const *rh, char const *optname);
 SERVER *rc_conf_srv(rc_handle const *rh, char const *optname);

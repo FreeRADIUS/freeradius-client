@@ -418,10 +418,15 @@ static int apply_config(rc_handle *rh)
 
 /** Read the global config file
  *
+ * This function will load the provided configuration file, and if
+ * RC_CONFIG_LOAD_ALL flag is specified any other files such as
+ * the dictionary.
+ *
  * @param filename a name of a file.
+ * @flags zero or RC_CONFIG_LOAD_ALL.
  * @return new rc_handle on success, NULL when failure.
  */
-rc_handle *rc_read_config(char const *filename)
+rc_handle *rc_read_config2(char const *filename, unsigned flags)
 {
 	FILE *configfd;
 	char buffer[512], *p;
@@ -534,7 +539,36 @@ rc_handle *rc_read_config(char const *filename)
 		rc_destroy(rh);
 		return NULL;
 	}
+
+	if (flags & RC_CONFIG_LOAD_ALL) {
+		p = rc_conf_str(rh, "dictionary");
+		if (p == NULL) {
+			rc_log(LOG_CRIT, "rc_read_config: no dictionary was specified");
+			rc_destroy(rh);
+			return NULL;
+		}
+
+		if (rc_read_dictionary(rh, p) != 0) {
+			rc_log(LOG_CRIT, "could not load dictionary");
+			rc_destroy(rh);
+			return NULL;
+		}
+	}
+
 	return rh;
+}
+
+/** Read the global config file
+ *
+ * This function is equivalent to rc_read_config2() with no flags.
+ * It is recommended to use rc_read_config2().
+ *
+ * @param filename a name of a file.
+ * @return new rc_handle on success, NULL when failure.
+ */
+rc_handle *rc_read_config(char const *filename)
+{
+	return rc_read_config2(filename, 0);
 }
 
 /** Get the value of a config option
