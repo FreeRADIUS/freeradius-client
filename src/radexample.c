@@ -42,7 +42,7 @@ main (int argc, char **argv)
 	default_realm = rc_conf_str(rh, "default_realm");
 
 	strcpy(username, "my-username");
-	strcpy(password, "my-password");
+	strcpy(passwd, "my-password");
 
 	send = NULL;
 
