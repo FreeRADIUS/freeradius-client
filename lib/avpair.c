@@ -19,7 +19,8 @@
 #include "util.h"
 
 /**
- * @defgroup radcli-api Main API Functions 
+ * @defgroup radcli-api Main API
+ * @brief Main API Functions 
  *
  * @{
  */
