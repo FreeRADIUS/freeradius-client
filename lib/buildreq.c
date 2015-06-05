@@ -13,6 +13,15 @@
 #include <radcli.h>
 #include "util.h"
 
+/** Generates a random ID
+ *
+ * @return the random ID.
+ */
+static unsigned char rc_get_id()
+{
+	return (unsigned char)(random() & UCHAR_MAX);
+}
+
 /** Build a skeleton RADIUS request using information from the config file
  *
  * @param rh a handle to parsed configuration.
@@ -34,15 +43,6 @@ void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, u
 	data->timeout = timeout;
 	data->retries = retries;
 	data->code = code;
-}
-
-/** Generates a random ID
- *
- * @return the random ID.
- */
-unsigned char rc_get_id()
-{
-	return (unsigned char)(random() & UCHAR_MAX);
 }
 
 /** Builds an authentication/accounting request for port id client_port with the value_pairs send and submits it to a server
