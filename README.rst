@@ -5,8 +5,8 @@ The radcli library
 ---------------
 |BuildStatus|_
 
-.. |BuildStatus| image:: https://travis-ci.org/nmav/libradcli.png
-.. _BuildStatus: https://travis-ci.org/nmav/libradcli
+.. |BuildStatus| image:: https://travis-ci.org/radcli/radcli.png
+.. _BuildStatus: https://travis-ci.org/radcli/radcli
 
 
 1. INTRODUCTION
@@ -29,5 +29,11 @@ and will include any new features for the task.
 2. Documentation
 ----------------
 
-It is available at: http://nmav.github.io/libradcli/
+It is available at:
+http://radcli.github.io/radcli/
 
+3. Bug reporting
+----------------
+
+Please use the issue tracker at:
+https://github.com/radcli/radcli/issues
