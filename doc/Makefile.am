@@ -8,8 +8,28 @@
 # and I'll send you a copy.
 #
 
-AUTOMAKE_OPTIONS = foreign
+-include $(top_srcdir)/doc/doc.mk
 
 CLEANFILES = *~
 
-EXTRA_DIST = instop.html
+EXTRA_DIST = Doxyfile.in scripts/getfuncs.pl doc.mk
+
+dist_man_MANS = $(APIMANS)
+
+$(APIMANS): stamp_mans
+
+stamp_mans: ../include/radcli.h
+	doxygen Doxyfile
+	doxy2man --out man --novalidate xml/radcli_8h.xml
+	echo > $@
+
+update-doc: stamp_mans
+	FUNCS=`cat $(top_srcdir)/include/radcli.h | $(top_srcdir)/doc/scripts/getfuncs.pl|sort -d|uniq`; \
+	MANS=""; \
+	for i in $$FUNCS; do \
+		MANS="$$MANS\nAPIMANS += man\/$$i.3"; \
+	done; \
+	grep -v -e '^APIMANS += ' doc.mk | \
+		perl -p -e "s/^APIMANS =/APIMANS =$$MANS/" > tmp-$@; \
+	diff -u $(srcdir)/doc.mk tmp-$@ || mv tmp-$@ doc.mk
+	rm -f tmp-$@

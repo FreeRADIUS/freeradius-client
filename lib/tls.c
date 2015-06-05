@@ -30,6 +30,13 @@
 
 #ifdef HAVE_GNUTLS
 
+/**
+ * @defgroup tls-api TLS/DTLS API
+ * @brief TLS and DTLS related functions
+ *
+ * @{
+ */
+
 #include <gnutls/gnutls.h>
 #include <gnutls/dtls.h>
 #include <pthread.h>
@@ -412,12 +419,11 @@ static void restart_session(rc_handle *rh, tls_st *st)
 	return;
 }
 
-/** Return the file descriptor of the TLS/DTLS session
+/** Returns the file descriptor of the TLS/DTLS session
  *
  * @param rh a handle to parsed configuration
- * @return fd
+ * @return the file descriptor used by the TLS session
  */
-
 int rc_tls_fd(rc_handle * rh)
 {
 	tls_st *st;
@@ -445,7 +451,6 @@ int rc_tls_fd(rc_handle * rh)
  * @param: rh a handle to parsed configuration
  * @return 0 on success, -1 on error
  */
-
 int rc_check_tls(rc_handle * rh)
 {
 	tls_st *st;
@@ -476,7 +481,6 @@ int rc_check_tls(rc_handle * rh)
  *
  * @param rh the configuration handle.
  */
-
 void rc_deinit_tls(rc_handle * rh)
 {
 	tls_st *st = rh->so.ptr;
@@ -499,7 +503,6 @@ void rc_deinit_tls(rc_handle * rh)
  * @param flags must be zero or SEC_FLAG_DTLS
  * @return 0 on success, -1 on failure.
  */
-
 int rc_init_tls(rc_handle * rh, unsigned flags)
 {
 	int ret, e;
@@ -683,4 +686,7 @@ int rc_init_tls(rc_handle * rh, unsigned flags)
 	free(st);
 	return ret;
 }
+
+/** @} */
 #endif
+

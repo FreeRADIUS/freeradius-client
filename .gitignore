@@ -15,6 +15,7 @@ src/.deps
 etc/radiusclient.conf
 etc/radiusclient-tls.conf
 lib/radcli.pc
+doc/Doxyfile
 tests/*.log
 tests/*.trs
 .deps

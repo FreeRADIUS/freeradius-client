@@ -14,6 +14,12 @@
  *
  */
 
+/**
+ * @defgroup radcli-api Main API Functions 
+ *
+ * @{
+ */
+
 #include <config.h>
 #include <includes.h>
 #include <radcli.h>
@@ -420,7 +426,7 @@ DICT_VALUE *rc_dict_findval(rc_handle const *rh, char const *valname)
 /** Lookup a DICT_VENDOR by its name
  *
  * @param rh a handle to parsed configuration.
- * @param valname the vendor name.
+ * @param vendorname the vendor name.
  * @return the full vendor structure based on the vendor name.
  */
 DICT_VENDOR *rc_dict_findvend(rc_handle const *rh, char const *vendorname)
@@ -473,7 +479,7 @@ DICT_VALUE *rc_dict_getval(rc_handle const *rh, uint32_t value, char const *attr
 	return NULL;
 }
 
-/** Frees the allocated av lists
+/** Frees the allocated dictionary
  *
  * @param rh a handle to parsed configuration.
  */
@@ -499,3 +505,4 @@ void rc_dict_free(rc_handle *rh)
 	rh->dictionary_values = NULL;
 	rh->dictionary_vendors = NULL;
 }
+/** @} */

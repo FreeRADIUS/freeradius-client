@@ -14,6 +14,13 @@
  *
  */
 
+/**
+ * @defgroup misc-api Miscellaneous API
+ * @brief Miscellaneous functions
+ *
+ * @{
+ */
+
 #include <sys/time.h>
 
 #include <config.h>
@@ -66,35 +73,7 @@ void rc_mdelay(int msecs)
 	select(0, NULL, NULL, NULL, &tv);
 }
 
-/** Initialises new Radius Client handle
- *
- * @return a new rc_handle (free with rc_destroy).
- */
-rc_handle *rc_new(void)
-{
-	rc_handle *rh;
-
-	rh = calloc(1, sizeof(*rh));
-	if (rh == NULL) {
-                rc_log(LOG_CRIT, "rc_new: out of memory");
-                return NULL;
-        }
-	return rh;
-}
-
-/** Destroys Radius Client handle reclaiming all memory
- *
- * @param rh The Radius client handle to free.
- */
-void rc_destroy(rc_handle *rh)
-{
-	rc_map2id_free(rh);
-	rc_dict_free(rh);
-	rc_config_free(rh);
-	free(rh);
-}
-
-/** Returns the current time as a double.
+/* Returns the current time as a double.
  *
  * @return current time (seconds since epoch) expressed as
  * 	double-precision floating point number.
@@ -162,3 +141,4 @@ rc_strlcpy(char *dst, char const *src, size_t siz)
 
 #endif
 
+/** @} */

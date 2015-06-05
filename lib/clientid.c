@@ -9,6 +9,13 @@
  *
  */
 
+/**
+ * @defgroup id-map Device to client ID mapping API
+ * @brief Helper functions for device to client ID mapping
+ *
+ * @{
+ */
+
 #include <config.h>
 #include <includes.h>
 #include <radcli.h>
@@ -135,3 +142,5 @@ void rc_map2id_free(rc_handle *rh)
 	}
 	rh->map2id_list = NULL;
 }
+
+/** @} */

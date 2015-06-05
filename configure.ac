@@ -390,6 +390,7 @@ AC_CONFIG_FILES([
 Makefile
 include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile
 doc/Makefile
+doc/Doxyfile
 lib/radcli.pc
 tests/Makefile
 tests/docker/Makefile

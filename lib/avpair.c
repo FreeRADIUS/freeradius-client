@@ -18,15 +18,21 @@
 #include <radcli.h>
 #include "util.h"
 
+/**
+ * @defgroup radcli-api Main API Functions 
+ *
+ * @{
+ */
+
 /** Adds an attribute-value pair to the given list
  *
  * @note Always appends the new pair to the end of the list.
  *
  * @param rh a handle to parsed configuration.
- * @param list a #VALUE_PAIR array of values; initially must be %NULL.
- * @param attrid The attribute of the pair to add (e.g., %PW_USER_NAME).
+ * @param list a VALUE_PAIR array of values; initially must be NULL.
+ * @param attrid The attribute of the pair to add (e.g., PW_USER_NAME).
  * @param pval the value (e.g., the actual username).
- * @param len the length of @pval, or -1 if to calculate (in case of strings).
+ * @param len the length of pval, or -1 if to calculate (in case of strings).
  * @param vendorpec The vendor ID in case of a vendor specific value - 0 otherwise.
  * @return pointer to added a/v pair upon success, NULL pointer upon failure.
  */
@@ -47,9 +53,9 @@ VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, int attrid, v
 
 /** Assigns the given value to an attribute-value pair
  *
- * @param vp a pointer to a #VALUE_PAIR structure.
+ * @param vp a pointer to a VALUE_PAIR structure.
  * @param pval the value (e.g., the actual username).
- * @param len the length of @pval, or -1 if to calculate (in case of strings).
+ * @param len the length of pval, or -1 if to calculate (in case of strings).
  * @return 0 on success or -1 on failure.
  */
 int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len)
@@ -102,7 +108,7 @@ int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len)
 /** Make a new attribute-value pair with given parameters
  *
  * @param rh a handle to parsed configuration.
- * @param attrid The attribute of the pair to add (e.g., %PW_USER_NAME).
+ * @param attrid The attribute of the pair to add (e.g., PW_USER_NAME).
  * @param pval the value (e.g., the actual username).
  * @param len the length of pval, or -1 if to calculate (in case of strings).
  * @param vendorpec The vendor ID in case of a vendor specific value - 0 otherwise.
@@ -174,11 +180,11 @@ VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, in
  * @note Uses recursion.
  *
  * @param rh a handle to parsed configuration.
- * @param pair a pointer to a #VALUE_PAIR structure.
+ * @param pair a pointer to a VALUE_PAIR structure.
  * @param ptr the value (e.g., the actual username).
  * @param length the length of ptr, or -1 if to calculate (in case of strings).
  * @param vendorpec The vendor ID in case of a vendor specific value - 0 otherwise.
- * @return value_pair list or %NULL on failure.
+ * @return value_pair list or NULL on failure.
  */
 VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 			  int length, int vendorpec)
@@ -340,8 +346,8 @@ shithappens:
 
 /** Find the first attribute value-pair (which matches the given attribute) from the specified value-pair list
  *
- * @param vp a pointer to a #VALUE_PAIR structure.
- * @param attrid The attribute of the pair to find (e.g., %PW_USER_NAME).
+ * @param vp a pointer to a VALUE_PAIR structure.
+ * @param attrid The attribute of the pair to find (e.g., PW_USER_NAME).
  * @param vendorpec The vendor ID in case of a vendor specific value - 0 otherwise.
  * @return the value pair found.
  */
@@ -360,9 +366,9 @@ VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, int attrid, int vendorpec)
  * Given the address of an existing list "a" and a pointer to an entry "p" in that list, add the value pair "b" to
  * the "a" list after the "p" entry.  If "p" is NULL, add the value pair "b" to the end of "a".
  *
- * @param a a #VALUE_PAIR array of values.
- * @param p a pointer to a #VALUE_PAIR in a.
- * @param b The #VALUE_PAIR pointer to add in a.
+ * @param a a VALUE_PAIR array of values.
+ * @param p a pointer to a VALUE_PAIR in a.
+ * @param b The VALUE_PAIR pointer to add in a.
  */
 void rc_avpair_insert(VALUE_PAIR **a, VALUE_PAIR *p, VALUE_PAIR *b)
 {
@@ -822,9 +828,9 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
  * The caller should provide a storage buffer and the buffer length.
  *
  * @param rh a handle to parsed configuration.
- * @param pair a pointer to a #VALUE_PAIR structure.
+ * @param pair a pointer to a VALUE_PAIR structure.
  * @param buf will hold the string output of the pair.
- * @param len the size of buf.
+ * @param buf_len the size of buf.
  * @return a pointer to provided storage buffer.
  */
 char *rc_avpair_log(rc_handle const *rh, VALUE_PAIR *pair, char *buf, size_t buf_len)
@@ -876,3 +882,5 @@ VALUE_PAIR *rc_avpair_readin(rc_handle const *rh, FILE *input)
 
 	return vp;
 }
+
+/** @} */

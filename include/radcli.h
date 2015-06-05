@@ -477,100 +477,122 @@ typedef struct env
 
 __BEGIN_DECLS
 
-/**
- * \defgroup API API Functions
- * @{
+/*!\mainpage
+ * \section Introduction
+ *
+ * RADIUS stands for Remote Authentication Dial In User Service
+ * and is a protocol for carrying authentication, authorization,
+ * and configuration information between a Network Access Server
+ * (NAS) which desires to authenticate its links and a shared
+ * Authentication Server.  The protocol originally was designed
+ * by the terminal server manufacturer Livingston for use with
+ * their Portmaster series of terminal servers.  Since then it
+ * has been implemented by a lot of other vendors and it is also
+ * on it's way to become a Internet Standard.
+ *
+ * This library implements the needed standards for the client side
+ * of the protocol, in a way the minimum configuration and modification
+ * is needed for the clients. The approach is to rely on a small
+ * external radius configuration file, read using rc_read_config(),
+ * and then using rc_auth() or rc_acct() to communicate with the server.
+ * Check radexample.c for a functional example.
+ *
  */
-   
+
+/** \example radexample.c
+ * This is an example of how to use the radcli API.
+ */
+
 /* avpair.c */
 
-VALUE_PAIR *rc_avpair_add(rc_handle const *, VALUE_PAIR **, int, void const *, int, int);
-int rc_avpair_assign(VALUE_PAIR *, void const *, int);
-VALUE_PAIR *rc_avpair_new(rc_handle const *, int, void const *, int, int);
-VALUE_PAIR *rc_avpair_gen(rc_handle const *, VALUE_PAIR *, unsigned char const *, int, int);
-VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, int, int);
-void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
-void rc_avpair_free(VALUE_PAIR *);
-int rc_avpair_parse(rc_handle const *, char const *, VALUE_PAIR **);
-int rc_avpair_tostr(rc_handle const *, VALUE_PAIR *, char *, int, char *, int);
-char *rc_avpair_log(rc_handle const *, VALUE_PAIR *, char *buf, size_t buf_len);
-VALUE_PAIR *rc_avpair_readin(rc_handle const *, FILE *);
+VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, int attrid, void const *pval, int len, int vendorpec);
+int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len);
+VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, int len, int vendorpec);
+VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
+			  int length, int vendorpec);
+VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, int attrid, int vendorpec);
+void rc_avpair_insert(VALUE_PAIR **a, VALUE_PAIR *p, VALUE_PAIR *b);
+void rc_avpair_free (VALUE_PAIR *pair);
+int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first_pair);
+int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, char *value, int lv);
+char *rc_avpair_log(rc_handle const *rh, VALUE_PAIR *pair, char *buf, size_t buf_len);
+VALUE_PAIR *rc_avpair_readin(rc_handle const *rh, FILE *input);
 
 /* buildreq.c */
 
-void rc_buildreq(rc_handle const *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
-int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *);
-int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
-int rc_acct(rc_handle *, uint32_t, VALUE_PAIR *);
-int rc_acct_proxy(rc_handle *, VALUE_PAIR *);
-int rc_check(rc_handle *, char *, char *, unsigned short, char *);
+void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, unsigned short port,
+		 char *secret, int timeout, int retries);
+int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received, char *msg);
+int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *msg);
+int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send);
+int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send);
+int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char *msg);
 
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
-    char *msg, int add_nas_port, int request_type);
+	   char *msg, int add_nas_port, int request_type);
 
 /* clientid.c */
 
-int rc_read_mapfile(rc_handle *, char const *);
-uint32_t rc_map2id(rc_handle const *, char const *);
-void rc_map2id_free(rc_handle *);
+int rc_read_mapfile(rc_handle *rh, char const *filename);
+uint32_t rc_map2id(rc_handle const *rh, char const *name);
+void rc_map2id_free(rc_handle *rh);
 
 /* config.c */
 
-rc_handle *rc_read_config(char const *);
-char *rc_conf_str(rc_handle const *, char const *);
-int rc_conf_int(rc_handle const *, char const *);
-SERVER *rc_conf_srv(rc_handle const *, char const *);
-void rc_config_free(rc_handle *);
-int rc_add_config(rc_handle *, char const *, char const *, char const *, int);
-rc_handle *rc_config_init(rc_handle *);
-int test_config(rc_handle *, char const *);
+int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val, char const *source, int line);
+rc_handle *rc_config_init(rc_handle *rh);
+rc_handle *rc_read_config(char const *filename);
+char *rc_conf_str(rc_handle const *rh, char const *optname);
+int rc_conf_int(rc_handle const *rh, char const *optname);
+SERVER *rc_conf_srv(rc_handle const *rh, char const *optname);
+int rc_test_config(rc_handle *rh, char const *filename);
+int rc_find_server_addr (rc_handle const *rh, char const *server_name,
+                         struct addrinfo** info, char *secret, rc_type type);
+void rc_config_free(rc_handle *rh);
+rc_handle *rc_new(void);
+void rc_destroy(rc_handle *rh);
+
+#define test_config rc_test_config
 
 /* dict.c */
 
-int rc_read_dictionary(rc_handle *, char const *);
-DICT_ATTR *rc_dict_getattr(rc_handle const *, int);
-DICT_ATTR *rc_dict_findattr(rc_handle const *, char const *);
-DICT_VALUE *rc_dict_findval(rc_handle const *, char const *);
-DICT_VENDOR *rc_dict_findvend(rc_handle const *, char const *);
-DICT_VENDOR *rc_dict_getvend(rc_handle const *, int);
-DICT_VALUE * rc_dict_getval(rc_handle const *, uint32_t, char const *);
-void rc_dict_free(rc_handle *);
+int rc_read_dictionary (rc_handle *rh, char const *filename);
+DICT_ATTR *rc_dict_getattr(rc_handle const *rh, int attribute);
+DICT_ATTR *rc_dict_findattr(rc_handle const *rh, char const *attrname);
+DICT_VALUE *rc_dict_findval(rc_handle const *rh, char const *valname);
+DICT_VENDOR *rc_dict_findvend(rc_handle const *rh, char const *vendorname);
+DICT_VENDOR *rc_dict_getvend (rc_handle const *rh, int vendorpec);
+DICT_VALUE *rc_dict_getval(rc_handle const *rh, uint32_t value, char const *attrname);
+void rc_dict_free(rc_handle *rh);
 
 /*	tls.c			*/
 
-#define SEC_FLAG_DTLS 1
-int rc_init_tls(rc_handle * rh, unsigned flags);
+int rc_tls_fd(rc_handle * rh);
 int rc_check_tls(rc_handle * rh);
 void rc_deinit_tls(rc_handle * rh);
-int rc_tls_fd(rc_handle * rh);
-
+#define SEC_FLAG_DTLS 1
+int rc_init_tls(rc_handle * rh, unsigned flags);
 
 /* ip_util.c */
 
-
-int rc_good_ipaddr(char const *);
-unsigned short rc_getport(int);
-int rc_own_hostname(char *, int);
+unsigned short rc_getport(int type);
+int rc_own_hostname(char *hostname, int len);
 struct sockaddr;
-int rc_get_srcaddr(struct sockaddr *, const struct sockaddr *);
-
+int rc_get_srcaddr(struct sockaddr *lia, const struct sockaddr *ria);
 
 /* log.c */
 
-void rc_openlog(char const *);
-void rc_log(int, char const *, ...);
+void rc_openlog(char const *ident);
+void rc_log(int prio, char const *format, ...);
 
 /* sendserver.c */
 
-int rc_send_server(rc_handle *, SEND_DATA *, char *, unsigned /*rc_type*/flags);
+int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
+                    unsigned type);
 
 /* util.c */
 
-void rc_str2tm(char const *, struct tm *);
-void rc_mdelay(int);
-rc_handle *rc_new(void);
-void rc_destroy(rc_handle *);
-double rc_getctime(void);
+void rc_str2tm (char const *valstr, struct tm *tm);
 
 /* env.c */
 
@@ -581,9 +603,8 @@ int rc_import_env(struct env *, char const **);
 
 /* md5.c */
 
-void rc_md5_calc(unsigned char *, unsigned char const *, unsigned int);
-
-/**@}*/
+void rc_md5_calc(unsigned char *output, unsigned char const *input,
+		 size_t inlen);
 
 __END_DECLS
 

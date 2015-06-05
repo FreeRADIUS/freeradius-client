@@ -13,6 +13,13 @@
 #include <includes.h>
 #include <radcli.h>
 
+/**
+ * @defgroup log-api Logging API
+ * @brief System log handling functions
+ *
+ * @{
+ */
+
 /** Opens system log
  *
  * @param ident the name of the program.
@@ -42,3 +49,4 @@ void rc_log(int prio, char const *format, ...)
 	syslog(prio, "%s", buff);
 #endif
 }
+/** @} */

@@ -14,6 +14,12 @@
  *
  */
 
+/**
+ * defgroup radcli-api Main API Functions
+ *
+ * @{
+ */
+
 #include <poll.h>
 
 #include <config.h>
@@ -29,9 +35,9 @@ static int rc_check_reply (AUTH_HDR *, int, char const *, unsigned char const *,
 
 /** Packs an attribute value pair list into a buffer
  *
- * @param vp a pointer to a #VALUE_PAIR.
+ * @param vp a pointer to a VALUE_PAIR.
  * @param secret the secret used by the server.
- * @param auth a pointer to #AUTH_HDR.
+ * @param auth a pointer to AUTH_HDR.
  * @return The number of octets packed.
  */
 static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
@@ -264,11 +270,11 @@ const static rc_sockets_override default_socket_funcs = {
 /** Sends a request to a RADIUS server and waits for the reply
  *
  * @param rh a handle to parsed configuration
- * @param data a pointer to a #SEND_DATA structure
- * @param msg must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of
+ * @param data a pointer to a SEND_DATA structure
+ * @param msg must be an array of %PW_MAX_MSG_SIZE or NULL; will contain the concatenation of
  *	any %PW_REPLY_MESSAGE received.
  * @param type must be %AUTH or %ACCT
- * @return %OK_RC (0) on success, %TIMEOUT_RC on timeout %REJECT_RC on acess reject, or negative
+ * @return OK_RC (0) on success, TIMEOUT_RC on timeout REJECT_RC on acess reject, or negative
  *	on failure as return value.
  */
 int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
@@ -625,12 +631,12 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 
 /** Verify items in returned packet
  *
- * @param auth a pointer to #AUTH_HDR.
+ * @param auth a pointer to AUTH_HDR.
  * @param bufferlen the available buffer length.
  * @param secret the secret used by the server.
  * @param vector a random vector of %AUTH_VECTOR_LEN.
  * @param seq_nbr a unique sequence number.
- * @return %OK_RC upon success, %BADRESP_RC if anything looks funny.
+ * @return OK_RC upon success, BADRESP_RC if anything looks funny.
  */
 static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char const *secret, unsigned char const *vector, uint8_t seq_nbr)
 {
@@ -790,3 +796,4 @@ static void rc_random_vector (unsigned char *vector)
 
 	return;
 }
+/** @} */

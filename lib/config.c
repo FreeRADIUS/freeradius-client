@@ -14,6 +14,12 @@
  *
  */
 
+/**
+ * @defgroup radcli-api Main API Functions
+ *
+ * @{
+ */
+
 #include <config.h>
 #include <includes.h>
 #include <radcli.h>
@@ -523,7 +529,7 @@ rc_handle *rc_read_config(char const *filename)
 	}
 	fclose(configfd);
 
-	if (test_config(rh, filename) == -1) {
+	if (rc_test_config(rh, filename) == -1) {
 		rc_destroy(rh);
 		return NULL;
 	}
@@ -601,7 +607,7 @@ SERVER *rc_conf_srv(rc_handle const *rh, char const *optname)
  * @param filename a name of a configuration file.
  * @return 0 on success, -1 when failure.
  */
-int test_config(rc_handle *rh, char const *filename)
+int rc_test_config(rc_handle *rh, char const *filename)
 {
 	SERVER *srv;
 
@@ -898,9 +904,7 @@ int rc_find_server_addr (rc_handle const *rh, char const *server_name,
  * Free allocated config values
  *
  */
-
-void
-rc_config_free(rc_handle *rh)
+void rc_config_free(rc_handle *rh)
 {
 	int i, j;
 	SERVER *serv;
@@ -925,3 +929,33 @@ rc_config_free(rc_handle *rh)
 	free(rh->config_options);
 	rh->config_options = NULL;
 }
+
+/** Initialises new Radius Client handle
+ *
+ * @return a new rc_handle (free with rc_destroy).
+ */
+rc_handle *rc_new(void)
+{
+	rc_handle *rh;
+
+	rh = calloc(1, sizeof(*rh));
+	if (rh == NULL) {
+                rc_log(LOG_CRIT, "rc_new: out of memory");
+                return NULL;
+        }
+	return rh;
+}
+
+/** Destroys Radius Client handle reclaiming all memory
+ *
+ * @param rh The Radius client handle to free.
+ */
+void rc_destroy(rc_handle *rh)
+{
+	rc_map2id_free(rh);
+	rc_dict_free(rh);
+	rc_config_free(rh);
+	free(rh);
+}
+
+/** @} */

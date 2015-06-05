@@ -14,6 +14,12 @@
  *
  */
 
+/**
+ * @defgroup misc-api Miscellaneous API
+ *
+ * @{
+ */
+
 #include <config.h>
 #include <includes.h>
 #include <radcli.h>
@@ -21,14 +27,13 @@
 
 #define HOSTBUF_SIZE 1024
 
- /** Return a struct addrinfo from a host name or address in textual notation.
-  * @param host the name of the host
-  * @param flags should be a combinations of %PW_AI flags
-  * @return address which should be deallocated using freeaddrinfo() or NULL on failure
-  **/
- 
+/* Return a struct addrinfo from a host name or address in textual notation.
+ * @param host the name of the host
+ * @param flags should be a combinations of PW_AI flags
+ * @return address which should be deallocated using freeaddrinfo() or NULL on failure
+ */
 struct addrinfo *rc_getaddrinfo (char const *host, unsigned flags)
- {
+{
 	struct addrinfo hints, *res;
 	int err;
 	const char *service = NULL;
@@ -74,8 +79,7 @@ unsigned short rc_getport(int type)
  * @param len the size of hostname.
  * @return -1 on failure, 0 on success.
  */
-int
-rc_own_hostname(char *hostname, int len)
+int rc_own_hostname(char *hostname, int len)
 {
 #ifdef HAVE_UNAME
 	struct	utsname uts;
@@ -146,12 +150,13 @@ int rc_get_srcaddr(struct sockaddr *lia, const struct sockaddr *ria)
 	return 0;
 }
 
-/** rc_own_bind_addr:
- * @rh: a handle to parsed configuration
- * @lia: the local address to listen to
+/** Find our source address
  *
  * Get the IP address to be used as a source address
  * for sending requests in host order.
+ *
+ * @param rh a handle to parsed configuration
+ * @param lia the local address to listen to
  *
  **/
 void rc_own_bind_addr(rc_handle *rh, struct sockaddr_storage *lia)
@@ -182,3 +187,4 @@ void rc_own_bind_addr(rc_handle *rh, struct sockaddr_storage *lia)
 
        return;
 }
+/** @} */
