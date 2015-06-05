@@ -467,12 +467,6 @@ typedef struct send_data /* Used to pass information to sendserver() function */
 #define PATH_MAX	1024
 #endif
 
-typedef struct env
-{
-	int maxsize, size;
-	char **env;
-} ENV;
-
 #define ENV_SIZE	128
 
 __BEGIN_DECLS
@@ -593,13 +587,6 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 /* util.c */
 
 void rc_str2tm (char const *valstr, struct tm *tm);
-
-/* env.c */
-
-struct env *rc_new_env(int);
-void rc_free_env(struct env *);
-int rc_add_env(struct env *, char const *, char const *);
-int rc_import_env(struct env *, char const **);
 
 /* md5.c */
 
