@@ -46,6 +46,11 @@ struct addrinfo *rc_getaddrinfo (char const *host, unsigned flags);
 void rc_own_bind_addr(rc_handle *rh, struct sockaddr_storage *lia);
 double rc_getctime(void);
 
+#ifdef _MSC_VER /* TODO: Fix me */
+# define rc_log(...)
+#else
+# define rc_log syslog
+#endif
 
 #endif /* UTIL_H */
 

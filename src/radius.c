@@ -183,7 +183,7 @@ LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char const *username, cha
 					ftype_str = dval->name;
 				}
 
-		rc_log(LOG_NOTICE, "authentication OK, username %s, service %s%s%s",
+		fprintf(stderr, "authentication OK, username %s, service %s%s%s",
 				username, service_str,(ftype_str)?"/":"", (ftype_str)?ftype_str:"");
 
 		if (msg && (*msg != '\0'))
@@ -198,7 +198,7 @@ LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char const *username, cha
 	}
 	else
 	{
-		rc_log(LOG_NOTICE, "authentication FAILED, type RADIUS, username %s",
+		fprintf(stderr, "authentication FAILED, type RADIUS, username %s",
 			   username_realm);
 		if (msg && (*msg != '\0'))
 			printf(SC_SERVER_REPLY, msg);
@@ -220,7 +220,6 @@ radius_login(rc_handle *rh, char const *username)
 
 	execle(login_radius, login_radius, NULL, env->env);
 
-	rc_log(LOG_ERR, "couldn't execute %s: %s", login_radius, strerror(errno));
 	fprintf(stderr, "couldn't execute %s: %s", login_radius, strerror(errno));
 
 	sleep(1);	/* give the user time to read */

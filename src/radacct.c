@@ -105,14 +105,14 @@ main (int argc, char **argv)
 		result = rc_acct(rh, client_port, send);
 		if (result == OK_RC)
 		{
-			fprintf(stderr, SC_ACCT_OK);
-			rc_log(LOG_NOTICE, "accounting OK, type %s, username %s, service %s%s%s",
+			fprintf(stdout, SC_ACCT_OK);
+			fprintf(stderr, "accounting OK, type %s, username %s, service %s%s%s",
 				   type, username, service,(fproto)?"/":"", (fproto)?fproto:"");
 		}
 		else
 		{
-			fprintf(stderr, SC_ACCT_FAILED, result);
-			rc_log(LOG_NOTICE, "accounting FAILED, type %s, username %s, service %s%s%s",
+			fprintf(stdout, SC_ACCT_FAILED, result);
+			fprintf(stderr, "accounting FAILED, type %s, username %s, service %s%s%s",
 				   type, username, service,(fproto)?"/":"", (fproto)?fproto:"");
 		}
 		rc_avpair_free(send);

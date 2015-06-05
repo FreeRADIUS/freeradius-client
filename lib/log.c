@@ -33,22 +33,4 @@ void rc_openlog(char const *ident)
 #endif
 }
 
-/** Logs information on system log
- *
- * @param prio the syslog priority.
- * @param format the format of the data to print.
- */
-void rc_log(int prio, char const *format, ...)
-{
-	char buff[1024];
-	va_list ap;
-
-	va_start(ap,format);
-	vsnprintf(buff, sizeof(buff), format, ap);
-	va_end(ap);
-
-#ifndef _MSC_VER /* TODO: Fix me */
-	syslog(prio, "%s", buff);
-#endif
-}
 /** @} */
