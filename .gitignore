@@ -14,8 +14,13 @@ src/.libs
 src/.deps
 etc/radiusclient.conf
 etc/radiusclient-tls.conf
+src/libtools.a
 lib/radcli.pc
 doc/Doxyfile
+doc/stamp_mans
+doc/xml
+doc/html
+doc/doxygen_sqlite3.db
 tests/*.log
 tests/*.trs
 .deps
