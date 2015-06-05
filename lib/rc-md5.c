@@ -17,7 +17,7 @@
  * @{
  */
 
-/** Hash the provided data using MD5
+/* Hash the provided data using MD5
  *
  * @param[out] output will hold a 16-byte checksum.
  * @param[in] input pointer to data to hash.

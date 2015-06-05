@@ -542,11 +542,6 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 
 void rc_str2tm (char const *valstr, struct tm *tm);
 
-/* md5.c */
-
-void rc_md5_calc(unsigned char *output, unsigned char const *input,
-		 size_t inlen);
-
 __END_DECLS
 
 #endif /* RADCLI_H */
