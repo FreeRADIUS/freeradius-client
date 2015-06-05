@@ -217,7 +217,6 @@ struct rc_conf
 	struct sockaddr_storage	own_bind_addr;
 	unsigned		own_bind_addr_set;
 
-	struct map2id_s		*map2id_list;
 	struct dict_attr	*dictionary_attributes;
 	struct dict_value	*dictionary_values;
 	struct dict_vendor	*dictionary_vendors;

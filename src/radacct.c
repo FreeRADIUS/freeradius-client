@@ -26,7 +26,6 @@ void usage(void)
 	fprintf(stderr,"  -V            output version information\n");
 	fprintf(stderr,"  -h            output this text\n");
 	fprintf(stderr,"  -f		filename of alternate config file\n");
-	fprintf(stderr,"  -i            ttyname to send to the server\n");
 	exit(ERROR_RC);
 }
 
@@ -47,7 +46,6 @@ main (int argc, char **argv)
 	DICT_VALUE  *dval;
 	char *username, *service, *fproto, *type;
 	char *path_radiusclient_conf = RC_CONFIG_FILE;
-	char *ttyn = NULL;
 	rc_handle *rh;
 
 	extern char *optarg;
@@ -56,15 +54,12 @@ main (int argc, char **argv)
 
 	rc_openlog(pname);
 
-	while ((c = getopt(argc,argv,"f:i:hV")) > 0)
+	while ((c = getopt(argc,argv,"f:hV")) > 0)
 	{
 		switch(c)
 		{
 			case 'f':
 				path_radiusclient_conf = optarg;
-				break;
-			case 'i':
-				ttyn = optarg;
 				break;
 			case 'V':
 				version();
@@ -84,28 +79,7 @@ main (int argc, char **argv)
 	if (rc_read_dictionary(rh, rc_conf_str(rh, "dictionary")) != 0)
 		exit (ERROR_RC);
 
-	if (rc_read_mapfile(rh, rc_conf_str(rh, "mapfile")) != 0)
-		exit (ERROR_RC);
-
-	if (ttyn != NULL)
-	{
-		client_port = rc_map2id(rh, ttyn);
-	}
-	else
-	{
-		/* we take stdout here, because stdin is usually connected
-	 	 *  to our input file
-	 	 */
-	 	if ((ttyn = ttyname(1)) != NULL)
-	 	{
-			client_port = rc_map2id(rh, ttyn);
-		}
-		else
-		{
-			client_port = 0;
-		}
-	}
-
+	client_port = 0;
 	if ((send = rc_avpair_readin(rh, stdin))) {
 
 		username = service = type = "(unknown)";

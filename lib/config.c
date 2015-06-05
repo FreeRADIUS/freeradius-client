@@ -646,11 +646,6 @@ int rc_test_config(rc_handle *rh, char const *filename)
 		rc_log(LOG_ERR,"%s: radius_deadtime is illegal", filename);
 		return -1;
 	}
-	if (rc_conf_str(rh, "mapfile") == NULL)
-	{
-		rc_log(LOG_ERR,"%s: mapfile not specified", filename);
-		return -1;
-	}
 
 	if (apply_config(rh) == -1) {
 		return -1;
@@ -953,7 +948,6 @@ rc_handle *rc_new(void)
  */
 void rc_destroy(rc_handle *rh)
 {
-	rc_map2id_free(rh);
 	rc_dict_free(rh);
 	rc_config_free(rh);
 	free(rh);

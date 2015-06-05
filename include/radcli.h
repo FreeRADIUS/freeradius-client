@@ -479,12 +479,6 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
 	   char *msg, int add_nas_port, int request_type);
 
-/* clientid.c */
-
-int rc_read_mapfile(rc_handle *rh, char const *filename);
-uint32_t rc_map2id(rc_handle const *rh, char const *name);
-void rc_map2id_free(rc_handle *rh);
-
 /* config.c */
 
 int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val, char const *source, int line);

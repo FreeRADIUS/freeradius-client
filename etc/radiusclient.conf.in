@@ -25,10 +25,6 @@ servers		@pkgsysconfdir@/servers
 # just like in the normal RADIUS distributions
 dictionary 	@pkgsysconfdir@/dictionary
 
-# file which specifies mapping between ttyname and NAS-Port attribute
-# Not required by all applications.
-mapfile		@pkgsysconfdir@/port-id-map
-
 # default authentication realm to append to all usernames if no
 # realm was explicitly specified by the user
 # the radiusd directly form Livingston doesnt use any realms, so leave
