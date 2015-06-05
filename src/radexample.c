@@ -1,9 +1,8 @@
 /*
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
+ * Copyright (C) 2015 Nikos Mavrogiannopoulos
  *
  * See the file COPYRIGHT for the respective terms and conditions.
- * If the file is missing contact me at lf@elemental.net
- * and I'll send you a copy.
  *
  */
 
@@ -47,12 +46,10 @@ main (int argc, char **argv)
 	strncpy(username_realm, username, sizeof(username_realm));
 
 	/* Append default realm */
-	if ((strchr(username_realm, '@') == NULL) && default_realm &&
-	    (*default_realm != '\0'))
-	{
-		strncat(username_realm, "@", sizeof(username_realm)-strlen(username_realm)-1);
-		strncat(username_realm, default_realm, sizeof(username_realm)-strlen(username_realm)-1);
-	}
+	if (default_realm && default_realm[0] != 0)
+		snprintf(username_realm, sizeof(username_realm), "%s@%s", username, default_realm);
+	else
+		strcpy(username_realm, username);
 
 	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, -1, 0) == NULL)
 		return ERROR_RC;
