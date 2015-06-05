@@ -35,3 +35,6 @@ update-doc: stamp_mans
 		perl -p -e "s/^APIMANS =/APIMANS =$$MANS/" > tmp-$@; \
 	diff -u $(srcdir)/doc.mk tmp-$@ || mv tmp-$@ doc.mk
 	rm -f tmp-$@
+
+clean-local:
+	-rm -f stamp_mans
