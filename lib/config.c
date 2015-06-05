@@ -53,6 +53,7 @@ static OPTION *find_option(rc_handle const *rh, char const *optname, unsigned in
  *
  * @param filename the name of the config file (for logging purposes).
  * @param line the line number in the file.
+ * @param option option to set.
  * @param p Value.
  * @return 0 on success, -1 on failure.
  */
@@ -660,7 +661,7 @@ int rc_test_config(rc_handle *rh, char const *filename)
 
 /** See if info matches hostname
  *
- * @param info a struct addrinfo
+ * @param addr a struct addrinfo
  * @param hostname the name of the host.
  * @return 0 on success, -1 when failure.
  */
