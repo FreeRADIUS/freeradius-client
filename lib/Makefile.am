@@ -13,7 +13,7 @@ AUTOMAKE_OPTIONS = foreign
 RC_LOG_FACILITY = @RC_LOG_FACILITY@
 LIBVERSION = @LIBVERSION@
 
-AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir) $(CRYPTO_CFLAGS)
+AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/include -I$(top_builddir) $(CRYPTO_CFLAGS) -Wall
 DEFS = @DEFS@ -DRC_LOG_FACILITY=$(RC_LOG_FACILITY)
 
 CLEANFILES = *~

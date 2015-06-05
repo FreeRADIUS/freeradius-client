@@ -135,8 +135,8 @@ static ssize_t tls_recvfrom(void *ptr, int sockfd,
 	}
 
 	if (ret == GNUTLS_E_WARNING_ALERT_RECEIVED) {
-		rc_log(LOG_ERR, "%s: received: %s", __func__,
-		       gnutls_strerror(ret), gnutls_alert_get_name(gnutls_alert_get(st->ctx.session)));
+		rc_log(LOG_ERR, "%s: received alert: %s", __func__,
+		       gnutls_alert_get_name(gnutls_alert_get(st->ctx.session)));
 		errno = EINTR;
 		return -1;
 	}
@@ -173,7 +173,6 @@ static int cert_verify_callback(gnutls_session_t session)
 	unsigned int status;
 	int ret;
 	struct tls_int_st *ctx;
-	const char *hostname;
 	gnutls_datum_t out;
 
 	/* read hostname */
@@ -227,7 +226,6 @@ static int init_session(rc_handle *rh, tls_int_st *ses,
 			unsigned secflags)
 {
 	int sockfd, ret, e;
-	const char *pskkey = NULL;
 	struct addrinfo *info;
 	char *p;
 	unsigned flags = 0;
@@ -406,7 +404,7 @@ static void restart_session(rc_handle *rh, tls_st *st)
 	/* reinitialize this session */
 	ret = init_session(rh, &tmps, st->ctx.hostname, st->ctx.port, &st->ctx.our_sockaddr, timeout, st->flags);
 	if (ret < 0) {
-		rc_log(LOG_ERR, "%s: error in re-initializing DTLS");
+		rc_log(LOG_ERR, "%s: error in re-initializing DTLS", __func__);
 		return;
 	}
 
@@ -456,7 +454,6 @@ int rc_check_tls(rc_handle * rh)
 	tls_st *st;
 	time_t now = time(0);
 	int ret;
-	unsigned type;
 
 	if (rh->so_set != SOCKETS_TLS && rh->so_set != SOCKETS_DTLS)
 		return 0;
@@ -505,10 +502,9 @@ void rc_deinit_tls(rc_handle * rh)
  */
 int rc_init_tls(rc_handle * rh, unsigned flags)
 {
-	int ret, e;
+	int ret;
 	tls_st *st = NULL;
 	struct sockaddr_storage our_sockaddr;
-	unsigned i;
 	const char *ca_file = rc_conf_str(rh, "tls-ca-file");
 	const char *cert_file = rc_conf_str(rh, "tls-cert-file");
 	const char *key_file = rc_conf_str(rh, "tls-key-file");
@@ -637,7 +633,7 @@ int rc_init_tls(rc_handle * rh, unsigned flags)
 		strlcpy(username, pskkey, username_len + 1);
 
 		p++;
-		hexkey.data = p;
+		hexkey.data = (uint8_t*)p;
 		hexkey.size = strlen(p);
 
 		ret = gnutls_psk_allocate_client_credentials(&st->psk_cred);

@@ -8,7 +8,7 @@
 #ifndef _RC_MD5_H
 #define _RC_MD5_H
 
-#include "config.h"
+#include <includes.h>
 #include <stdlib.h>
 
 #ifdef HAVE_NETTLE

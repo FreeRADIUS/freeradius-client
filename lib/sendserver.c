@@ -19,13 +19,12 @@
  * @{
  */
 
-#include <poll.h>
-
-#include <config.h>
 #include <includes.h>
 #include <radcli.h>
 #include <pathnames.h>
+#include <poll.h>
 #include "util.h"
+#include "rc-md5.h"
 
 #define	SA(p)	((struct sockaddr *)(p))
 

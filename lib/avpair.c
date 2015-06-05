@@ -718,7 +718,6 @@ int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first
 int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, char *value, int lv)
 {
 	DICT_VALUE     *dval;
-	char            buffer[32];
 	struct in_addr  inad;
 	unsigned char  *ptr;
 	unsigned int    pos;
@@ -802,7 +801,7 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 	    	memset(ip, 0, sizeof(ip));
 	    	memcpy(ip, pair->strvalue+2, pair->lvalue-2);
 
-	    	if (inet_ntop(AF_INET6, ip, txt, sizeof(txt)) == NULL)
+	    	if (inet_ntop(AF_INET6, ip, (void*)txt, sizeof(txt)) == NULL)
 	    		return -1;
 		snprintf(value, lv, "%s/%u", txt, (unsigned)pair->strvalue[1]);
 

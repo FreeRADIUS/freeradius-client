@@ -342,8 +342,7 @@ int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val
  */
 rc_handle *rc_config_init(rc_handle *rh)
 {
-	int i;
-	SERVER *authservers;
+	SERVER *authservers = NULL;
 	SERVER *acctservers;
 	OPTION *acct;
 	OPTION *auth;
