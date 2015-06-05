@@ -8,7 +8,9 @@
 # and I'll send you a copy.
 #
 
--include $(top_srcdir)/doc/doc.mk
+include $(top_srcdir)/doc/doc.mk
+
+APIMANS += man/radcli.h.3
 
 CLEANFILES = *~
 

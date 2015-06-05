@@ -1,4 +1,4 @@
-APIMANS = man/radcli.h.3
+APIMANS =
 APIMANS += man/rc_aaa.3
 APIMANS += man/rc_acct.3
 APIMANS += man/rc_acct_proxy.3
