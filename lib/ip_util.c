@@ -1,6 +1,4 @@
 /*
- * $Id: ip_util.c,v 1.14 2010/03/17 18:57:01 aland Exp $
- *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.

@@ -1,6 +1,4 @@
 /*
- * $Id: avpair.c,v 1.26 2010/06/15 09:22:52 aland Exp $
- *
  * Copyright (C) 1995 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.

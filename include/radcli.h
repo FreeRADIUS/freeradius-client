@@ -1,6 +1,4 @@
 /*
- * $Id: freeradius-client.h,v 1.18 2010/06/15 09:22:51 aland Exp $
- *
  * Copyright (C) 1995,1996,1997,1998 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.

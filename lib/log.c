@@ -1,6 +1,4 @@
 /*
- * $Id: log.c,v 1.5 2007/06/21 18:07:23 cparker Exp $
- *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
  * See the file COPYRIGHT for the respective terms and conditions.

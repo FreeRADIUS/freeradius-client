@@ -1,6 +1,4 @@
 /*
- * $Id: options.h,v 1.6 2008/03/05 16:35:20 cparker Exp $
- *
  * Copyright (C) 1996 Lars Fenneberg
  *
  * See the file COPYRIGHT for the respective terms and conditions.

@@ -1,6 +1,4 @@
 /*
- * $Id: config.c,v 1.23 2010/04/28 14:26:15 aland Exp $
- *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.

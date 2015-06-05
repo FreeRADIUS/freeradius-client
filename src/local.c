@@ -1,6 +1,4 @@
 /*
- * $Id: local.c,v 1.5 2007/01/06 20:15:35 pnixon Exp $
- *
  * Copyright (C) 1996 Lars Fenneberg
  *
  * See the file COPYRIGHT for the respective terms and conditions.

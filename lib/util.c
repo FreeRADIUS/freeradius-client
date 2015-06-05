@@ -1,6 +1,4 @@
 /*
- * $Id: util.c,v 1.10 2010/02/04 10:31:41 aland Exp $
- *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.

@@ -1,6 +1,4 @@
 /*
- * $Id: sendserver.c,v 1.30 2010/06/15 09:22:52 aland Exp $
- *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.

@@ -1,6 +1,4 @@
 /*
- * $Id: buildreq.c,v 1.17 2010/02/04 10:27:09 aland Exp $
- *
  * Copyright (C) 1995,1997 Lars Fenneberg
  *
  * See the file COPYRIGHT for the respective terms and conditions.

@@ -1,7 +1,6 @@
 /*
  * md5.h        Structures and prototypes for md5.
  *
- * Version:     $Id: md5.h,v 1.2 2007/06/21 18:07:24 cparker Exp $
  * License:	BSD, but largely derived from a public domain source.
  *
  */

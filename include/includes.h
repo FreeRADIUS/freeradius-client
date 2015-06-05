@@ -1,6 +1,4 @@
 /*
- * $Id: includes.h,v 1.6 2007/06/21 18:07:22 cparker Exp $
- *
  * Copyright (C) 1997 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.

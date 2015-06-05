@@ -1,6 +1,4 @@
 /*
- * $Id: radexample.c,v 1.8 2007/07/11 17:29:30 cparker Exp $
- *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
  * See the file COPYRIGHT for the respective terms and conditions.

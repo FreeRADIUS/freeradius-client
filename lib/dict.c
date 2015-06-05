@@ -1,6 +1,4 @@
 /*
- * $Id: dict.c,v 1.10 2007/07/11 17:29:29 cparker Exp $
- *
  * Copyright (C) 1995,1996,1997 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.

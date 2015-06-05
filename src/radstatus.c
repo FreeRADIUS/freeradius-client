@@ -1,6 +1,4 @@
 /*
- * $Id: radstatus.c,v 1.8 2007/04/13 14:20:44 pnixon Exp $
- *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
  * See the file COPYRIGHT for the respective terms and conditions.

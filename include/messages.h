@@ -1,6 +1,4 @@
 /*
- * $Id: messages.h,v 1.2 2004/02/23 20:10:39 sobomax Exp $
- *
  * Copyright (C) 1995,1996 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.
