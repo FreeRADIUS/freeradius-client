@@ -477,8 +477,11 @@ typedef struct env
 
 __BEGIN_DECLS
 
-/* Function prototypes */
-
+/**
+ * \defgroup API API Functions
+ * @{
+ */
+   
 /* avpair.c */
 
 VALUE_PAIR *rc_avpair_add(rc_handle const *, VALUE_PAIR **, int, void const *, int, int);
@@ -580,6 +583,8 @@ int rc_import_env(struct env *, char const **);
 /* md5.c */
 
 void rc_md5_calc(unsigned char *, unsigned char const *, unsigned int);
+
+/**@}*/
 
 __END_DECLS
 
