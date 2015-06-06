@@ -59,118 +59,6 @@ AC_SUBST(LIBVERSION)
 dnl Check if we need -lsocket.
 AC_CHECK_LIB(socket, socket)
 
-dnl Check if we need -lnsl. Usually if we want to
-dnl link against -lsocket we need to include -lnsl as well.
-AC_CHECK_LIB(nsl, gethostbyaddr)
-
-dnl Check the style of gethostbyaddr, in order of preference
-dnl GNU (_r eight args)
-dnl SYSV (_r six args)
-dnl BSD (three args, may not be thread safe)
-dnl Tru64 has BSD version, but it is thread safe
-dnl     http://h30097.www3.hp.com/docs/base_doc/DOCUMENTATION/V51B_HTML/MAN/MAN3/1739____.HTM
-dnl We need #stdio.h to define NULL on FreeBSD (at least)
-gethostbyaddrrstyle=""
-AC_MSG_CHECKING([gethostbyaddr_r() syntax])
-case "$host" in
-*-freebsd*)
-	AC_DEFINE([GETHOSTBYADDR_R], [], [Define to 1 us gethostbyaddr_r()])
-        AC_DEFINE([GETHOSTBYADDRRSTYLE_BSD], [], [Define to 1 to use bsd-style gethostbyaddr_r()])
-        gethostbyaddrrstyle=BSD
-        AC_MSG_WARN([FreeBSD overridden to BSD-style])
-        ;;
-esac
-if test "x$gethostbyaddrrstyle" = "x"; then
-        AC_TRY_LINK([
-#include <stdio.h>
-#include <netdb.h>
-], [ gethostbyaddr_r(NULL, 0, 0, NULL, NULL, 0, NULL, NULL) ], [
-	AC_DEFINE(GETHOSTBYADDR_R)
-        AC_DEFINE([GETHOSTBYADDRRSTYLE_GNU], [], [Define to 1 to use gnu-style gethostbyaddr_r()])
-        gethostbyaddrrstyle=GNU
-])
-fi
-if test "x$gethostbyaddrrstyle" = "x"; then
-        AC_TRY_LINK([
-#include <stdio.h>
-#include <netdb.h>
-], [ gethostbyaddr_r(NULL, 0, 0, NULL, NULL, 0, NULL) ] , [
-	AC_DEFINE(GETHOSTBYADDR_R)
-	AC_DEFINE([GETHOSTBYADDRRSTYLE_SYSV], [], [Define to 1 to use sysv-style gethostbyaddr_r()])
-        gethostbyaddrrstyle=SYSV
-])
-fi
-if test "x$gethostbyaddrrstyle" = "x"; then
-        AC_TRY_LINK([
-#include <stdio.h>
-#include <netdb.h>
-], [ gethostbyaddr(NULL, 0, 0)  ], [
-	AC_DEFINE(GETHOSTBYADDR_R)
-        AC_DEFINE(GETHOSTBYADDRRSTYLE_BSD)
-        gethostbyaddrrstyle=BSD
-])
-fi
-
-if test "x$gethostbyaddrrstyle" = "x"; then
-        AC_MSG_RESULT([none!  It must not exist, here.])
-else
-        AC_MSG_RESULT([${gethostbyaddrrstyle}-style])
-fi
-
-if test "x$gethostbyaddrrstyle" = "xBSD"; then
-        AC_MSG_WARN([ ****** BSD-style gethostbyaddr might NOT be thread-safe! ****** ])
-fi
-
-dnl Check the style of gethostbyname, in order of preference
-dnl GNU (_r seven args)
-dnl SYSV (_r five args)
-dnl BSD (two args, may not be thread safe)
-dnl Tru64 has BSD version, but it _is_ thread safe
-dnl     http://h30097.www3.hp.com/docs/base_doc/DOCUMENTATION/V51B_HTML/MAN/MAN3/1946____.HTM
-dnl We need #stdio.h to define NULL on FreeBSD (at least)
-gethostbynamerstyle=""
-AC_MSG_CHECKING([gethostbyname_r() syntax])
-AC_TRY_LINK([
-#include <stdio.h>
-#include <netdb.h>
-], [ gethostbyname_r(NULL, NULL, NULL, 0, NULL, NULL) ], [
-	AC_DEFINE([GETHOSTBYNAME_R], [], [Define to 1 to use gethostbyname_r()])
-        AC_DEFINE([GETHOSTBYNAMERSTYLE_GNU], [], [Define to 1 to use gnu-style gethostbyname_r()])
-        gethostbynamerstyle=GNU
-])
-if test "x$gethostbynamerstyle" = "x"; then
-        AC_TRY_LINK([
-#include <stdio.h>
-#include <netdb.h>
-], [ gethostbyname_r(NULL, NULL, NULL, 0, NULL) ] , [
-        AC_DEFINE(GETHOSTBYNAME_R)        
-	AC_DEFINE([GETHOSTBYNAMERSTYLE_SYSV], [], [Define to 1 to use sysv-style gethostbyname_r()])
-        gethostbynamerstyle=SYSV
-])
-fi
-if test "x$gethostbynamerstyle" = "x"; then
-        AC_TRY_LINK([
-#include <stdio.h>
-#include <netdb.h>
-], [ gethostbyname(NULL)  ], [
-	AC_DEFINE(GETHOSTBYNAME_R)
-	AC_DEFINE([GETHOSTBYNAMERSTYLE_BSD], [], [Define to 1 to use bsd-style gethostbyname_r()])
-        gethostbynamerstyle=BSD
-])
-fi
-
-if test "x$gethostbynamerstyle" = "x"; then
-        AC_MSG_RESULT([none!  It must not exist, here.])
-else
-        AC_MSG_RESULT([${gethostbynamerstyle}-style])
-fi
-
-if test "x$gethostbynamerstyle" = "xBSD"; then
-        AC_MSG_WARN([ ****** BSD-style gethostbyname might NOT be thread-safe! ****** ])
-fi
-
-AC_CHECK_LIB(crypt, crypt)
-
 dnl Checks for endianness
 AC_C_BIGENDIAN
 if test $ac_cv_c_bigendian = yes; then
@@ -182,7 +70,7 @@ fi
 dnl Checks for header files.
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS(crypt.h signal.h sys/signal.h sys/stat.h)
+AC_CHECK_HEADERS(signal.h sys/signal.h sys/stat.h)
 AC_CHECK_HEADERS(fcntl.h sys/fcntl.h)
 AC_CHECK_HEADERS(sys/utsname.h getopt.h unistd.h)
 AC_CHECK_HEADERS(sys/file.h termios.h sys/ioctl.h)
@@ -202,15 +90,13 @@ AC_HEADER_TIME
 AC_STRUCT_TM
 
 dnl Checks for library functions.
-AC_PROG_GCC_TRADITIONAL
 AC_FUNC_MEMCMP
-AC_FUNC_SETVBUF_REVERSED
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
 AC_FUNC_ALLOCA
 AC_REPLACE_FUNCS(strdup strerror strcasecmp)
-AC_CHECK_FUNCS(flock fcntl uname gethostname sysinfo getdomainname)
-AC_CHECK_FUNCS(stricmp random rand snprintf vsnprintf strlcpy)
+AC_CHECK_FUNCS(fcntl uname gethostname sysinfo getdomainname)
+AC_CHECK_FUNCS(random rand snprintf vsnprintf strlcpy)
 
 AC_CHECK_FUNCS([pthread_mutex_lock],,)
 if test "$ac_cv_func_pthread_mutex_lock" != "yes";then
@@ -325,24 +211,6 @@ AC_ARG_WITH(facility,
 [
         AC_MSG_RESULT(LOG_DAEMON)
         RC_LOG_FACILITY=LOG_DAEMON
-]
-)
-
-dnl RADIUS_116
-AC_MSG_CHECKING(whether to include Livingston's RADIUS server 1.16 kludge)
-AC_ARG_ENABLE(radius-116,
-[  --enable-radius-116     Include support for Livingston's RADIUS server 1.16],
-[
-        AC_MSG_RESULT(yes)
-	AC_DEFINE(RADIUS_116)
-	AC_MSG_WARN([!! This is a bug in Livingston's RADIUS server v1.16. There])
-	AC_MSG_WARN([!! is a patch included with radiusclient which fixes this])
-	AC_MSG_WARN([!! problem. See patches/radiusd-1.16.accounting.diff. With])
-	AC_MSG_WARN([!! the patched RADIUS server you no longer need to activate])
-	AC_MSG_WARN([!! this hack.])
-],
-[
-        AC_MSG_RESULT(no)
 ]
 )
 

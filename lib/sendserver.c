@@ -721,18 +721,6 @@ static int rc_check_reply (AUTH_HDR *auth, int bufferlen, char const *secret, un
 	if (memcmp ((char *) reply_digest, (char *) calc_digest,
 		    AUTH_VECTOR_LEN) != 0)
 	{
-#ifdef RADIUS_116
-		/* the original Livingston radiusd v1.16 seems to have
-		   a bug in digest calculation with accounting requests,
-		   authentication request are ok. i looked at the code
-		   but couldn't find any bugs. any help to get this
-		   kludge out are welcome. preferably i want to
-		   reproduce the calculation bug here to be compatible
-		   to stock Livingston radiusd v1.16.	-lf, 03/14/96
-		 */
-		if (auth->code == PW_ACCOUNTING_RESPONSE)
-			return OK_RC;
-#endif
 		rc_log(LOG_ERR, "rc_check_reply: received invalid reply digest from RADIUS server");
 		return BADRESP_RC;
 	}
