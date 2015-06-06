@@ -270,105 +270,128 @@ typedef enum rc_attr_id {
 
 /* Integer Translations */
 
-/** SERVICE TYPES */
+/** \enum rc_service_type RFC2865 Service-Type values
+ */
+typedef enum rc_service_type {
+	PW_LOGIN=1,
+	PW_FRAMED=2,
+	PW_CALLBACK_LOGIN=3,
+	PW_CALLBACK_FRAMED=4,
+	PW_OUTBOUND=5,
+	PW_ADMINISTRATIVE=6,
+	PW_NAS_PROMPT=7,
+	PW_AUTHENTICATE_ONLY=8,
+	PW_CALLBACK_NAS_PROMPT=9
+} rc_service_type;
 
-#define PW_LOGIN			1
-#define PW_FRAMED			2
-#define PW_CALLBACK_LOGIN		3
-#define PW_CALLBACK_FRAMED		4
-#define PW_OUTBOUND			5
-#define PW_ADMINISTRATIVE		6
-#define PW_NAS_PROMPT			7
-#define PW_AUTHENTICATE_ONLY		8
-#define PW_CALLBACK_NAS_PROMPT		9
+/** \enum rc_framed_protocol RFC2865 Framed-Protocol values
+ */
+typedef enum rc_framed_protocol {
+	PW_PPP=1,
+	PW_SLIP=2,
+	PW_ARA=	3,
+	PW_GANDALF=4,
+	PW_XYLOGICS=5
+} rc_framed_protocol;
 
-/** FRAMED PROTOCOLS */
-
-#define PW_PPP				1
-#define PW_SLIP				2
-#define PW_ARA				3
-#define PW_GANDALF			4
-#define PW_XYLOGICS			5
-
-/** FRAMED ROUTING VALUES */
-
-#define PW_NONE				0
-#define PW_BROADCAST			1
-#define PW_LISTEN			2
-#define PW_BROADCAST_LISTEN		3
+/** \enum rc_framed_routing_type RFC2865 Framed-Routing values
+ */
+typedef enum rc_framed_routing_type {
+	PW_NONE=0,
+	PW_BROADCAST=1,
+	PW_LISTEN=2,
+	PW_BROADCAST_LISTEN=3
+} rc_framed_routing_type;
 
 /** FRAMED COMPRESSION TYPES */
 
-#define PW_VAN_JACOBSON_TCP_IP		1
-#define PW_IPX_HEADER_COMPRESSION	2
+/** \enum rc_framed_comp RFC2865 Framed-Compression values
+ */
+typedef enum rc_framed_comp {
+	PW_COMP_NONE=0,
+	PW_VAN_JACOBSON_TCP_IP=1,
+	PW_IPX_HEADER_COMPRESSION=2,
+	PW_COMP_LZS=3
+} rc_framed_comp;
 
-/** LOGIN SERVICES */
+/** \enum rc_login_service_type RFC2865 Login-Service values
+ */
+typedef enum rc_login_service_type {
+	PW_TELNET=0,
+	PW_RLOGIN=1,
+	PW_TCP_CLEAR=2,
+	PW_PORTMASTER=3,
+	PW_LAT=4,
+	PW_X25_PAD=5,
+	PW_X25_T3POS=6
+} rc_login_service_type;
 
-#define PW_TELNET			0
-#define PW_RLOGIN			1
-#define PW_TCP_CLEAR			2
-#define PW_PORTMASTER			3
-#define PW_LAT				4
-#define PW_X25_PAD			5
-#define PW_X25_T3POS			6
-
-/** TERMINATION ACTIONS */
-
-#define PW_DEFAULT			0
-#define PW_RADIUS_REQUEST		1
+/** \enum rc_termination_action RFC2865 Termination-Action values
+ */
+typedef enum rc_termination_action {
+	PW_DEFAULT=0,
+	PW_RADIUS_REQUEST=1
+} rc_termination_action;
 
 /** PROHIBIT PROTOCOL */
-
 #define PW_DUMB			0	//!< 1 and 2 are defined in FRAMED PROTOCOLS.
 #define PW_AUTH_ONLY		3
 #define PW_ALL			255
 
-/** ACCOUNTING STATUS TYPES */
+/** \enum rc_acct_status_type RFC2866 Acct-Status-Type values
+ */
+typedef enum rc_acct_status_type {
+	PW_STATUS_START=1,
+	PW_STATUS_STOP=2,
+	PW_STATUS_ALIVE=3,
+	PW_STATUS_MODEM_START=4,
+	PW_STATUS_MODEM_STOP=5,
+	PW_STATUS_CANCEL=6,
+	PW_ACCOUNTING_ON=7,
+	PW_ACCOUNTING_OFF=8
+} rc_acct_status_type;
 
-#define PW_STATUS_START		1
-#define PW_STATUS_STOP		2
-#define PW_STATUS_ALIVE		3
-#define PW_STATUS_MODEM_START	4
-#define PW_STATUS_MODEM_STOP	5
-#define PW_STATUS_CANCEL	6
-#define PW_ACCOUNTING_ON	7
-#define PW_ACCOUNTING_OFF	8
+/** \enum rc_acct_terminate_cause RFC2866 Acct-Terminate-Cause values
+ */
+typedef enum rc_acct_terminate_cause {
+	PW_USER_REQUEST=1,
+	PW_LOST_CARRIER=2,
+	PW_LOST_SERVICE=3,
+	PW_ACCT_IDLE_TIMEOUT=4,
+	PW_ACCT_SESSION_TIMEOUT=5,
+	PW_ADMIN_RESET=6,
+	PW_ADMIN_REBOOT=7,
+	PW_PORT_ERROR=8,
+	PW_NAS_ERROR=9,
+	PW_NAS_REQUEST=10,
+	PW_NAS_REBOOT=11,
+	PW_PORT_UNNEEDED=12,
+	PW_PORT_PREEMPTED=13,
+	PW_PORT_SUSPENDED=14,
+	PW_SERVICE_UNAVAILABLE=15,
+	PW_CALLBACK=16,
+	PW_USER_ERROR=17,
+	PW_HOST_REQUEST=18
+} rc_acct_terminate_cause;
 
-/** ACCOUNTING TERMINATION CAUSES */
+/** \enum rc_nas_port_type RFC2866 NAS-Port-Type values
+ */
+typedef enum rc_nas_port_type {
+	PW_ASYNC=0,
+	PW_SYNC=1,
+	PW_ISDN_SYNC=2,
+	PW_ISDN_SYNC_V120=3,
+	PW_ISDN_SYNC_V110=4,
+	PW_VIRTUAL=5
+} rc_nas_port_type;
 
-#define PW_USER_REQUEST		1
-#define PW_LOST_CARRIER		2
-#define PW_LOST_SERVICE		3
-#define PW_ACCT_IDLE_TIMEOUT	4
-#define PW_ACCT_SESSION_TIMEOUT	5
-#define PW_ADMIN_RESET		6
-#define PW_ADMIN_REBOOT		7
-#define PW_PORT_ERROR		8
-#define PW_NAS_ERROR		9
-#define PW_NAS_REQUEST		10
-#define PW_NAS_REBOOT		11
-#define PW_PORT_UNNEEDED	12
-#define PW_PORT_PREEMPTED	13
-#define PW_PORT_SUSPENDED	14
-#define PW_SERVICE_UNAVAILABLE	15
-#define PW_CALLBACK		16
-#define PW_USER_ERROR		17
-#define PW_HOST_REQUEST		18
-
-/** NAS PORT TYPES */
-
-#define PW_ASYNC		0
-#define PW_SYNC			1
-#define PW_ISDN_SYNC		2
-#define PW_ISDN_SYNC_V120	3
-#define PW_ISDN_SYNC_V110	4
-#define PW_VIRTUAL		5
-
-/** AUTHENTIC TYPES */
-
-#define PW_RADIUS	1
-#define PW_LOCAL	2
-#define PW_REMOTE	3
+/** \enum rc_acct_auth_type RFC2866 Acct-Authentic values
+ */
+typedef enum rc_acct_auth_type {
+	PW_RADIUS=1,
+	PW_LOCAL=2,
+	PW_REMOTE=3
+} rc_acct_auth_type;
 
 /* Server data structures */
 
@@ -376,7 +399,7 @@ typedef struct dict_attr
 {
 	char              name[NAME_LENGTH + 1];	//!< attribute name.
 	int               value;			//!< attribute index.
-	int               type;				//!< string, int, etc..
+	rc_attr_type      type;				//!< string, int, etc..
 	struct dict_attr *next;
 } DICT_ATTR;
 
@@ -406,7 +429,7 @@ typedef struct value_pair
 } VALUE_PAIR;
 
 /* don't change this, as it has to be the same as in the Merit radiusd code */
-#define MGMT_POLL_SECRET	"Hardlyasecret"
+#define MGMT_POLL_SECRET	"Hardlyasecret" //!< Default for Merit radiusd
 
 /* Define return codes from "SendServer" utility */
 
