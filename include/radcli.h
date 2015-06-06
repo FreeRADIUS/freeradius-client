@@ -536,6 +536,9 @@ int rc_get_srcaddr(struct sockaddr *lia, const struct sockaddr *ria);
 /* log.c */
 
 void rc_openlog(char const *ident);
+/* to provide compatibility with any old applications that may have
+ * been using rc_log() */
+#define rc_log syslog
 
 /* sendserver.c */
 
