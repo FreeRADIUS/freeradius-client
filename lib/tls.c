@@ -27,6 +27,7 @@
 #include <includes.h>
 #include <radcli.h>
 #include "util.h"
+#include "tls.h"
 
 #ifdef HAVE_GNUTLS
 
@@ -426,7 +427,7 @@ int rc_tls_fd(rc_handle * rh)
 {
 	tls_st *st;
 
-	if (rh->so_set != SOCKETS_TLS && rh->so_set != SOCKETS_DTLS)
+	if (rh->so_type != RC_SOCKET_TLS && rh->so_type != RC_SOCKET_DTLS)
 		return -1;
 
 	st = rh->so.ptr;
@@ -455,7 +456,7 @@ int rc_check_tls(rc_handle * rh)
 	time_t now = time(0);
 	int ret;
 
-	if (rh->so_set != SOCKETS_TLS && rh->so_set != SOCKETS_DTLS)
+	if (rh->so_type != RC_SOCKET_TLS && rh->so_type != RC_SOCKET_DTLS)
 		return 0;
 
 	st = rh->so.ptr;
@@ -474,7 +475,7 @@ int rc_check_tls(rc_handle * rh)
 	return 0;
 }
 
-/** This function will deinitialize a previously initialed DTLS or TLS session.
+/* This function will deinitialize a previously initialed DTLS or TLS session.
  *
  * @param rh the configuration handle.
  */
@@ -492,7 +493,7 @@ void rc_deinit_tls(rc_handle * rh)
 	free(st);
 }
 
-/** Initialize a configuration for TLS or DTLS
+/* Initialize a configuration for TLS or DTLS
  *
  * This function will initialize the handle for TLS or DTLS.
  *
@@ -516,10 +517,10 @@ int rc_init_tls(rc_handle * rh, unsigned flags)
 	memset(&rh->so, 0, sizeof(rh->so));
 
 	if (flags & SEC_FLAG_DTLS) {
-		rh->so_set = SOCKETS_DTLS;
+		rh->so_type = RC_SOCKET_DTLS;
 		rh->so.static_secret = DEFAULT_DTLS_SECRET;
 	} else {
-		rh->so_set = SOCKETS_TLS;
+		rh->so_type = RC_SOCKET_TLS;
 		rh->so.static_secret = DEFAULT_TLS_SECRET;
 	}
 

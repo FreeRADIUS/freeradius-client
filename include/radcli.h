@@ -88,6 +88,12 @@ typedef struct server {
 	double deadtime_ends[SERVER_MAX];
 } SERVER;
 
+typedef enum rc_socket_type {
+	RC_SOCKET_UDP = 0,
+	RC_SOCKET_TLS = 1,
+	RC_SOCKET_DTLS = 2
+} rc_socket_type;
+
 #define AUTH_HDR_LEN			20
 #define CHAP_VALUE_LENGTH		16
 
@@ -494,6 +500,7 @@ int rc_find_server_addr (rc_handle const *rh, char const *server_name,
 void rc_config_free(rc_handle *rh);
 rc_handle *rc_new(void);
 void rc_destroy(rc_handle *rh);
+rc_socket_type rc_get_socket_type(rc_handle * rh);
 
 #define test_config rc_test_config
 
@@ -512,9 +519,6 @@ void rc_dict_free(rc_handle *rh);
 
 int rc_tls_fd(rc_handle * rh);
 int rc_check_tls(rc_handle * rh);
-void rc_deinit_tls(rc_handle * rh);
-#define SEC_FLAG_DTLS 1
-int rc_init_tls(rc_handle * rh, unsigned flags);
 
 /* ip_util.c */
 

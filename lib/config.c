@@ -24,6 +24,7 @@
 #include <radcli.h>
 #include <options.h>
 #include "util.h"
+#include "tls.h"
 
 /** Find an option in the option list
  *
@@ -983,6 +984,18 @@ void rc_destroy(rc_handle *rh)
 	rc_dict_free(rh);
 	rc_config_free(rh);
 	free(rh);
+}
+
+/** Returns the type of the socket used
+ *
+ * That indicates the type of connection used with the radius
+ * server, and can be UDP, TLS or DTLS.
+ *
+ * @return the type of the socket
+ */
+rc_socket_type rc_get_socket_type(rc_handle *rh)
+{
+	return rh->so_type;
 }
 
 /** @} */

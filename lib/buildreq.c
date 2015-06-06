@@ -79,7 +79,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	time_t		dtime;
 	rc_type		type;
 
-	if (rh->so_set == SOCKETS_TLS || rh->so_set == SOCKETS_DTLS ||
+	if (rh->so_type == RC_SOCKET_TLS || rh->so_type == RC_SOCKET_DTLS ||
 	    request_type != PW_ACCOUNTING_REQUEST) {
 		aaaserver = rc_conf_srv(rh, "authserver");
 		type = AUTH;
@@ -267,7 +267,7 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 
 	data.send_pairs = data.receive_pairs = NULL;
 
-	if (rh->so_set == SOCKETS_TLS || rh->so_set == SOCKETS_DTLS)
+	if (rh->so_type == RC_SOCKET_TLS || rh->so_type == RC_SOCKET_DTLS)
 		type = AUTH;
 	else
 		type = ACCT;

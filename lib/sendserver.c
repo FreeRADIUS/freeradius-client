@@ -333,7 +333,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 		/*}*/
 	}
 
-	if (rh->so_set == SOCKETS_UDP) {
+	if (rh->so_type == RC_SOCKET_UDP) {
 		sfuncs = &default_socket_funcs;
 	} else {
 		sfuncs = &rh->so;

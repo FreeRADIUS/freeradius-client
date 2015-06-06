@@ -162,12 +162,6 @@ int sigprocmask (int, sigset_t *, sigset_t *);
 #define AUTH_VECTOR_LEN		16
 #define GETSTR_LENGTH		128	//!< must be bigger than AUTH_PASS_LEN.
 
-typedef enum rc_sockets_type {
-	SOCKETS_UDP = 0,
-	SOCKETS_TLS = 1,
-	SOCKETS_DTLS = 2
-} rc_sockets_type;
-
 typedef struct pw_auth_hdr
 {
 	uint8_t		code;
@@ -203,7 +197,7 @@ struct rc_conf
 	char			ifname[512];
 
 	rc_sockets_override	so;
-	rc_sockets_type		so_set;
+	unsigned		so_type; /* rc_socket_type */
 };
 
 #endif
