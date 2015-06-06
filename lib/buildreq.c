@@ -260,7 +260,7 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 {
 	SEND_DATA       data;
 	int		result;
-	uint32_t		service_type;
+	uint32_t	service_type;
 	int		timeout = rc_conf_int(rh, "radius_timeout");
 	int		retries = rc_conf_int(rh, "radius_retries");
 	rc_type		type;
