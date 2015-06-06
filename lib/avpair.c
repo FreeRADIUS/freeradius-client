@@ -705,7 +705,7 @@ int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first
 	return 0;
 }
 
-/** Translate an av_pair into two strings
+/** Translate an av_pair into printable strings
  *
  * @param rh a handle to parsed configuration.
  * @param pair a pointer to a VALUE_PAIR structure.

@@ -16,6 +16,8 @@ rc_check_tls \-
 Check established TLS/DTLS channels for operation
 .PP 
 This function will check whether the channel(s) established for TLS or DTLS are operational, and will re-establish the channel if necessary. If this function fails then the TLS or DTLS state should be considered as disconnected. It must be called at a time when the sessions are not in usage (e.g., in a different thread).
+.PP 
+Note: It is recommended to run this function periodically if you have a DTLS channel since an undetected server reset may result to a black hole behavior of the server.
 .SH PARAMETERS
 .TP
 .B rh

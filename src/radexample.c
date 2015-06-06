@@ -67,7 +67,19 @@ main (int argc, char **argv)
 	result = rc_auth(rh, 0, send, &received, msg);
 
 	if (result == OK_RC) {
+		VALUE_PAIR *vp = received;
+		char name[128];
+		char value[128];
+
 		fprintf(stderr, "\"%s\" RADIUS Authentication OK\n", username);
+
+		/* print the known attributes in the reply */
+		while(vp != NULL) {
+			if (rc_avpair_tostr(rh, vp, name, sizeof(name), value, sizeof(value)) == 0) {
+				fprintf(stderr, "%s:\t%s\n", name, value);
+			}
+			vp = vp->next;
+		}
 	} else {
 		fprintf(stderr, "\"%s\" RADIUS Authentication failure (RC=%i)\n", username, result);
 	}

@@ -17,7 +17,9 @@ rc_add_config \-
 .fi
 .SH DESCRIPTION
 .PP 
-Allow a config option to be added to rc_handle from inside a program
+Allow a config option to be added to rc_handle from inside a program.
+.PP 
+That allows programs to setup a handle without loading a configuration file.
 .SH PARAMETERS
 .TP
 .B rh
@@ -33,11 +35,11 @@ the value to be added.
 
 .TP
 .B source
-typically should be __FILE__ or __func__ for logging purposes. 
+typically should be FILE or func for logging purposes. 
 
 .TP
 .B line
-__LINE__ for logging purposes. 
+LINE for logging purposes. 
 
 .SH RETURN VALUE
 .PP

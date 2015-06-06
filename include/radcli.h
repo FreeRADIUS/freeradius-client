@@ -100,12 +100,14 @@ typedef enum rc_socket_type {
 #define PW_AUTH_UDP_PORT		1645
 #define PW_ACCT_UDP_PORT		1646
 
-#define PW_TYPE_STRING			0
-#define PW_TYPE_INTEGER			1
-#define PW_TYPE_IPADDR			2
-#define PW_TYPE_DATE			3
-#define PW_TYPE_IPV6ADDR		4
-#define PW_TYPE_IPV6PREFIX		5
+typedef enum rc_attr_type {
+	PW_TYPE_STRING=0,	//!< The attribute is a printable string.
+	PW_TYPE_INTEGER=1,	//!< The attribute is a 32-bit integer.
+	PW_TYPE_IPADDR=2,	//!< The attribute is an IPv4 address in host-byte order.
+	PW_TYPE_DATE=3,		//!< The attribute contains a 32-bit number indicating the seconds since epoch.
+	PW_TYPE_IPV6ADDR=4,	//!< The attribute is an 128-bit IPv6 address.
+	PW_TYPE_IPV6PREFIX=5    //!< The attribute is an IPv6 prefix; the lvalue will indicate its size.
+} rc_attr_type;
 
 /* standard RADIUS codes */
 
@@ -381,11 +383,11 @@ typedef struct dict_vendor
 
 typedef struct value_pair
 {
-	char               name[NAME_LENGTH + 1];
-	int                attribute;
-	int                type;
-	uint32_t           lvalue;
-	char               strvalue[AUTH_STRING_LEN + 1];
+	char               name[NAME_LENGTH + 1];	//!< attribute name if known.
+	int                attribute;			//!< attribute numeric value.
+	rc_attr_type	   type;			//!< attribute type.
+	uint32_t           lvalue;			//!< attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR.
+	char               strvalue[AUTH_STRING_LEN + 1]; //!< contains attribute value in other cases.
 	struct value_pair *next;
 } VALUE_PAIR;
 
