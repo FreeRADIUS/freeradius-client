@@ -463,6 +463,19 @@ __BEGIN_DECLS
  * This is an example of how to use the radcli API.
  */
 
+/** \example radiusclient-tls.conf
+ * This is an configuration file with TLS.
+ */
+
+/** \example radiusclient.conf
+ * This is an example configuration file listing the available options.
+ */
+
+/** \example servers
+ * This is an example servers configuration file.
+ */
+
+
 /* avpair.c */
 
 VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, int attrid, void const *pval, int len, int vendorpec);
