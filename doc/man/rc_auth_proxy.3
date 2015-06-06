@@ -45,11 +45,11 @@ must be an array of PW_MAX_MSG_SIZE or NULL; will contain the concatenation of a
 .nf
 \fB
 struct value_pair {
-  char                \fIname\fP;
-  int                 \fIattribute\fP;
-  int                 \fItype\fP;
-  uint32_t            \fIlvalue\fP;
-  char                \fIstrvalue\fP;
+  char                \fIname\fP;      // attribute name if known. 
+  int                 \fIattribute\fP; // attribute numeric value. 
+  rc_attr_type        \fItype\fP;      // attribute type. 
+  uint32_t            \fIlvalue\fP;    // attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR. 
+  char                \fIstrvalue\fP;  // contains attribute value in other cases. 
   struct value_pair  *\fInext\fP;
 };
 \fP
@@ -63,11 +63,11 @@ struct value_pair {
 .nf
 \fB
 struct value_pair {
-  char                \fIname\fP;
-  int                 \fIattribute\fP;
-  int                 \fItype\fP;
-  uint32_t            \fIlvalue\fP;
-  char                \fIstrvalue\fP;
+  char                \fIname\fP;      // attribute name if known. 
+  int                 \fIattribute\fP; // attribute numeric value. 
+  rc_attr_type        \fItype\fP;      // attribute type. 
+  uint32_t            \fIlvalue\fP;    // attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR. 
+  char                \fIstrvalue\fP;  // contains attribute value in other cases. 
   struct value_pair  *\fInext\fP;
 };
 \fP
