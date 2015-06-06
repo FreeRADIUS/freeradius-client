@@ -39,7 +39,7 @@ the length of pval, or -1 if to calculate (in case of strings).
 \fB
 struct value_pair {
   char                \fIname\fP;      // attribute name if known. 
-  int                 \fIattribute\fP; // attribute numeric value. 
+  rc_attr_id          \fIattribute\fP; // attribute numeric value. 
   rc_attr_type        \fItype\fP;      // attribute type. 
   uint32_t            \fIlvalue\fP;    // attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR. 
   char                \fIstrvalue\fP;  // contains attribute value in other cases. 

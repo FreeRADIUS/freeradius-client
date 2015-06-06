@@ -13,7 +13,7 @@ radcli.h \-
 .RS
 .nf
 \fB
-int            rc_aaa(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *, int, int);
+int            rc_aaa(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *, int, rc_standard_codes);
 int            rc_acct(rc_handle *, uint32_t, VALUE_PAIR *);
 int            rc_acct_proxy(rc_handle *, VALUE_PAIR *);
 int            rc_add_config(rc_handle *, char const *, char const *, char const *, int);
@@ -56,7 +56,7 @@ int            rc_own_hostname(char *, int);
 rc_handle     *rc_read_config(char const *);
 rc_handle     *rc_read_config2(char const *, unsigned);
 int            rc_read_dictionary(rc_handle *, char const *);
-int            rc_send_server(rc_handle *, SEND_DATA *, char *, unsigned);
+int            rc_send_server(rc_handle *, SEND_DATA *, char *, rc_type);
 int            rc_test_config(rc_handle *, char const *);
 int            rc_tls_fd(rc_handle *);
 \fP
@@ -92,7 +92,7 @@ struct send_data {
 \fB
 struct value_pair {
   char                \fIname\fP;      // attribute name if known. 
-  int                 \fIattribute\fP; // attribute numeric value. 
+  rc_attr_id          \fIattribute\fP; // attribute numeric value. 
   rc_attr_type        \fItype\fP;      // attribute type. 
   uint32_t            \fIlvalue\fP;    // attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR. 
   char                \fIstrvalue\fP;  // contains attribute value in other cases. 

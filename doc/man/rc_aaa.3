@@ -8,13 +8,13 @@ rc_aaa \-
 .B #include <radcli.h>
 .sp
 \fBint rc_aaa\fP(
-    \fBrc_handle    *\fP\fIrh\fP,
-    \fBuint32_t      \fP\fIclient_port\fP,
-    \fBVALUE_PAIR   *\fP\fIsend\fP,
-    \fBVALUE_PAIR  **\fP\fIreceived\fP,
-    \fBchar         *\fP\fImsg\fP,
-    \fBint           \fP\fIadd_nas_port\fP,
-    \fBint           \fP\fIrequest_type\fP
+    \fBrc_handle        *\fP\fIrh\fP,
+    \fBuint32_t          \fP\fIclient_port\fP,
+    \fBVALUE_PAIR       *\fP\fIsend\fP,
+    \fBVALUE_PAIR      **\fP\fIreceived\fP,
+    \fBchar             *\fP\fImsg\fP,
+    \fBint               \fP\fIadd_nas_port\fP,
+    \fBrc_standard_codes \fP\fIrequest_type\fP
 );
 .fi
 .SH DESCRIPTION
@@ -59,7 +59,7 @@ one of standard RADIUS codes (e.g., PW_ACCESS_REQUEST).
 \fB
 struct value_pair {
   char                \fIname\fP;      // attribute name if known. 
-  int                 \fIattribute\fP; // attribute numeric value. 
+  rc_attr_id          \fIattribute\fP; // attribute numeric value. 
   rc_attr_type        \fItype\fP;      // attribute type. 
   uint32_t            \fIlvalue\fP;    // attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR. 
   char                \fIstrvalue\fP;  // contains attribute value in other cases. 
@@ -77,7 +77,7 @@ struct value_pair {
 \fB
 struct value_pair {
   char                \fIname\fP;      // attribute name if known. 
-  int                 \fIattribute\fP; // attribute numeric value. 
+  rc_attr_id          \fIattribute\fP; // attribute numeric value. 
   rc_attr_type        \fItype\fP;      // attribute type. 
   uint32_t            \fIlvalue\fP;    // attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR. 
   char                \fIstrvalue\fP;  // contains attribute value in other cases. 
