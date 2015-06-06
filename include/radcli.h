@@ -447,6 +447,12 @@ __BEGIN_DECLS
  * is needed for the clients. The approach is to rely on a small
  * external radius configuration file, read using rc_read_config2(),
  * and then using rc_auth() or rc_acct() to communicate with the server.
+ * Configuration options (like using TLS or so) are then set when
+ * parsing the file, simplifying application configuration and administration.
+ *
+ * Alternative operation without a configuration file is also possible, see
+ * rc_add_config().
+ * 
  * Check radexample.c for a functional example.
  *
  */

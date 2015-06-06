@@ -279,13 +279,16 @@ static int set_option_auo(char const *filename, int line, OPTION *option, char c
 	return 0;
 }
 
-/** Allow a config option to be added to rc_handle from inside a program
+/** Allow a config option to be added to rc_handle from inside a program.
+ *
+ * That allows programs to setup a handle without loading a configuration
+ * file.
  *
  * @param rh a handle to parsed configuration.
  * @param option_name the name of the option.
  * @param option_val the value to be added.
- * @param source typically should be %__FILE__ or %__func__ for logging purposes.
- * @param line %__LINE__ for logging purposes.
+ * @param source typically should be __FILE__ or __func__ for logging purposes.
+ * @param line __LINE__ for logging purposes.
  * @return 0 on success, -1 on failure.
  */
 int rc_add_config(rc_handle *rh, char const *option_name, char const *option_val, char const *source, int line)
