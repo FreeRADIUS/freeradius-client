@@ -447,6 +447,10 @@ int rc_tls_fd(rc_handle * rh)
  * It must be called at a time when the sessions are not in usage
  * (e.g., in a different thread).
  *
+ * Note: It is recommended to run this function periodically if you
+ * have a DTLS channel since an undetected server reset may
+ * result to a black hole behavior of the server.
+ *
  * @param: rh a handle to parsed configuration
  * @return 0 on success, -1 on error
  */
