@@ -560,10 +560,6 @@ void rc_openlog(char const *ident);
 int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
                     unsigned type);
 
-/* util.c */
-
-void rc_str2tm (char const *valstr, struct tm *tm);
-
 __END_DECLS
 
 #endif /* RADCLI_H */

@@ -12,13 +12,6 @@
  *
  */
 
-/**
- * @defgroup misc-api Miscellaneous API
- * @brief Miscellaneous functions
- *
- * @{
- */
-
 #include <sys/time.h>
 
 #include <config.h>
@@ -35,11 +28,11 @@ static char const * months[] =
 			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 		};
 
-/** Turns printable string into correct tm struct entries
+/*- Turns printable string into correct tm struct entries
  *
  * @param valstr the printable date in 'day month year' format.
  * @param tm the output struct.
- */
+ -*/
 void rc_str2tm (char const *valstr, struct tm *tm)
 {
 	int             i;
@@ -61,21 +54,11 @@ void rc_str2tm (char const *valstr, struct tm *tm)
 	tm->tm_year = atoi (&valstr[7]) - 1900;
 }
 
-void rc_mdelay(int msecs)
-{
-	struct timeval tv;
-
-	tv.tv_sec = (int) msecs / 1000;
-	tv.tv_usec = (msecs % 1000) * 1000;
-
-	select(0, NULL, NULL, NULL, &tv);
-}
-
-/* Returns the current time as a double.
+/*- Returns the current time as a double.
  *
  * @return current time (seconds since epoch) expressed as
  * 	double-precision floating point number.
- */
+ -*/
 double rc_getctime(void)
 {
     struct timeval timev;
@@ -106,11 +89,11 @@ double rc_getctime(void)
 
 #ifndef HAVE_STRLCPY
 
-/*
+/*-
  * Copy src to string dst of size siz.  At most siz-1 characters
  * will be copied.  Always NUL terminates (unless siz == 0).
  * Returns strlen(src); if retval >= siz, truncation occurred.
- */
+ -*/
 size_t
 rc_strlcpy(char *dst, char const *src, size_t siz)
 {
@@ -139,4 +122,3 @@ rc_strlcpy(char *dst, char const *src, size_t siz)
 
 #endif
 
-/** @} */

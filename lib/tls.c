@@ -479,10 +479,12 @@ int rc_check_tls(rc_handle * rh)
 	return 0;
 }
 
-/* This function will deinitialize a previously initialed DTLS or TLS session.
+/** @} */
+
+/*- This function will deinitialize a previously initialed DTLS or TLS session.
  *
  * @param rh the configuration handle.
- */
+ -*/
 void rc_deinit_tls(rc_handle * rh)
 {
 	tls_st *st = rh->so.ptr;
@@ -497,14 +499,14 @@ void rc_deinit_tls(rc_handle * rh)
 	free(st);
 }
 
-/* Initialize a configuration for TLS or DTLS
+/*- Initialize a configuration for TLS or DTLS
  *
  * This function will initialize the handle for TLS or DTLS.
  *
  * @param rh a handle to parsed configuration
  * @param flags must be zero or SEC_FLAG_DTLS
  * @return 0 on success, -1 on failure.
- */
+ -*/
 int rc_init_tls(rc_handle * rh, unsigned flags)
 {
 	int ret;
@@ -688,6 +690,5 @@ int rc_init_tls(rc_handle * rh, unsigned flags)
 	return ret;
 }
 
-/** @} */
 #endif
 

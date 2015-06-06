@@ -17,12 +17,12 @@
  * @{
  */
 
-/* Hash the provided data using MD5
+/*- Hash the provided data using MD5
  *
  * @param[out] output will hold a 16-byte checksum.
  * @param[in] input pointer to data to hash.
  * @param[in] inlen the length of input.
- */
+ -*/
 void rc_md5_calc(unsigned char *output, unsigned char const *input,
 		 size_t inlen)
 {
