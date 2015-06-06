@@ -20,13 +20,13 @@ dist_man_MANS = $(APIMANS)
 
 $(APIMANS): stamp_mans
 
-stamp_mans: ../include/radcli.h
+stamp_mans: ../include/radcli/radcli.h
 	-doxygen Doxyfile
 	-doxy2man --short-pkg radcli --pkg 'Simple radius library'  --out man --novalidate xml/radcli_8h.xml
 	echo > $@
 
 update-doc: stamp_mans
-	FUNCS=`cat $(top_srcdir)/include/radcli.h | $(top_srcdir)/doc/scripts/getfuncs.pl|sort -d|uniq`; \
+	FUNCS=`cat $(top_srcdir)/include/radcli/radcli.h | $(top_srcdir)/doc/scripts/getfuncs.pl|sort -d|uniq`; \
 	MANS=""; \
 	for i in $$FUNCS; do \
 		MANS="$$MANS\nAPIMANS += man\/$$i.3"; \

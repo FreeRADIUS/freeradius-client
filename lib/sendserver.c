@@ -20,7 +20,7 @@
  */
 
 #include <includes.h>
-#include <radcli.h>
+#include <radcli/radcli.h>
 #include <pathnames.h>
 #include <poll.h>
 #include "util.h"

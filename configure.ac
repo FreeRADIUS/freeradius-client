@@ -12,10 +12,10 @@ AC_INIT([radcli], [1.2.0], [n.mavrogiannopoulos@gmail.com])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_TARGET([])
 
-case "$target" in
-	*)
-	;;
-esac
+AC_SUBST(MAJOR_VERSION, `echo $PACKAGE_VERSION | sed 's/\(.*\)\..*\..*/\1/g'`)
+AC_SUBST(MINOR_VERSION, `echo $PACKAGE_VERSION | sed 's/.*\.\(.*\)\..*/\1/g'`)
+AC_SUBST(PATCH_VERSION, [[`echo $PACKAGE_VERSION | sed 's/.*\..*\.\([0-9]*\).*/\1/g'`]])
+AC_SUBST(NUMBER_VERSION, `printf "0x%02x%02x%02x" $MAJOR_VERSION $MINOR_VERSION $PATCH_VERSION`)
 
 AM_INIT_AUTOMAKE([1.11.3 -Wall -Wno-override])
 
@@ -257,6 +257,7 @@ dnl AC_SUBST(LTLIBOBJS)
 AC_CONFIG_FILES([
 Makefile
 include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile
+include/radcli/version.h
 doc/Makefile
 doc/Doxyfile
 lib/radcli.pc

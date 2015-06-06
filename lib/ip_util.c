@@ -14,7 +14,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radcli.h>
+#include <radcli/radcli.h>
 #include "util.h"
 
 #define HOSTBUF_SIZE 1024

@@ -16,7 +16,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radcli.h>
+#include <radcli/radcli.h>
 #include "util.h"
 
 #define	RC_BUFSIZ	1024

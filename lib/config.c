@@ -21,7 +21,7 @@
 
 #include <config.h>
 #include <includes.h>
-#include <radcli.h>
+#include <radcli/radcli.h>
 #include <options.h>
 #include "util.h"
 #include "tls.h"

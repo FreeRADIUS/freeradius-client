@@ -32,7 +32,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <radcli.h>
+#include <radcli/radcli.h>
 
 #define BUF_LEN 4096
 
