@@ -47,6 +47,13 @@
 # define __END_DECLS /* empty */
 #endif
 
+/**
+ * @defgroup radcli-api Main API
+ * @brief Main API Functions 
+ *
+ * @{
+ */
+
 #define AUTH_PASS_LEN		(3 * 16) /* multiple of 16 */
 #define AUTH_ID_LEN		64
 #define AUTH_STRING_LEN		253	 /* maximum of 253 */
@@ -62,10 +69,11 @@
 
 #define PW_MAX_MSG_SIZE		4096
 
-/* codes for radius_buildreq, radius_getport, etc. */
+/** \enum rc_type Codes to indicate the type of server
+ */
 typedef enum rc_type {
-	AUTH = 0,
-	ACCT = 1
+	AUTH = 0, //!< Request for authentication server
+	ACCT = 1  //!< Request for accounting server
 } rc_type;
 
 /* defines for config.c */
@@ -88,10 +96,12 @@ typedef struct server {
 	double deadtime_ends[SERVER_MAX];
 } SERVER;
 
+/** \enum rc_socket_type Indicate the type of the socket
+ */
 typedef enum rc_socket_type {
-	RC_SOCKET_UDP = 0,
-	RC_SOCKET_TLS = 1,
-	RC_SOCKET_DTLS = 2
+	RC_SOCKET_UDP = 0,	//!< Plain UDP socket
+	RC_SOCKET_TLS = 1,	//!< TLS socket
+	RC_SOCKET_DTLS = 2	//!< DTLS socket
 } rc_socket_type;
 
 #define AUTH_HDR_LEN			20
@@ -100,6 +110,8 @@ typedef enum rc_socket_type {
 #define PW_AUTH_UDP_PORT		1645
 #define PW_ACCT_UDP_PORT		1646
 
+/** \enum rc_attr_type Attribute types
+ */
 typedef enum rc_attr_type {
 	PW_TYPE_STRING=0,	//!< The attribute is a printable string.
 	PW_TYPE_INTEGER=1,	//!< The attribute is a 32-bit integer.
@@ -109,154 +121,156 @@ typedef enum rc_attr_type {
 	PW_TYPE_IPV6PREFIX=5    //!< The attribute is an IPv6 prefix; the lvalue will indicate its size.
 } rc_attr_type;
 
-/* standard RADIUS codes */
+/** \enum rc_standard_codes Standard RADIUS request codes
+ */
+typedef enum rc_standard_codes {
+	PW_ACCESS_REQUEST=1,
+	PW_ACCESS_ACCEPT=2,
+	PW_ACCESS_REJECT=3,
+	PW_ACCOUNTING_REQUEST=4,
+	PW_ACCOUNTING_RESPONSE=5,
+	PW_ACCOUNTING_STATUS=6,
+	PW_PASSWORD_REQUEST=7,
+	PW_PASSWORD_ACK=8,
+	PW_PASSWORD_REJECT=9,
+	PW_ACCOUNTING_MESSAGE=10,
+	PW_ACCESS_CHALLENGE=11,
+	PW_STATUS_SERVER=12,
+	PW_STATUS_CLIENT=13
+} rc_standard_codes;
 
-#define PW_ACCESS_REQUEST		1
-#define PW_ACCESS_ACCEPT		2
-#define PW_ACCESS_REJECT		3
-#define PW_ACCOUNTING_REQUEST		4
-#define PW_ACCOUNTING_RESPONSE		5
-#define PW_ACCOUNTING_STATUS		6
-#define PW_PASSWORD_REQUEST		7
-#define PW_PASSWORD_ACK			8
-#define PW_PASSWORD_REJECT		9
-#define PW_ACCOUNTING_MESSAGE		10
-#define PW_ACCESS_CHALLENGE		11
-#define PW_STATUS_SERVER		12
-#define PW_STATUS_CLIENT		13
+/** \enum rc_attr_id Standard RADIUS attribute-value pair identifiers
+ */
+typedef enum rc_attr_id {
+	PW_USER_NAME=1,		//!< Its type is string.
+	PW_USER_PASSWORD=2,	//!< Its type is string.
+	PW_CHAP_PASSWORD=3,	//!< Its type is string.
+	PW_NAS_IP_ADDRESS=4,	//!< Its type is ipaddr.
+	PW_NAS_PORT=5,		//!< Its type is integer.
+	PW_SERVICE_TYPE=6,	//!< Its type is integer.
+	PW_FRAMED_PROTOCOL=7,	//!< Its type is integer.
+	PW_FRAMED_IP_ADDRESS=8,	//!< Its type is ipaddr.
+	PW_FRAMED_IP_NETMASK=9,	//!< Its type is ipaddr.
+	PW_FRAMED_ROUTING=10,	//!< Its type is integer.
+	PW_FILTER_ID=11,	//!< Its type is string.
+	PW_FRAMED_MTU=12,	//!< Its type is integer.
+	PW_FRAMED_COMPRESSION=13,	//!< Its type is integer.
+	PW_LOGIN_IP_HOST=14,	//!< Its type is ipaddr.
+	PW_LOGIN_SERVICE=15,	//!< Its type is integer.
+	PW_LOGIN_PORT=16,	//!< Its type is integer.
+	PW_OLD_PASSWORD=17,	//!< Its type is string - deprecated.
+	PW_REPLY_MESSAGE=18,	//!< Its type is string.
+	PW_LOGIN_CALLBACK_NUMBER=19,	//!< Its type is string.
+	PW_FRAMED_CALLBACK_ID=20,	//!< Its type is string.
+	PW_EXPIRATION=21,		//!< Its type is date - deprecated.
+	PW_FRAMED_ROUTE=22,		//!< Its type is string.
+	PW_FRAMED_IPX_NETWORK=23,	//!< Its type is integer.
+	PW_STATE=24,		//!< Its type is string.
+	PW_CLASS=25,		//!< Its type is string.
+	PW_VENDOR_SPECIFIC=26,	//!< Its type is string.
+	PW_SESSION_TIMEOUT=27,	//!< Its type is integer.
+	PW_IDLE_TIMEOUT=28,	//!< Its type is integer.
+	PW_TERMINATION_ACTION=29,	//!< Its type is integer.
+	PW_CALLED_STATION_ID=30,	//!< Its type is string.
+	PW_CALLING_STATION_ID=31,	//!< Its type is string.
+	PW_NAS_IDENTIFIER=32,	//!< Its type is string.
+	PW_PROXY_STATE=33,	//!< Its type is string.
+	PW_LOGIN_LAT_SERVICE=34,//!< Its type is string.
+	PW_LOGIN_LAT_NODE=35,	//!< Its type is string.
+	PW_LOGIN_LAT_GROUP=36,	//!< Its type is string.
+	PW_FRAMED_APPLETALK_LINK=37,	//!< Its type is integer.
+	PW_FRAMED_APPLETALK_NETWORK=38,	//!< Its type is integer.
+	PW_FRAMED_APPLETALK_ZONE=39,	//!< Its type is string.
+	PW_ACCT_STATUS_TYPE=40,		//!< Its type is integer.
+	PW_ACCT_DELAY_TIME=41,		//!< Its type is integer.
+	PW_ACCT_INPUT_OCTETS=42,	//!< Its type is integer.
+	PW_ACCT_OUTPUT_OCTETS=43,	//!< Its type is integer.
+	PW_ACCT_SESSION_ID=44,		//!< Its type is string.
+	PW_ACCT_AUTHENTIC=45,		//!< Its type is integer.
+	PW_ACCT_SESSION_TIME=46,	//!< Its type is integer.
+	PW_ACCT_INPUT_PACKETS=47,	//!< Its type is integer.
+	PW_ACCT_OUTPUT_PACKETS=48,	//!< Its type is integer.
+	PW_ACCT_TERMINATE_CAUSE=49,	//!< Its type is integer.
+	PW_ACCT_MULTI_SESSION_ID=50,	//!< Its type is string.
+	PW_ACCT_LINK_COUNT=51,		//!< Its type is integer.
+	PW_ACCT_INPUT_GIGAWORDS=52,	//!< Its type is integer.
+	PW_ACCT_OUTPUT_GIGAWORDS=53,	//!< Its type is integer.
+	PW_EVENT_TIMESTAMP=55,		//!< Its type is integer.
+	PW_EGRESS_VLANID=56,		//!< Its type is string.
+	PW_INGRESS_FILTERS=57,		//!< Its type is integer.
+	PW_EGRESS_VLAN_NAME=58,		//!< Its type is string.
+	PW_USER_PRIORITY_TABLE=59,	//!< Its type is string.
+	PW_CHAP_CHALLENGE=60,		//!< Its type is string.
+	PW_NAS_PORT_TYPE=61,		//!< Its type is integer.
+	PW_PORT_LIMIT=62,		//!< Its type is integer.
+	PW_LOGIN_LAT_PORT=63,		//!< Its type is string.
+	PW_TUNNEL_TYPE=64,		//!< Its type is string.
+	PW_TUNNEL_MEDIUM_TYPE=65,	//!< Its type is integer.
+	PW_TUNNEL_CLIENT_ENDPOINT=66,	//!< Its type is string.
+	PW_TUNNEL_SERVER_ENDPOINT=67,	//!< Its type is string.
+	PW_ACCT_TUNNEL_CONNECTION=68,	//!< Its type is string.
+	PW_TUNNEL_PASSWORD=69,		//!< Its type is string.
+	PW_ARAP_PASSWORD=70,		//!< Its type is string.
+	PW_ARAP_FEATURES=71,		//!< Its type is string.
+	PW_ARAP_ZONE_ACCESS=72,		//!< Its type is integer.
+	PW_ARAP_SECURITY=73,		//!< Its type is integer.
+	PW_ARAP_SECURITY_DATA=74,	//!< Its type is string.
+	PW_PASSWORD_RETRY=75,		//!< Its type is integer.
+	PW_PROMPT=76,			//!< Its type is integer.
+	PW_CONNECT_INFO=77,		//!< Its type is string.
+	PW_CONFIGURATION_TOKEN=78,	//!< Its type is string.
+	PW_EAP_MESSAGE=79,		//!< Its type is string.
+	PW_MESSAGE_AUTHENTICATOR=80,	//!< Its type is string.
+	PW_TUNNEL_PRIVATE_GROUP_ID=81,	//!< Its type is string.
+	PW_TUNNEL_ASSIGNMENT_ID=82,	//!< Its type is string.
+	PW_TUNNEL_PREFERENCE=83,	//!< Its type is string.
+	PW_ARAP_CHALLENGE_RESPONSE=84,	//!< Its type is string.
+	PW_ACCT_INTERIM_INTERVAL=85,	//!< Its type is integer.
+	PW_ACCT_TUNNEL_PACKETS_LOST=86,	//!< Its type is integer.
+	PW_NAS_PORT_ID_STRING=87,	//!< Its type is string.
+	PW_FRAMED_POOL=88,		//!< Its type is string.
+	PW_CHARGEABLE_USER_IDENTITY=89,	//!< Its type is string.
+	PW_CUI=89,			//!< Its type is string.
+	PW_TUNNEL_CLIENT_AUTH_ID=90,	//!< Its type is string.
+	PW_TUNNEL_SERVER_AUTH_ID=91,	//!< Its type is string.
+	PW_NAS_FILTER_RULE=92,		//!< Its type is string.
+	PW_ORIGINATING_LINE_INFO=94,	//!< Its type is string.
+	PW_NAS_IPV6_ADDRESS=95,		//!< Its type is string.
+	PW_FRAMED_INTERFACE_ID=96,	//!< Its type is string.
+	PW_FRAMED_IPV6_PREFIX=97,	//!< Its type is string.
+	PW_LOGIN_IPV6_HOST=98,		//!< Its type is string.
+	PW_FRAMED_IPV6_ROUTE=99,	//!< Its type is string.
+	PW_FRAMED_IPV6_POOL=100,	//!< Its type is string.
+	PW_ERROR_CAUSE=101,		//!< Its type is integer.
+	PW_EAP_KEY_NAME=102,		//!< Its type is string.
 
+	PW_FRAMED_IPV6_ADDRESS=168,	//!< Its type is ipaddr6.
+	PW_DNS_SERVER_IPV6_ADDRESS=169,	//!< Its type is ipaddr6.
+	PW_ROUTE_IPV6_INFORMATION=170,	//!< Its type is ipv6prefix.
 
-/* standard RADIUS attribute-value pairs */
+	//!< Experimental SIP-specific attributes (draft-sterman-aaa-sip-00.txt etc)
 
-#define PW_USER_NAME			1	//!< string.
-#define PW_USER_PASSWORD		2	//!< string.
-#define PW_CHAP_PASSWORD		3	//!< string.
-#define PW_NAS_IP_ADDRESS		4	//!< ipaddr.
-#define PW_NAS_PORT			5	//!< integer.
-#define PW_SERVICE_TYPE			6	//!< integer.
-#define PW_FRAMED_PROTOCOL		7	//!< integer.
-#define PW_FRAMED_IP_ADDRESS		8	//!< ipaddr.
-#define PW_FRAMED_IP_NETMASK		9	//!< ipaddr.
-#define PW_FRAMED_ROUTING		10	//!< integer.
-#define PW_FILTER_ID			11	//!< string.
-#define PW_FRAMED_MTU			12	//!< integer.
-#define PW_FRAMED_COMPRESSION		13	//!< integer.
-#define PW_LOGIN_IP_HOST		14	//!< ipaddr.
-#define PW_LOGIN_SERVICE		15	//!< integer.
-#define PW_LOGIN_PORT			16	//!< integer.
-#define PW_OLD_PASSWORD			17	//!< string */ /* deprecated.
-#define PW_REPLY_MESSAGE		18	//!< string.
-#define PW_LOGIN_CALLBACK_NUMBER	19	//!< string.
-#define PW_FRAMED_CALLBACK_ID		20	//!< string.
-#define PW_EXPIRATION			21	//!< date */ /* deprecated.
-#define PW_FRAMED_ROUTE			22	//!< string.
-#define PW_FRAMED_IPX_NETWORK		23	//!< integer.
-#define PW_STATE			24	//!< string.
-#define PW_CLASS			25	//!< string.
-#define PW_VENDOR_SPECIFIC		26	//!< string.
-#define PW_SESSION_TIMEOUT		27	//!< integer.
-#define PW_IDLE_TIMEOUT			28	//!< integer.
-#define PW_TERMINATION_ACTION		29	//!< integer.
-#define PW_CALLED_STATION_ID		30	//!< string.
-#define PW_CALLING_STATION_ID		31	//!< string.
-#define PW_NAS_IDENTIFIER		32	//!< string.
-#define PW_PROXY_STATE			33	//!< string.
-#define PW_LOGIN_LAT_SERVICE		34	//!< string.
-#define PW_LOGIN_LAT_NODE		35	//!< string.
-#define PW_LOGIN_LAT_GROUP		36	//!< string.
-#define PW_FRAMED_APPLETALK_LINK	37	//!< integer.
-#define PW_FRAMED_APPLETALK_NETWORK	38	//!< integer.
-#define PW_FRAMED_APPLETALK_ZONE	39	//!< string.
-#define PW_ACCT_STATUS_TYPE		40	//!< integer.
-#define PW_ACCT_DELAY_TIME		41	//!< integer.
-#define PW_ACCT_INPUT_OCTETS		42	//!< integer.
-#define PW_ACCT_OUTPUT_OCTETS		43	//!< integer.
-#define PW_ACCT_SESSION_ID		44	//!< string.
-#define PW_ACCT_AUTHENTIC		45	//!< integer.
-#define PW_ACCT_SESSION_TIME		46	//!< integer.
-#define PW_ACCT_INPUT_PACKETS		47	//!< integer.
-#define PW_ACCT_OUTPUT_PACKETS		48	//!< integer.
-#define PW_ACCT_TERMINATE_CAUSE		49	//!< integer.
-#define PW_ACCT_MULTI_SESSION_ID	50	//!< string.
-#define PW_ACCT_LINK_COUNT		51	//!< integer.
-#define PW_ACCT_INPUT_GIGAWORDS		52	//!< integer.
-#define PW_ACCT_OUTPUT_GIGAWORDS	53	//!< integer.
-#define PW_EVENT_TIMESTAMP		55	//!< integer.
-#define PW_EGRESS_VLANID		56	//!< string.
-#define PW_INGRESS_FILTERS		57	//!< integer.
-#define PW_EGRESS_VLAN_NAME		58	//!< string.
-#define PW_USER_PRIORITY_TABLE		59	//!< string.
-#define PW_CHAP_CHALLENGE		60	//!< string.
-#define PW_NAS_PORT_TYPE		61	//!< integer.
-#define PW_PORT_LIMIT			62	//!< integer.
-#define PW_LOGIN_LAT_PORT		63	//!< string.
-#define PW_TUNNEL_TYPE			64	//!< string.
-#define PW_TUNNEL_MEDIUM_TYPE		65	//!< integer.
-#define PW_TUNNEL_CLIENT_ENDPOINT	66	//!< string.
-#define PW_TUNNEL_SERVER_ENDPOINT	67	//!< string.
-#define PW_ACCT_TUNNEL_CONNECTION	68	//!< string.
-#define PW_TUNNEL_PASSWORD		69	//!< string.
-#define PW_ARAP_PASSWORD		70	//!< string.
-#define PW_ARAP_FEATURES		71	//!< string.
-#define PW_ARAP_ZONE_ACCESS		72	//!< integer.
-#define PW_ARAP_SECURITY		73	//!< integer.
-#define PW_ARAP_SECURITY_DATA		74	//!< string.
-#define PW_PASSWORD_RETRY		75	//!< integer.
-#define PW_PROMPT			76	//!< integer.
-#define PW_CONNECT_INFO			77	//!< string.
-#define PW_CONFIGURATION_TOKEN		78	//!< string.
-#define PW_EAP_MESSAGE			79	//!< string.
-#define PW_MESSAGE_AUTHENTICATOR	80	//!< string.
-#define PW_TUNNEL_PRIVATE_GROUP_ID	81	//!< string.
-#define PW_TUNNEL_ASSIGNMENT_ID		82	//!< string.
-#define PW_TUNNEL_PREFERENCE		83	//!< string.
-#define PW_ARAP_CHALLENGE_RESPONSE	84	//!< string.
-#define PW_ACCT_INTERIM_INTERVAL	85	//!< integer.
-#define PW_ACCT_TUNNEL_PACKETS_LOST	86	//!< integer.
-#define PW_NAS_PORT_ID_STRING		87	//!< string.
-#define PW_FRAMED_POOL			88	//!< string.
-#define PW_CHARGEABLE_USER_IDENTITY	89	//!< string.
-#define PW_CUI				89	//!< string.
-#define PW_TUNNEL_CLIENT_AUTH_ID	90	//!< string.
-#define PW_TUNNEL_SERVER_AUTH_ID	91	//!< string.
-#define PW_NAS_FILTER_RULE		92	//!< string.
-#define PW_ORIGINATING_LINE_INFO	94	//!< string.
-#define PW_NAS_IPV6_ADDRESS		95	//!< string.
-#define PW_FRAMED_INTERFACE_ID		96	//!< string.
-#define PW_FRAMED_IPV6_PREFIX		97	//!< string.
-#define PW_LOGIN_IPV6_HOST		98	//!< string.
-#define PW_FRAMED_IPV6_ROUTE		99	//!< string.
-#define PW_FRAMED_IPV6_POOL		100	//!< string.
-#define PW_ERROR_CAUSE			101	//!< integer.
-#define PW_EAP_KEY_NAME			102	//!< string.
+	PW_DIGEST_RESPONSE=206,		//!< Its type is string.
+	PW_DIGEST_ATTRIBUTES=207,	//!< Its type is string.
+	PW_DIGEST_REALM=1063,		//!< Its type is string.
+	PW_DIGEST_NONCE=1064,		//!< Its type is string.
+	PW_DIGEST_METHOD=1065,		//!< Its type is string.
+	PW_DIGEST_URI=1066,		//!< Its type is string.
+	PW_DIGEST_QOP=1067,		//!< Its type is string.
+	PW_DIGEST_ALGORITHM=1068,	//!< Its type is string.
+	PW_DIGEST_BODY_DIGEST=1069,	//!< Its type is string.
+	PW_DIGEST_CNONCE=1070,		//!< Its type is string.
+	PW_DIGEST_NONCE_COUNT=1071,	//!< Its type is string.
+	PW_DIGEST_USER_NAME=1072,	//!< Its type is string.
 
-#define PW_FRAMED_IPV6_ADDRESS		168	//!< ipaddr6.
-#define PW_DNS_SERVER_IPV6_ADDRESS	169	//!< ipaddr6.
-#define PW_ROUTE_IPV6_INFORMATION	170	//!< ipv6prefix.
-
-/* Experimental SIP-specific attributes (draft-sterman-aaa-sip-00.txt etc) */
-
-#define PW_DIGEST_RESPONSE		206	//!< string.
-#define PW_DIGEST_ATTRIBUTES		207	//!< string.
-#define PW_DIGEST_REALM			1063	//!< string.
-#define PW_DIGEST_NONCE			1064	//!< string.
-#define PW_DIGEST_METHOD		1065	//!< string.
-#define PW_DIGEST_URI			1066	//!< string.
-#define PW_DIGEST_QOP			1067	//!< string.
-#define PW_DIGEST_ALGORITHM		1068	//!< string.
-#define PW_DIGEST_BODY_DIGEST		1069	//!< string.
-#define PW_DIGEST_CNONCE		1070	//!< string.
-#define PW_DIGEST_NONCE_COUNT		1071	//!< string.
-#define PW_DIGEST_USER_NAME		1072	//!< string.
-
-/* Merit Experimental Extensions */
-
-#define PW_USER_ID			222	//!< string.
-#define PW_USER_REALM			223	//!< string.
+	//!< Merit Experimental Extensions
+	PW_USER_ID=222,			//!< Its type is string.
+	PW_USER_REALM=223		//!< Its type is string.
+} rc_attr_id;
 
 /* Integer Translations */
 
-/* SERVICE TYPES */
+/** SERVICE TYPES */
 
 #define PW_LOGIN			1
 #define PW_FRAMED			2
@@ -268,7 +282,7 @@ typedef enum rc_attr_type {
 #define PW_AUTHENTICATE_ONLY		8
 #define PW_CALLBACK_NAS_PROMPT		9
 
-/* FRAMED PROTOCOLS */
+/** FRAMED PROTOCOLS */
 
 #define PW_PPP				1
 #define PW_SLIP				2
@@ -276,19 +290,19 @@ typedef enum rc_attr_type {
 #define PW_GANDALF			4
 #define PW_XYLOGICS			5
 
-/* FRAMED ROUTING VALUES */
+/** FRAMED ROUTING VALUES */
 
 #define PW_NONE				0
 #define PW_BROADCAST			1
 #define PW_LISTEN			2
 #define PW_BROADCAST_LISTEN		3
 
-/* FRAMED COMPRESSION TYPES */
+/** FRAMED COMPRESSION TYPES */
 
 #define PW_VAN_JACOBSON_TCP_IP		1
 #define PW_IPX_HEADER_COMPRESSION	2
 
-/* LOGIN SERVICES */
+/** LOGIN SERVICES */
 
 #define PW_TELNET			0
 #define PW_RLOGIN			1
@@ -298,18 +312,18 @@ typedef enum rc_attr_type {
 #define PW_X25_PAD			5
 #define PW_X25_T3POS			6
 
-/* TERMINATION ACTIONS */
+/** TERMINATION ACTIONS */
 
 #define PW_DEFAULT			0
 #define PW_RADIUS_REQUEST		1
 
-/* PROHIBIT PROTOCOL */
+/** PROHIBIT PROTOCOL */
 
 #define PW_DUMB			0	//!< 1 and 2 are defined in FRAMED PROTOCOLS.
 #define PW_AUTH_ONLY		3
 #define PW_ALL			255
 
-/* ACCOUNTING STATUS TYPES */
+/** ACCOUNTING STATUS TYPES */
 
 #define PW_STATUS_START		1
 #define PW_STATUS_STOP		2
@@ -320,7 +334,7 @@ typedef enum rc_attr_type {
 #define PW_ACCOUNTING_ON	7
 #define PW_ACCOUNTING_OFF	8
 
-/* ACCOUNTING TERMINATION CAUSES */
+/** ACCOUNTING TERMINATION CAUSES */
 
 #define PW_USER_REQUEST		1
 #define PW_LOST_CARRIER		2
@@ -341,7 +355,7 @@ typedef enum rc_attr_type {
 #define PW_USER_ERROR		17
 #define PW_HOST_REQUEST		18
 
-/* NAS PORT TYPES */
+/** NAS PORT TYPES */
 
 #define PW_ASYNC		0
 #define PW_SYNC			1
@@ -350,7 +364,7 @@ typedef enum rc_attr_type {
 #define PW_ISDN_SYNC_V110	4
 #define PW_VIRTUAL		5
 
-/* AUTHENTIC TYPES */
+/** AUTHENTIC TYPES */
 
 #define PW_RADIUS	1
 #define PW_LOCAL	2
@@ -384,7 +398,7 @@ typedef struct dict_vendor
 typedef struct value_pair
 {
 	char               name[NAME_LENGTH + 1];	//!< attribute name if known.
-	int                attribute;			//!< attribute numeric value.
+	rc_attr_id         attribute;			//!< attribute numeric value.
 	rc_attr_type	   type;			//!< attribute type.
 	uint32_t           lvalue;			//!< attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR.
 	char               strvalue[AUTH_STRING_LEN + 1]; //!< contains attribute value in other cases.
@@ -428,6 +442,8 @@ typedef struct send_data /* Used to pass information to sendserver() function */
 #endif
 
 #define ENV_SIZE	128
+
+/** @} */
 
 __BEGIN_DECLS
 
@@ -502,7 +518,7 @@ int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send);
 int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char *msg);
 
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
-	   char *msg, int add_nas_port, int request_type);
+	   char *msg, int add_nas_port, rc_standard_codes request_type);
 
 /* config.c */
 
@@ -558,7 +574,7 @@ void rc_openlog(char const *ident);
 /* sendserver.c */
 
 int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
-                    unsigned type);
+                    rc_type type);
 
 __END_DECLS
 

@@ -451,7 +451,7 @@ int rc_tls_fd(rc_handle * rh)
  * have a DTLS channel since an undetected server reset may
  * result to a black hole behavior of the server.
  *
- * @param: rh a handle to parsed configuration
+ * @param rh a handle to parsed configuration
  * @return 0 on success, -1 on error
  */
 int rc_check_tls(rc_handle * rh)

@@ -276,7 +276,7 @@ const static rc_sockets_override default_socket_funcs = {
  *	on failure as return value.
  */
 int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
-                    unsigned type)
+                    rc_type type)
 {
 	int             sockfd = -1;
 	AUTH_HDR       *auth, *recv_auth;

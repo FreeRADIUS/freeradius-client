@@ -676,6 +676,9 @@ int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first
 				pair->strvalue[1] = pair->lvalue;
 				pair->strvalue[pair->lvalue] = '\0';
 				pair->attribute = PW_DIGEST_ATTRIBUTES;
+				break;
+			default:
+				break;
 			}
 
 			pair->next = NULL;

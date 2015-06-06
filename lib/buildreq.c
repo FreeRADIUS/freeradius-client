@@ -64,7 +64,7 @@ void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, u
  *	on failure as return value.
  */
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
-	   char *msg, int add_nas_port, int request_type)
+	   char *msg, int add_nas_port, rc_standard_codes request_type)
 {
 	SEND_DATA       data;
 	VALUE_PAIR	*adt_vp = NULL;

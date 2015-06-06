@@ -425,7 +425,7 @@ static int apply_config(rc_handle *rh)
  * the dictionary.
  *
  * @param filename a name of a file.
- * @flags zero or RC_CONFIG_LOAD_ALL.
+ * @params flags zero or RC_CONFIG_LOAD_ALL.
  * @return new rc_handle on success, NULL when failure.
  */
 rc_handle *rc_read_config2(char const *filename, unsigned flags)
