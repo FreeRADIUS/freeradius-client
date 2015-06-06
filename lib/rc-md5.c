@@ -11,12 +11,6 @@
  */
 #include "rc-md5.h"
 
-/**
- * @defgroup misc-api Miscellaneous API
- *
- * @{
- */
-
 /*- Hash the provided data using MD5
  *
  * @param[out] output will hold a 16-byte checksum.
@@ -33,4 +27,3 @@ void rc_md5_calc(unsigned char *output, unsigned char const *input,
 	MD5Final(output, &context);
 }
 
-/** @} */

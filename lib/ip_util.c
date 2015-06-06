@@ -12,12 +12,6 @@
  *
  */
 
-/**
- * @defgroup misc-api Miscellaneous API
- *
- * @{
- */
-
 #include <config.h>
 #include <includes.h>
 #include <radcli.h>
@@ -54,6 +48,12 @@ struct addrinfo *rc_getaddrinfo (char const *host, unsigned flags)
 
 	return res;
 }
+
+/**
+ * @defgroup misc-api Miscellaneous API
+ *
+ * @{
+ */
 
 /** Get the port number for the supplied request type
  *
