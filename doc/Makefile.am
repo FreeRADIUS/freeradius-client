@@ -38,3 +38,5 @@ update-doc: stamp_mans
 
 clean-local:
 	-rm -f stamp_mans
+
+dist-hook: update-doc
