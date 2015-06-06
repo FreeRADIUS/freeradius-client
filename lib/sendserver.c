@@ -411,6 +411,16 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 		}
 	}
 
+	/*
+	 * Fill in NAS-Identifier (if needed)
+	 */
+	if (rc_avpair_get(data->send_pairs, PW_NAS_IDENTIFIER, 0) == NULL) {
+		char *p = rc_conf_str(rh, "nas-identifier");
+		if (p != NULL) {
+			rc_avpair_add(rh, &(data->send_pairs), PW_NAS_IDENTIFIER, p, -1, 0);
+		}
+	}
+
 	/* Build a request */
 	auth = (AUTH_HDR *) send_buffer;
 	auth->code = data->code;

@@ -29,35 +29,31 @@ typedef struct _option {
 static OPTION config_options_default[] = {
 /* internally used options */
 {"config_file",		OT_STR, ST_UNDEF, NULL},
-/* General options */
-{"auth_order",	 	OT_AUO, ST_UNDEF, NULL},
-{"login_tries",	 	OT_INT, ST_UNDEF, NULL},
-{"login_timeout",	OT_INT, ST_UNDEF, NULL},
-{"nologin",		OT_STR, ST_UNDEF, NULL},
-{"issue",		OT_STR, ST_UNDEF, NULL},
+/* RADIUS specific options */
 {"serv-auth-type",	OT_STR, ST_UNDEF, NULL},
 {"tls-verify-hostname",	OT_STR, ST_UNDEF, NULL},
-{"tls-ca-file",	OT_STR, ST_UNDEF, NULL},
+{"tls-ca-file",		OT_STR, ST_UNDEF, NULL},
 {"tls-cert-file",	OT_STR, ST_UNDEF, NULL},
 {"tls-key-file",	OT_STR, ST_UNDEF, NULL},
-/* RADIUS specific options */
+{"nas-identifier",	OT_STR, ST_UNDEF, NULL},
 {"authserver",		OT_SRV, ST_UNDEF, NULL},
 {"acctserver",		OT_SRV, ST_UNDEF, NULL},
 {"servers",		OT_STR, ST_UNDEF, NULL},
 {"dictionary",		OT_STR, ST_UNDEF, NULL},
-{"login_radius",	OT_STR, ST_UNDEF, NULL},
-{"seqfile",		OT_STR, ST_UNDEF, NULL},
-{"mapfile",		OT_STR, ST_UNDEF, NULL},
 {"default_realm",	OT_STR, ST_UNDEF, NULL},
 {"radius_timeout",	OT_INT, ST_UNDEF, NULL},
 {"radius_retries",	OT_INT,	ST_UNDEF, NULL},
 {"radius_deadtime",	OT_INT, ST_UNDEF, NULL},
 {"bindaddr",		OT_STR, ST_UNDEF, NULL},
-/* TLS-specific options */
-{"tls-ca-file",		OT_STR, ST_UNDEF, NULL},
-{"tls-cert-file",	OT_STR, ST_UNDEF, NULL},
-{"tls-key-file",	OT_STR, ST_UNDEF, NULL},
-/* local options */
+/* Deprecated options */
+{"login_radius",	OT_STR, ST_UNDEF, NULL},
+{"seqfile",		OT_STR, ST_UNDEF, NULL},
+{"mapfile",		OT_STR, ST_UNDEF, NULL},
+{"auth_order",	 	OT_AUO, ST_UNDEF, NULL},
+{"login_tries",	 	OT_INT, ST_UNDEF, NULL},
+{"login_timeout",	OT_INT, ST_UNDEF, NULL},
+{"nologin",		OT_STR, ST_UNDEF, NULL},
+{"issue",		OT_STR, ST_UNDEF, NULL},
 {"login_local",		OT_STR, ST_UNDEF, NULL},
 };
 

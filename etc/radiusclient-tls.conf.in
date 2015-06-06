@@ -1,5 +1,9 @@
 # RADIUS settings
 
+# The name to be used to identify this NAS (server). If set it will
+# be used in NAS-Identifier.
+#nas-identifier my-server-name
+
 # The type of authentication to use for the radius server.
 # The only available option is DTLS, or should be commented
 # out to use plain UDP. DTLS authentication can be used

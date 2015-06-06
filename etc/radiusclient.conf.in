@@ -1,5 +1,9 @@
 # RADIUS settings
 
+# The name to be used to identify this NAS (server). If set it will
+# be used in NAS-Identifier.
+#nas-identifier my-server-name
+
 # RADIUS server to use for authentication requests. this config
 # item can appear more then one time. if multiple servers are
 # defined they are tried in a round robin fashion if one
@@ -51,8 +55,3 @@ radius_deadtime	0
 # local address from which radius packets have to be sent
 bindaddr *
 
-# LOCAL settings
-
-# program to execute for local login
-# it must support the -f flag for preauthenticated login
-login_local	/bin/login
