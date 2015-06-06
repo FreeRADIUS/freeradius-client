@@ -10,7 +10,6 @@
 #include	<includes.h>
 #include	<radcli.h>
 #include	<pathnames.h>
-#include	"common.h"
 
 int
 main (int argc, char **argv)
@@ -20,7 +19,7 @@ main (int argc, char **argv)
 	char            passwd[AUTH_PASS_LEN + 1];
 	VALUE_PAIR 	*send, *received;
 	uint32_t	service;
-	char 		msg[PW_MAX_MSG_SIZE], username_realm[256];
+	char 		username_realm[256];
 	char		*default_realm;
 	rc_handle	*rh;
 
@@ -40,13 +39,10 @@ main (int argc, char **argv)
 	/*
 	 * Fill in User-Name
 	 */
-	strncpy(username_realm, username, sizeof(username_realm));
-
-	/* Append default realm */
 	if (default_realm && default_realm[0] != 0)
 		snprintf(username_realm, sizeof(username_realm), "%s@%s", username, default_realm);
 	else
-		strcpy(username_realm, username);
+		snprintf(username_realm, sizeof(username_realm), "%s", username);
 
 	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, -1, 0) == NULL)
 		return ERROR_RC;
@@ -64,7 +60,7 @@ main (int argc, char **argv)
 	if (rc_avpair_add(rh, &send, PW_SERVICE_TYPE, &service, -1, 0) == NULL)
 		return ERROR_RC;
 
-	result = rc_auth(rh, 0, send, &received, msg);
+	result = rc_auth(rh, 0, send, &received, NULL);
 
 	if (result == OK_RC) {
 		VALUE_PAIR *vp = received;
