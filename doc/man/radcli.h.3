@@ -24,11 +24,15 @@ int            rc_avpair_assign(VALUE_PAIR *, void const *, int);
 void           rc_avpair_free(VALUE_PAIR *);
 VALUE_PAIR    *rc_avpair_gen(rc_handle const *, VALUE_PAIR *, unsigned char const *, int, int);
 VALUE_PAIR    *rc_avpair_get(VALUE_PAIR *, int, int);
+void           rc_avpair_get_attr(VALUE_PAIR *, unsigned *, unsigned *);
+int            rc_avpair_get_in6(VALUE_PAIR *, struct in6_addr *, unsigned *);
+int            rc_avpair_get_raw(VALUE_PAIR *, char **, unsigned *);
+int            rc_avpair_get_uint32(VALUE_PAIR *, uint32_t *);
 void           rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
 char          *rc_avpair_log(rc_handle const *, VALUE_PAIR *, char *, size_t);
 VALUE_PAIR    *rc_avpair_new(rc_handle const *, int, void const *, int, int);
+VALUE_PAIR    *rc_avpair_next(VALUE_PAIR *);
 int            rc_avpair_parse(rc_handle const *, char const *, VALUE_PAIR **);
-VALUE_PAIR    *rc_avpair_readin(rc_handle const *, FILE *);
 int            rc_avpair_tostr(rc_handle const *, VALUE_PAIR *, char *, int, char *, int);
 void           rc_buildreq(rc_handle const *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
 int            rc_check(rc_handle *, char *, char *, unsigned short, char *);
@@ -85,17 +89,20 @@ struct send_data {
 .SS ""
 .PP
 .sp
+.PP 
+this structure directly. Use the rc_avpair_get_ functions. 
 .sp
 .RS
 .nf
 \fB
-struct value_pair {
-  char                \fIname\fP;      // attribute name if known. 
-  unsigned            \fIattribute\fP; // attribute numeric value of type rc_attr_id. 
-  rc_attr_type        \fItype\fP;      // attribute type. 
-  uint32_t            \fIlvalue\fP;    // attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR. 
-  char                \fIstrvalue\fP;  // contains attribute value in other cases. 
-  struct value_pair  *\fInext\fP;
+struct rc_value_pair {
+  char                   \fIname\fP;      // attribute name if known. 
+  unsigned               \fIattribute\fP; // attribute numeric value of type rc_attr_id. 
+  rc_attr_type           \fItype\fP;      // attribute type. 
+  uint32_t               \fIlvalue\fP;    // attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR. 
+  char                   \fIstrvalue\fP;  // contains attribute value in other cases. 
+  struct rc_value_pair  *\fInext\fP;
+  char                   \fIpad\fP;       // unused pad 
 };
 \fP
 .fi
@@ -104,6 +111,6 @@ struct value_pair {
 .PP
 .nh
 .ad l
-\fIrc_aaa\fP(3), \fIrc_acct\fP(3), \fIrc_acct_proxy\fP(3), \fIrc_add_config\fP(3), \fIrc_auth\fP(3), \fIrc_auth_proxy\fP(3), \fIrc_avpair_add\fP(3), \fIrc_avpair_assign\fP(3), \fIrc_avpair_free\fP(3), \fIrc_avpair_gen\fP(3), \fIrc_avpair_get\fP(3), \fIrc_avpair_insert\fP(3), \fIrc_avpair_log\fP(3), \fIrc_avpair_new\fP(3), \fIrc_avpair_parse\fP(3), \fIrc_avpair_readin\fP(3), \fIrc_avpair_tostr\fP(3), \fIrc_buildreq\fP(3), \fIrc_check\fP(3), \fIrc_check_tls\fP(3), \fIrc_conf_int\fP(3), \fIrc_conf_srv\fP(3), \fIrc_conf_str\fP(3), \fIrc_config_free\fP(3), \fIrc_config_init\fP(3), \fIrc_destroy\fP(3), \fIrc_dict_findattr\fP(3), \fIrc_dict_findval\fP(3), \fIrc_dict_findvend\fP(3), \fIrc_dict_free\fP(3), \fIrc_dict_getattr\fP(3), \fIrc_dict_getval\fP(3), \fIrc_dict_getvend\fP(3), \fIrc_find_server_addr\fP(3), \fIrc_get_socket_type\fP(3), \fIrc_get_srcaddr\fP(3), \fIrc_getport\fP(3), \fIrc_new\fP(3), \fIrc_openlog\fP(3), \fIrc_own_hostname\fP(3), \fIrc_read_config\fP(3), \fIrc_read_dictionary\fP(3), \fIrc_send_server\fP(3), \fIrc_test_config\fP(3), \fIrc_tls_fd\fP(3)
+\fIrc_aaa\fP(3), \fIrc_acct\fP(3), \fIrc_acct_proxy\fP(3), \fIrc_add_config\fP(3), \fIrc_auth\fP(3), \fIrc_auth_proxy\fP(3), \fIrc_avpair_add\fP(3), \fIrc_avpair_assign\fP(3), \fIrc_avpair_free\fP(3), \fIrc_avpair_gen\fP(3), \fIrc_avpair_get\fP(3), \fIrc_avpair_get_attr\fP(3), \fIrc_avpair_get_in6\fP(3), \fIrc_avpair_get_raw\fP(3), \fIrc_avpair_get_uint32\fP(3), \fIrc_avpair_insert\fP(3), \fIrc_avpair_log\fP(3), \fIrc_avpair_new\fP(3), \fIrc_avpair_next\fP(3), \fIrc_avpair_parse\fP(3), \fIrc_avpair_tostr\fP(3), \fIrc_buildreq\fP(3), \fIrc_check\fP(3), \fIrc_check_tls\fP(3), \fIrc_conf_int\fP(3), \fIrc_conf_srv\fP(3), \fIrc_conf_str\fP(3), \fIrc_config_free\fP(3), \fIrc_config_init\fP(3), \fIrc_destroy\fP(3), \fIrc_dict_findattr\fP(3), \fIrc_dict_findval\fP(3), \fIrc_dict_findvend\fP(3), \fIrc_dict_free\fP(3), \fIrc_dict_getattr\fP(3), \fIrc_dict_getval\fP(3), \fIrc_dict_getvend\fP(3), \fIrc_find_server_addr\fP(3), \fIrc_get_socket_type\fP(3), \fIrc_get_srcaddr\fP(3), \fIrc_getport\fP(3), \fIrc_new\fP(3), \fIrc_openlog\fP(3), \fIrc_own_hostname\fP(3), \fIrc_read_config\fP(3), \fIrc_read_dictionary\fP(3), \fIrc_send_server\fP(3), \fIrc_test_config\fP(3), \fIrc_tls_fd\fP(3)
 .ad
 .hy
