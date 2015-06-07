@@ -52,6 +52,9 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 	int             type;
 	unsigned attr_vendorspec = 0;
 
+	if (rh->first_dict_read != NULL && strcmp(filename, rh->first_dict_read) == 0)
+		return 0;
+
 	if ((dictfd = fopen (filename, "r")) == NULL)
 	{
 		rc_log(LOG_ERR, "rc_read_dictionary couldn't open dictionary %s: %s",
@@ -352,6 +355,10 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
                 }
 	}
 	fclose (dictfd);
+
+	if (rh->first_dict_read == NULL)
+		rh->first_dict_read = strdup(filename);
+
 	return 0;
 }
 

@@ -26,7 +26,7 @@ main (int argc, char **argv)
 	/* Don't needed if you already used openlog() */
 	rc_openlog("my-prog-name");
 
-	if ((rh = rc_read_config2(RC_CONFIG_FILE, RC_CONFIG_LOAD_ALL)) == NULL)
+	if ((rh = rc_read_config(RC_CONFIG_FILE)) == NULL)
 		return ERROR_RC;
 
 	default_realm = rc_conf_str(rh, "default_realm");

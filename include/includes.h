@@ -194,6 +194,10 @@ struct rc_conf
 	struct sockaddr_storage	own_bind_addr;
 	unsigned		own_bind_addr_set;
 
+	 /* we keep a copy of the filename to avoid re-reading a dictionary,
+	  * for applications relying on the old API which required explicit
+	  * load of it. */
+	char			*first_dict_read;
 	struct dict_attr	*dictionary_attributes;
 	struct dict_value	*dictionary_values;
 	struct dict_vendor	*dictionary_vendors;
