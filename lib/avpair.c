@@ -943,7 +943,8 @@ int rc_avpair_get_in6 (VALUE_PAIR *vp, struct in6_addr *res, unsigned *prefix)
  * PW_TYPE_IPV6PREFIX.
  *
  * @param vp a pointer to a VALUE_PAIR structure.
- * @param res The integer value returned.
+ * @param res Will contain pointer to the data value.
+ * @param res_size Will contain the data size.
  * @return zero on success or -1 on failure.
  */
 int rc_avpair_get_raw (VALUE_PAIR *vp, char **res, unsigned *res_size)
