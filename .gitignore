@@ -14,6 +14,7 @@ src/.libs
 src/.deps
 etc/radiusclient.conf
 etc/radiusclient-tls.conf
+include/radcli/version.h
 src/libtools.a
 lib/radcli.pc
 doc/Doxyfile
