@@ -29,7 +29,7 @@ and will include any new features for the task.
 2. Documentation
 ----------------
 
-It is available at:
+Documentation and examples are available at:
 http://radcli.github.io/radcli/
 
 3. Bug reporting
