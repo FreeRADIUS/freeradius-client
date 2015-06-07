@@ -1,4 +1,4 @@
-* Version 1.2.0 (unreleased)
+* Version 1.2.0 (released 2015-06-07)
 - Initial version of the fork. That changes the name of the library to
   libradcli.so, and the header to radcli.h. A compatibility header with
   freeradius-client library is also installed.
