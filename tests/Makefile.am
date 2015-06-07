@@ -10,16 +10,16 @@ EXTRA_DIST = radiusclient-ipv6.conf servers-ipv6 \
 	dtls/radsecproxy.conf
 
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_builddir)
-LDADD = ../lib/libfreeradius-client.la
+LDADD = ../lib/libradcli.la
 
 nodist_check_SCRIPTS = basic-tests.sh ipv6-tests.sh tls-tests.sh
 TESTS = basic-tests.sh ipv6-tests.sh
 check_PROGRAMS =
 
 if ENABLE_GNUTLS
-TESTS += tls-tests.sh
+TESTS += tls-tests.sh avpair
 
-check_PROGRAMS += tls-restart
+check_PROGRAMS += tls-restart avpair
 
 tls_restart_SOURCES = tls-restart.c
 tls_restart_LDADD = ../src/libtools.a ../lib/libradcli.la
