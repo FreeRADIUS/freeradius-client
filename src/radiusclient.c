@@ -52,7 +52,7 @@ main(int argc, char **argv)
     int i, nas_port, ch, acct, server, ecount, firstline, theend;
     void *rh;
     size_t len;
-    VALUE_PAIR *send, **vp;
+    VALUE_PAIR *send;
     char *rc_conf, *cp;
     char lbuf[4096];
 
@@ -101,19 +101,16 @@ main(int argc, char **argv)
 
     if (server == 0) {
         send = NULL;
-        vp = &send;
         for (i = 0; i < argc; i++) {
-            if (rc_avpair_parse(rh, argv[i], vp) < 0) {
+            if (rc_avpair_parse(rh, argv[i], &send) < 0) {
                 fprintf(stderr, "%s: can't parse AV pair\n", argv[i]);
                 exit(3);
             }
-            vp = &send->next;
         }
         exit(process(rh, send, acct, nas_port));
     }
     while (1 == 1) {
         send = NULL;
-        vp = &send;
         ecount = 0;
         firstline = 1;
         acct = 0;
@@ -138,11 +135,9 @@ main(int argc, char **argv)
                 if (theend == 0) {
                     memcpy(lbuf, cp, len);
                     lbuf[len] = '\0';
-                    if (rc_avpair_parse(rh, lbuf, vp) < 0) {
+                    if (rc_avpair_parse(rh, lbuf, &send) < 0) {
                         fprintf(stderr, "%s: can't parse AV pair\n", lbuf);
                         ecount++;
-                    } else {
-                        vp = &send->next;
                     }
                 }
             }

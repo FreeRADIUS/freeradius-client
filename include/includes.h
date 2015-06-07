@@ -159,6 +159,8 @@ int sigprocmask (int, sigset_t *, sigset_t *);
 # endif
 #endif
 
+#include <radcli/radcli.h>
+
 #define AUTH_VECTOR_LEN		16
 #define GETSTR_LENGTH		128	//!< must be bigger than AUTH_PASS_LEN.
 

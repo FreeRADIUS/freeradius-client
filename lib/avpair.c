@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2015 Nikos Mavrogiannopoulos
  * Copyright (C) 1995 Lars Fenneberg
  *
  * Copyright 1992 Livingston Enterprises, Inc.
@@ -48,6 +49,20 @@ VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, int attrid, v
 
 	return vp;
 
+}
+
+/** Iterates through the attribute-value pairs
+ *
+ * The attribute-value are organized in a linked-list, and this
+ * function provides a way to iterate them given the first element
+ * initially.
+ *
+ * @param t the current pair.
+ * @return pointer to the next pair, or NULL when finished.
+ */
+VALUE_PAIR *rc_avpair_next (VALUE_PAIR *t)
+{
+	return t->next;
 }
 
 /** Assigns the given value to an attribute-value pair
@@ -854,34 +869,94 @@ char *rc_avpair_log(rc_handle const *rh, VALUE_PAIR *pair, char *buf, size_t buf
 	return buf;
 }
 
-/** Get a sequence of attribute value pairs from the file input and make them into a list of value_pairs
+/** Get the integer value of the given attribute value-pair
  *
- * @param rh a handle to parsed configuration.
- * @param input a %FILE handle.
- * @return the array of value pairs.
+ * This function is valid for PW_TYPE_INTEGER, PW_TYPE_IPADDR.
+ * PW_TYPE_DATE. In PW_TYPE_IPADDR this value will contain the
+ * IPv4 address in host by order.
+ *
+ * @param vp a pointer to a VALUE_PAIR structure.
+ * @param res The integer value returned.
+ * @return zero on success or -1 on failure.
  */
-VALUE_PAIR *rc_avpair_readin(rc_handle const *rh, FILE *input)
+int rc_avpair_get_uint32 (VALUE_PAIR *vp, uint32_t *res)
 {
-	VALUE_PAIR *vp = NULL;
-	char buffer[1024], *q;
+	if (vp->type == PW_TYPE_DATE || vp->type == PW_TYPE_IPADDR ||
+	    vp->type == PW_TYPE_INTEGER) {
+	    	if (res)
+		    *res = vp->lvalue;
+		return 0;
+	} else {
+		return -1;
+	}
+}
 
-	while (fgets(buffer, sizeof(buffer), input) != NULL)
-	{
-		q = buffer;
+/** Get the IPv6 address and prefix value of the given attribute value-pair
+ *
+ * This function is valid for PW_TYPE_IPV6ADDR, PW_TYPE_IPV6PREFIX.
+ *
+ * @param vp a pointer to a VALUE_PAIR structure.
+ * @param res An in6_addr structure for result to be copied in.
+ * @param prefix If of type PW_TYPE_IPV6PREFIX the prefix will be copied (may be NULL).
+ * @return zero on success or -1 on failure.
+ */
+int rc_avpair_get_in6 (VALUE_PAIR *vp, struct in6_addr *res, unsigned *prefix)
+{
+	if (vp->type == PW_TYPE_IPV6ADDR) {
+		memcpy(res, vp->strvalue, 16);
+		return 0;
+	} else if (vp->type == PW_TYPE_IPV6PREFIX) {
+	    	if (vp->lvalue < 2 || vp->lvalue > 18)
+	    		return -1;
 
-		while(*q && isspace(*q)) q++;
-
-		if ((*q == '\n') || (*q == '#') || (*q == '\0'))
-			continue;
-
-		if (rc_avpair_parse(rh, q, &vp) < 0) {
-			rc_log(LOG_ERR, "rc_avpair_readin: malformed attribute: %s", buffer);
-			rc_avpair_free(vp);
-			return NULL;
+		if (res) {
+		    	memset(res, 0, 16);
+		    	memcpy(res, vp->strvalue+2, vp->lvalue-2);
 		}
+
+		if (prefix)
+		    	*prefix = (unsigned char)vp->strvalue[1];
+	    	return 0;
 	}
 
-	return vp;
+	return -1;
+}
+
+/** Get the raw value of the given attribute value-pair
+ *
+ * This function is valid for PW_TYPE_STRING, PW_TYPE_IPV6ADDR,
+ * PW_TYPE_IPV6PREFIX.
+ *
+ * @param vp a pointer to a VALUE_PAIR structure.
+ * @param res The integer value returned.
+ * @return zero on success or -1 on failure.
+ */
+int rc_avpair_get_raw (VALUE_PAIR *vp, char **res, unsigned *res_size)
+{
+	if (vp->type == PW_TYPE_STRING || vp->type == PW_TYPE_IPV6ADDR ||
+	    vp->type == PW_TYPE_IPV6PREFIX) {
+	    	if (res)
+	    		*res = vp->strvalue;
+		if (res_size)
+			*res_size = vp->lvalue;
+		return 0;
+	} else {
+		return -1;
+	}
+}
+
+/** Get the attribute ID and type of the given attribute value-pair
+ *
+ * @param vp a pointer to a VALUE_PAIR structure.
+ * @param type The attribute type, of type rc_attr_type
+ * @param id The attribute identifier, of type rc_attr_id
+ */
+void rc_avpair_get_attr (VALUE_PAIR *vp, unsigned *type, unsigned *id)
+{
+	if (type)
+		*type = vp->type;
+	if (id)
+		*id = vp->attribute;
 }
 
 /** @} */

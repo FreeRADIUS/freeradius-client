@@ -7,12 +7,13 @@
  *
  */
 
-static char	rcsid[] =
-		"$Id: radacct.c,v 1.6 2007/07/11 17:29:30 cparker Exp $";
-
 #include <config.h>
-#include <includes.h>
-#include <freeradius-client.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <syslog.h>
+#include <string.h>
+#include <radcli/radcli.h>
+#include <radcli/version.h>
 #include <messages.h>
 #include <pathnames.h>
 
@@ -29,8 +30,33 @@ void usage(void)
 
 void version(void)
 {
-	fprintf(stderr,"%s: %s\n", pname ,rcsid);
+	fprintf(stderr,"%s: %s\n", pname, RADCLI_VERSION);
 	exit(ERROR_RC);
+}
+
+static
+VALUE_PAIR *rc_avpair_readin(rc_handle const *rh, FILE *input)
+{
+       VALUE_PAIR *vp = NULL;
+       char buffer[1024], *q;
+
+       while (fgets(buffer, sizeof(buffer), input) != NULL)
+       {
+               q = buffer;
+
+               while(*q && isspace(*q)) q++;
+
+               if ((*q == '\n') || (*q == '#') || (*q == '\0'))
+                       continue;
+
+               if (rc_avpair_parse(rh, q, &vp) < 0) {
+                       rc_log(LOG_ERR, "rc_avpair_readin: malformed attribute: %s", buffer);
+                       rc_avpair_free(vp);
+                       return NULL;
+               }
+       }
+
+       return vp;
 }
 
 int

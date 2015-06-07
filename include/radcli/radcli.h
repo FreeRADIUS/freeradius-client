@@ -56,7 +56,6 @@
 
 #define AUTH_PASS_LEN		(3 * 16) /* multiple of 16 */
 #define AUTH_ID_LEN		64
-#define AUTH_STRING_LEN		253	 /* maximum of 253 */
 
 #define BUFFER_LEN		8192
 
@@ -420,16 +419,6 @@ typedef struct dict_vendor
 	struct dict_vendor *next;
 } DICT_VENDOR;
 
-typedef struct value_pair
-{
-	char               name[NAME_LENGTH + 1];	//!< attribute name if known.
-	unsigned           attribute;			//!< attribute numeric value of type rc_attr_id.
-	rc_attr_type	   type;			//!< attribute type.
-	uint32_t           lvalue;			//!< attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR.
-	char               strvalue[AUTH_STRING_LEN + 1]; //!< contains attribute value in other cases.
-	struct value_pair *next;
-} VALUE_PAIR;
-
 /* don't change this, as it has to be the same as in the Merit radiusd code */
 #define MGMT_POLL_SECRET	"Hardlyasecret" //!< Default for Merit radiusd
 
@@ -443,6 +432,22 @@ typedef enum rc_send_status {
 	TIMEOUT_RC=1,
 	REJECT_RC=2
 } rc_send_status;
+
+
+# define AUTH_STRING_LEN		253	 /* maximum of 253 */
+
+/** \struct rc_value_pair Avoid using this structure directly. Use the rc_avpair_get_ functions.
+ */
+typedef struct rc_value_pair
+{
+	char               name[NAME_LENGTH + 1];	//!< attribute name if known.
+	unsigned           attribute;			//!< attribute numeric value of type rc_attr_id.
+	rc_attr_type	   type;			//!< attribute type.
+	uint32_t           lvalue;			//!< attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR.
+	char               strvalue[AUTH_STRING_LEN + 1]; //!< contains attribute value in other cases.
+	struct rc_value_pair *next;
+	char		   pad[32];			//!< unused pad
+} VALUE_PAIR;
 
 typedef struct send_data /* Used to pass information to sendserver() function */
 {
@@ -522,7 +527,6 @@ __BEGIN_DECLS
  * This is an example servers configuration file with TLS PSK.
  */
 
-
 /* avpair.c */
 
 VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, int attrid, void const *pval, int len, int vendorpec);
@@ -536,7 +540,12 @@ void rc_avpair_free (VALUE_PAIR *pair);
 int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first_pair);
 int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, char *value, int lv);
 char *rc_avpair_log(rc_handle const *rh, VALUE_PAIR *pair, char *buf, size_t buf_len);
-VALUE_PAIR *rc_avpair_readin(rc_handle const *rh, FILE *input);
+VALUE_PAIR *rc_avpair_next(VALUE_PAIR *t);
+
+int rc_avpair_get_uint32 (VALUE_PAIR *vp, uint32_t *res);
+int rc_avpair_get_in6 (VALUE_PAIR *vp, struct in6_addr *res, unsigned *prefix);
+int rc_avpair_get_raw (VALUE_PAIR *vp, char **res, unsigned *res_size);
+void rc_avpair_get_attr (VALUE_PAIR *vp, unsigned *type, unsigned *id);
 
 /* buildreq.c */
 
