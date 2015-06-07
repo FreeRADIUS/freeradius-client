@@ -243,6 +243,7 @@ typedef enum rc_attr_id {
 	PW_FRAMED_IPV6_POOL=100,	//!< Its type is string.
 	PW_ERROR_CAUSE=101,		//!< Its type is integer.
 	PW_EAP_KEY_NAME=102,		//!< Its type is string.
+	PW_DELEGATED_IPV6_PREFIX=123,	//!< Its type is ipv6prefix.
 
 	PW_FRAMED_IPV6_ADDRESS=168,	//!< Its type is ipaddr6.
 	PW_DNS_SERVER_IPV6_ADDRESS=169,	//!< Its type is ipaddr6.
