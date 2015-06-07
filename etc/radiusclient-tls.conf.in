@@ -4,12 +4,6 @@
 # be used in NAS-Identifier.
 #nas-identifier my-server-name
 
-# The type of authentication to use for the radius server.
-# The available options are 'tls' and 'dtls', or should be commented
-# out to use plain UDP. TLS and DTLS authentication can be used
-# with PSK keys or X.509 certificate authentication (see below).
-serv-auth-type	tls
-
 # RADIUS server to use for authentication requests. this config
 # item can appear more then one time. if multiple servers are
 # defined they are tried in a round robin fashion if one
@@ -66,9 +60,11 @@ bindaddr *
 
 # TLS/DTLS settings
 
-# The type of authentication used. Available options are, 'tls',
-# 'dtls' or unset.
-serv-auth-type tls
+# The type of authentication to use for the radius server.
+# The available options are 'tls' and 'dtls', or should be commented
+# out to use plain UDP. TLS and DTLS authentication can be used
+# with PSK keys or X.509 certificate authentication (see below).
+serv-auth-type	tls
 
 # The CA certificate to be used to verify the server's certificate.
 # Does not need to be set if we are using PSK (pre-shared keys).
