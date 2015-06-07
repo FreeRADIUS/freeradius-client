@@ -169,7 +169,11 @@ typedef struct pw_auth_hdr
 	uint16_t	length;
 	uint8_t		vector[AUTH_VECTOR_LEN];
 	uint8_t		data[2];
-} AUTH_HDR;
+}
+#ifdef __GNUC__
+__attribute__((packed))
+#endif
+AUTH_HDR;
 
 typedef struct rc_sockets_override {
 	void *ptr;
