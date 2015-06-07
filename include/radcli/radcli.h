@@ -514,6 +514,10 @@ __BEGIN_DECLS
  * This is an example servers configuration file.
  */
 
+/** \example servers-tls
+ * This is an example servers configuration file with TLS PSK.
+ */
+
 
 /* avpair.c */
 
