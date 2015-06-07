@@ -93,7 +93,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
 
-	if (add_nas_port != 0) {
+	if (add_nas_port != 0 && rc_avpair_get(data.send_pairs, PW_NAS_PORT, 0) == NULL) {
 		/*
 		 * Fill in NAS-Port
 		 */
