@@ -26,7 +26,9 @@
 
 /** Adds an attribute-value pair to the given list
  *
- * @note Always appends the new pair to the end of the list.
+ * See rc_avpair_assign() for the format of the data.
+ *
+ * @note It always appends the new pair to the end of the list.
  *
  * @param rh a handle to parsed configuration.
  * @param list a VALUE_PAIR array of values; initially must be NULL.
@@ -66,6 +68,17 @@ VALUE_PAIR *rc_avpair_next (VALUE_PAIR *t)
 }
 
 /** Assigns the given value to an attribute-value pair
+ *
+ * If the value is of type PW_TYPE_STRING it must either be
+ * a null terminated string with len set to -1, or raw data
+ * with length properly set. For PW_TYPE_DATE, PW_TYPE_INTEGER,
+ * and PW_TYPE_IPADDR an uint32_t number should be set at pval.
+ * For IPv4 addresses it should be in host byte order.
+ *
+ * For PW_TYPE_IPV6ADDR type a 16-byte long address is expected, and
+ * for PW_TYPE_IPV6PREFIX the rfc3162 prefix format is expected. Simply
+ * that is a zero byte, a byte with the value of prefix (e.g., 112), and
+ * the remaining bytes are the IPv6 address.
  *
  * @param vp a pointer to a VALUE_PAIR structure.
  * @param pval the value (e.g., the actual username).
@@ -120,6 +133,8 @@ int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len)
 }
 
 /** Make a new attribute-value pair with given parameters
+ *
+ * See rc_avpair_assign() for the format of the data.
  *
  * @param rh a handle to parsed configuration.
  * @param attrid The attribute of the pair to add (e.g., PW_USER_NAME).
