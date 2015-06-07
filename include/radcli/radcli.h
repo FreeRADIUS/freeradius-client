@@ -431,14 +431,16 @@ typedef struct value_pair
 /* don't change this, as it has to be the same as in the Merit radiusd code */
 #define MGMT_POLL_SECRET	"Hardlyasecret" //!< Default for Merit radiusd
 
-/* Define return codes from "SendServer" utility */
-
-#define BADRESPID_RC	-3
-#define BADRESP_RC	-2
-#define ERROR_RC	-1
-#define OK_RC		0
-#define TIMEOUT_RC	1
-#define REJECT_RC	2
+/** \enum rc_send_status Return codes for rc_send_server()
+ */
+typedef enum rc_send_status {
+	BADRESPID_RC=-3,
+	BADRESP_RC=-2,
+	ERROR_RC=-1,
+	OK_RC=0,
+	TIMEOUT_RC=1,
+	REJECT_RC=2
+} rc_send_status;
 
 typedef struct send_data /* Used to pass information to sendserver() function */
 {
