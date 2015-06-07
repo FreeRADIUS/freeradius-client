@@ -107,8 +107,8 @@ typedef enum rc_socket_type {
 #define AUTH_HDR_LEN			20
 #define CHAP_VALUE_LENGTH		16
 
-#define PW_AUTH_UDP_PORT		1645
-#define PW_ACCT_UDP_PORT		1646
+#define PW_AUTH_UDP_PORT		1812
+#define PW_ACCT_UDP_PORT		1813
 
 /** \enum rc_attr_type Attribute types
  */
