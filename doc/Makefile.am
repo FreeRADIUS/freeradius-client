@@ -13,6 +13,7 @@ include $(top_srcdir)/doc/doc.mk
 APIMANS += man/radcli.h.3
 
 CLEANFILES = *~
+DISTCLEANFILES = stamp_mans
 
 EXTRA_DIST = Doxyfile.in scripts/getfuncs.pl doc.mk
 
@@ -35,8 +36,5 @@ update-doc: stamp_mans
 		perl -p -e "s/^APIMANS =/APIMANS =$$MANS/" > tmp-$@; \
 	diff -u $(srcdir)/doc.mk tmp-$@ || mv tmp-$@ doc.mk
 	rm -f tmp-$@
-
-clean-local:
-	-rm -f stamp_mans
 
 dist-hook: update-doc
