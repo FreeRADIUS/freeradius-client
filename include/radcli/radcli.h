@@ -421,7 +421,7 @@ typedef struct dict_vendor
 typedef struct value_pair
 {
 	char               name[NAME_LENGTH + 1];	//!< attribute name if known.
-	rc_attr_id         attribute;			//!< attribute numeric value.
+	unsigned           attribute;			//!< attribute numeric value of type rc_attr_id.
 	rc_attr_type	   type;			//!< attribute type.
 	uint32_t           lvalue;			//!< attribute value if type is PW_TYPE_INTEGER, PW_TYPE_DATE or PW_TYPE_IPADDR.
 	char               strvalue[AUTH_STRING_LEN + 1]; //!< contains attribute value in other cases.
