@@ -20,7 +20,7 @@ pkgsysconf_DATA = port-id-map radiusclient.conf \
 
 EXTRA_DIST = port-id-map dictionary dictionary.ascend \
 	dictionary.compat dictionary.merit servers servers-tls radiusclient.conf.in \
-	dictionary.sip
+	dictionary.sip radiusclient-tls.conf.in
 
 radiusclient.conf: radiusclient.conf.in
 	sed -e 's|@sbin''dir@|$(sbindir)|g' \
