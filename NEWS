@@ -9,3 +9,4 @@
 - Removed the requirement for legacy options to be present in the configuration
   file. That includes: auth_order, login_tries, login_timeout, nologin, issue,
   login_radius, seqfile
+- Added higher level API to read values from VALUE_PAIR.
