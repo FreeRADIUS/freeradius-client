@@ -333,10 +333,6 @@ typedef enum rc_termination_action {
 	PW_RADIUS_REQUEST=1
 } rc_termination_action;
 
-/** PROHIBIT PROTOCOL */
-#define PW_DUMB			0	//!< 1 and 2 are defined in FRAMED PROTOCOLS.
-#define PW_AUTH_ONLY		3
-#define PW_ALL			255
 
 /** \enum rc_acct_status_type RFC2866 Acct-Status-Type values
  */
@@ -392,6 +388,11 @@ typedef enum rc_acct_auth_type {
 	PW_LOCAL=2,
 	PW_REMOTE=3
 } rc_acct_auth_type;
+
+/* PROHIBIT PROTOCOL */
+#define PW_DUMB			0	//!< 1 and 2 are defined in FRAMED PROTOCOLS.
+#define PW_AUTH_ONLY		3
+#define PW_ALL			255
 
 /* Server data structures */
 
