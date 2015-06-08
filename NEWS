@@ -1,3 +1,10 @@
+* Version 1.2.0 (unreleaseD)
+- Removal of unused port-id-map file.
+- Corrections in the link creation during install.
+- Corrections in the types of the distributed dictionary.
+- Added compatibility headers for radiusclient-ng.
+
+
 * Version 1.2.0 (released 2015-06-07)
 - Initial version of the fork. That changes the name of the library to
   libradcli.so, and the header to radcli.h. A compatibility header with
