@@ -32,7 +32,7 @@
 #include <unistd.h>
 #include	"common.h"
 
-#include <freeradius-client.h>
+#include <radcli/radcli.h>
 
 #define BUF_LEN 4096
 

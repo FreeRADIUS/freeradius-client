@@ -19,7 +19,7 @@ static char	rcsid[] =
 
 #include <config.h>
 #include <includes.h>
-#include <freeradius-client.h>
+#include <radcli/radcli.h>
 #include <pathnames.h>
 #include <messages.h>
 
