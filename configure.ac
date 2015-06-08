@@ -30,6 +30,7 @@ AC_PROG_CC
 dnl Needed for normal compile
 AC_PATH_PROG(AR, ar)
 AM_PROG_LIBTOOL
+AC_PROG_LN_S
 
 dnl HAVE_SHADOW_PASSWORDS
 AC_MSG_CHECKING(whether to include shadow password support)

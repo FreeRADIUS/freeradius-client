@@ -36,5 +36,5 @@ libradcli_la_LDFLAGS = -version-info $(LIBVERSION)
 
 libradcli_la_LIBADD = $(CRYPTO_LIBS)
 
-install-data-local:
-	cd $(libdir) && ln -sf libradcli.so libfreeradius-client.so
+install-exec-hook:
+	cd $(DESTDIR)$(libdir) && $(LN_S) libradcli.so libfreeradius-client.so
