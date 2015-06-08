@@ -7,7 +7,7 @@
 # 
 # 
 
-AC_INIT([radcli], [1.2.0], [n.mavrogiannopoulos@gmail.com])
+AC_INIT([radcli], [1.2.1], [n.mavrogiannopoulos@gmail.com])
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_TARGET([])
@@ -35,7 +35,7 @@ AC_PROG_LN_S
 dnl HAVE_SHADOW_PASSWORDS
 AC_MSG_CHECKING(whether to enable legacy library compatibility)
 AC_ARG_ENABLE(legacy-compat,
-[  --enable-legacy-compat         Enable compatibility mode with radiusclient-ng and freeradius-client],
+[  --enable-legacy-compat  Enable compatibility mode with radiusclient-ng and freeradius-client],
 [
         AC_MSG_RESULT(yes)
 	enable_compat=yes
