@@ -22,6 +22,10 @@ doc/stamp_mans
 doc/xml
 doc/html
 doc/doxygen_sqlite3.db
+tests/avpair
+tests/tls-restart
+tests/docker/Dockerfile
+tests/.libs
 tests/*.log
 tests/*.trs
 .deps
