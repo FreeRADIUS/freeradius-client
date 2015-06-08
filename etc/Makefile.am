@@ -15,12 +15,10 @@ CLEANFILES = *~ radiusclient.conf radiusclient-tls.conf
 sbindir = @sbindir@
 pkgsysconfdir = @pkgsysconfdir@
 pkgsysconf_DATA = radiusclient.conf \
-	dictionary dictionary.ascend dictionary.compat dictionary.merit \
-	dictionary.sip radiusclient-tls.conf
+	dictionary radiusclient-tls.conf
 
-EXTRA_DIST = dictionary dictionary.ascend \
-	dictionary.compat dictionary.merit servers servers-tls radiusclient.conf.in \
-	dictionary.sip radiusclient-tls.conf.in
+EXTRA_DIST = dictionary servers servers-tls radiusclient.conf.in \
+	radiusclient-tls.conf.in
 
 radiusclient.conf: radiusclient.conf.in
 	sed -e 's|@sbin''dir@|$(sbindir)|g' \
