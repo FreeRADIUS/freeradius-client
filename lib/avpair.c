@@ -294,12 +294,11 @@ VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char c
 		goto skipit;
 	}
 
-	rpair = malloc(sizeof(*rpair));
+	rpair = calloc(1, sizeof(*rpair));
 	if (rpair == NULL) {
 		rc_log(LOG_CRIT, "rc_avpair_gen: out of memory");
 		goto shithappens;
 	}
-	memset(rpair, '\0', sizeof(*rpair));
 
 	/* Insert this new pair at the beginning of the list */
 	rpair->next = pair;
