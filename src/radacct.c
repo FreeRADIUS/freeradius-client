@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <syslog.h>
 #include <string.h>
+#include <ctype.h>
+#include <unistd.h>
 #include <radcli/radcli.h>
 #include <radcli/version.h>
 #include <messages.h>
