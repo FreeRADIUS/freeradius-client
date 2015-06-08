@@ -14,6 +14,10 @@ AUTOMAKE_OPTIONS = foreign
 EXTRA_DIST = radcli/version.h.in
 
 noinst_HEADERS = pathnames.h messages.h includes.h
+
+if ENABLE_LEGACY_COMPAT
 include_HEADERS = freeradius-client.h radiusclient-ng.h
+endif
+
 nobase_include_HEADERS = radcli/version.h radcli/radcli.h
 

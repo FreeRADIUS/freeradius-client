@@ -33,19 +33,20 @@ AM_PROG_LIBTOOL
 AC_PROG_LN_S
 
 dnl HAVE_SHADOW_PASSWORDS
-AC_MSG_CHECKING(whether to include shadow password support)
-AC_ARG_ENABLE(shadow,
-[  --enable-shadow         Enable shadow password support],
+AC_MSG_CHECKING(whether to enable legacy library compatibility)
+AC_ARG_ENABLE(legacy-compat,
+[  --enable-legacy-compat         Enable compatibility mode with radiusclient-ng and freeradius-client],
 [
         AC_MSG_RESULT(yes)
-	AC_DEFINE(HAVE_SHADOW_PASSWORDS)
-	shadow_passwords=yes
+	enable_compat=yes
 ],
 [
         AC_MSG_RESULT(no)
-	shadow_passwords=no
+	enable_compat=no
 ]
 )
+
+AM_CONDITIONAL(ENABLE_LEGACY_COMPAT, test "$enable_compat" = "yes")
 
 # Library code modified:                              REVISION++
 # Interfaces changed/added/removed:   CURRENT++       REVISION=0
@@ -270,6 +271,7 @@ AC_OUTPUT
 
 AC_MSG_NOTICE([Configuration:
 
-  Nettle for MD5:         $with_nettle
-  TLS and DTLS support:   $use_gnutls
+  Nettle for MD5:            $with_nettle
+  TLS and DTLS support:      $use_gnutls
+  freeradius-client compat:  $enable_compat
 ])

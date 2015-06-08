@@ -37,5 +37,7 @@ libradcli_la_LDFLAGS = -version-info $(LIBVERSION)
 libradcli_la_LIBADD = $(CRYPTO_LIBS)
 
 install-exec-hook:
+if ENABLE_LEGACY_COMPAT
 	cd $(DESTDIR)$(libdir) && $(LN_S) libradcli.so libfreeradius-client.so
 	cd $(DESTDIR)$(libdir) && $(LN_S) libradcli.so libradiusclient-ng.so
+endif

@@ -132,10 +132,6 @@ int sigprocmask (int, sigset_t *, sigset_t *);
 # include <getopt.h>
 #endif
 
-#if defined(HAVE_SHADOW_H) && defined(HAVE_SHADOW_PASSWORDS)
-# include <shadow.h>
-#endif
-
 #if TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
