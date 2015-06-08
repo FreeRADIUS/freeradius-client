@@ -12,7 +12,7 @@ EXTRA_DIST = radiusclient-ipv6.conf servers-ipv6 \
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir)/include -I$(top_srcdir)/src -I$(top_builddir)
 LDADD = ../lib/libradcli.la
 
-nodist_check_SCRIPTS = basic-tests.sh ipv6-tests.sh tls-tests.sh
+dist_check_SCRIPTS = basic-tests.sh ipv6-tests.sh tls-tests.sh
 TESTS = basic-tests.sh ipv6-tests.sh
 check_PROGRAMS =
 
