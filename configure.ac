@@ -266,3 +266,9 @@ tests/docker/Makefile
 ])
 AC_CONFIG_COMMANDS([default],[[test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h]],[[]])
 AC_OUTPUT
+
+AC_MSG_NOTICE([Configuration:
+
+  Nettle for MD5:         $with_nettle
+  TLS and DTLS support:   $use_gnutls
+])
