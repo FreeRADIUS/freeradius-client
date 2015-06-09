@@ -53,6 +53,7 @@ void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, u
 /** Builds an authentication/accounting request for port id client_port with the value_pairs send and submits it to a server
  *
  * @param rh a handle to parsed configuration.
+ * @param ctx if non-NULL it will contain the context of the request; It must be released using rc_aaa_ctx_free().
  * @param client_port the client port number to use (may be zero to use any available).
  * @param send a VALUE_PAIR array of values (e.g., PW_USER_NAME).
  * @param received an allocated array of received values.
@@ -63,8 +64,8 @@ void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, u
  * @return received value_pairs in received, messages from the server in msg and OK_RC (0) on success, negative
  *	on failure as return value.
  */
-int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
-	   char *msg, int add_nas_port, rc_standard_codes request_type)
+int rc_aaa_ctx(rc_handle *rh, RC_AAA_CTX **ctx, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
+	   	char *msg, int add_nas_port, rc_standard_codes request_type)
 {
 	SEND_DATA       data;
 	VALUE_PAIR	*adt_vp = NULL;
@@ -142,7 +143,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 			rc_avpair_assign(adt_vp, &dtime, 0);
 		}
 
-		result = rc_send_server (rh, &data, msg, type);
+		result = rc_send_server_ctx (rh, ctx, &data, msg, type);
 		if (result == TIMEOUT_RC && radius_deadtime > 0)
 			aaaserver->deadtime_ends[i] = start_time + (double)radius_deadtime;
 	}
@@ -169,7 +170,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 			rc_avpair_assign(adt_vp, &dtime, 0);
 		}
 
-		result = rc_send_server (rh, &data, msg, type);
+		result = rc_send_server_ctx (rh, ctx, &data, msg, type);
 		if (result != TIMEOUT_RC)
 			aaaserver->deadtime_ends[i] = -1;
 	}
@@ -182,6 +183,25 @@ exit:
 	}
 
 	return result;
+}
+
+/** Builds an authentication/accounting request for port id client_port with the value_pairs send and submits it to a server
+ *
+ * @param rh a handle to parsed configuration.
+ * @param client_port the client port number to use (may be zero to use any available).
+ * @param send a VALUE_PAIR array of values (e.g., PW_USER_NAME).
+ * @param received an allocated array of received values.
+ * @param msg must be an array of PW_MAX_MSG_SIZE or NULL; will contain the concatenation of any
+ *	PW_REPLY_MESSAGE received.
+ * @param add_nas_port if non-zero it will include PW_NAS_PORT in sent pairs.
+ * @param request_type one of standard RADIUS codes (e.g., PW_ACCESS_REQUEST).
+ * @return received value_pairs in received, messages from the server in msg and OK_RC (0) on success, negative
+ *	on failure as return value.
+ */
+int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
+	   char *msg, int add_nas_port, rc_standard_codes request_type)
+{
+	return rc_aaa_ctx(rh, NULL, client_port, send, received, msg, add_nas_port, request_type);
 }
 
 /** Builds an authentication request for port id client_port with the value_pairs send and submits it to a server

@@ -157,7 +157,6 @@ int sigprocmask (int, sigset_t *, sigset_t *);
 
 #include <radcli/radcli.h>
 
-#define AUTH_VECTOR_LEN		16
 #define GETSTR_LENGTH		128	//!< must be bigger than AUTH_PASS_LEN.
 
 typedef struct pw_auth_hdr
@@ -205,5 +204,14 @@ struct rc_conf
 	rc_sockets_override	so;
 	unsigned		so_type; /* rc_socket_type */
 };
+
+typedef struct rc_aaa_ctx_st
+{
+	char	secret[MAX_SECRET_LENGTH + 1]; //!< The secret used for this request
+	uint8_t	request_vector[AUTH_VECTOR_LEN]; //< The auth vector used in this request
+} RC_AAA_CTX;
+
+int rc_send_server_ctx (rc_handle *rh, RC_AAA_CTX **ctx, SEND_DATA *data,
+                        char *msg, rc_type type);
 
 #endif

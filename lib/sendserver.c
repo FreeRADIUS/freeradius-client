@@ -263,11 +263,26 @@ const static rc_sockets_override default_socket_funcs = {
 	.recvfrom = plain_recvfrom
 };
 
+static int populate_ctx(RC_AAA_CTX **ctx, char secret[MAX_SECRET_LENGTH+1], uint8_t vector[AUTH_VECTOR_LEN])
+{
+	if (ctx) {
+		*ctx = malloc(sizeof(RC_AAA_CTX));
+		if (*ctx) {
+			memcpy((*ctx)->secret, secret, sizeof((*ctx)->secret));
+			memcpy((*ctx)->request_vector, vector, sizeof((*ctx)->request_vector));
+		} else {
+			return ERROR_RC;
+		}
+	}
+	return OK_RC;
+}
+
 #define SCLOSE(fd) if (sfuncs->close_fd) sfuncs->close_fd(fd)
 
 /** Sends a request to a RADIUS server and waits for the reply
  *
  * @param rh a handle to parsed configuration
+ * @param ctx if non-NULL it will contain the context of sent request; It must be released using rc_aaa_ctx_free().
  * @param data a pointer to a SEND_DATA structure
  * @param msg must be an array of %PW_MAX_MSG_SIZE or NULL; will contain the concatenation of
  *	any %PW_REPLY_MESSAGE received.
@@ -275,8 +290,8 @@ const static rc_sockets_override default_socket_funcs = {
  * @return OK_RC (0) on success, TIMEOUT_RC on timeout REJECT_RC on acess reject, or negative
  *	on failure as return value.
  */
-int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
-                    rc_type type)
+int rc_send_server_ctx (rc_handle *rh, RC_AAA_CTX **ctx, SEND_DATA *data, char *msg,
+                        rc_type type)
 {
 	int             sockfd = -1;
 	AUTH_HDR       *auth, *recv_auth;
@@ -594,6 +609,13 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 	}
 
 	SCLOSE (sockfd);
+	result = populate_ctx(ctx, secret, vector);
+	if (result != OK_RC) {
+		memset(secret, '\0', sizeof(secret));
+		goto cleanup;
+	}
+
+
 	memset (secret, '\0', sizeof (secret));
 
 	if (msg) {
@@ -638,6 +660,22 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 	}
 
 	return result;
+}
+
+/** Sends a request to a RADIUS server and waits for the reply
+ *
+ * @param rh a handle to parsed configuration
+ * @param data a pointer to a SEND_DATA structure
+ * @param msg must be an array of %PW_MAX_MSG_SIZE or NULL; will contain the concatenation of
+ *	any %PW_REPLY_MESSAGE received.
+ * @param type must be %AUTH or %ACCT
+ * @return OK_RC (0) on success, TIMEOUT_RC on timeout REJECT_RC on acess reject, or negative
+ *	on failure as return value.
+ */
+int rc_send_server(rc_handle *rh, SEND_DATA *data, char *msg,
+                   rc_type type)
+{
+	return rc_send_server_ctx(rh, NULL, data, msg, type);
 }
 
 /** Verify items in returned packet

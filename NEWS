@@ -3,6 +3,12 @@
 - Corrections in the link creation during install.
 - Corrections in the types of the distributed dictionary.
 - Added compatibility headers for radiusclient-ng.
+- Added new API to access the context of a request.
+- API and ABI modifications:
+  - rc_aaa_ctx_free: New function
+  - rc_aaa_ctx_get_secret: New function
+  - rc_aaa_ctx_get_vector: New function
+  - rc_aaa_ctx: New function
 
 
 * Version 1.2.0 (released 2015-06-07)

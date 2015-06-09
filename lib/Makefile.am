@@ -26,7 +26,8 @@ DISTCLEANFILES = $(pkgconfig_DATA)
 lib_LTLIBRARIES =  libradcli.la
 libradcli_la_SOURCES = buildreq.c sendserver.c \
 	avpair.c config.c dict.c ip_util.c log.c util.c  \
-	options.h rc-md5.h rc-md5.c util.h tls.c tls.h
+	options.h rc-md5.h rc-md5.c util.h tls.c tls.h \
+	aaa_ctx.c
 
 if !ENABLE_NETTLE
 libradcli_la_SOURCES += md5.c md5.h

@@ -462,6 +462,11 @@ typedef struct send_data /* Used to pass information to sendserver() function */
 	VALUE_PAIR     *receive_pairs;  //!< Where to place received a/v pairs.
 } SEND_DATA;
 
+#define AUTH_VECTOR_LEN		16
+
+struct rc_aaa_ctx_st;
+typedef struct rc_aaa_ctx_st RC_AAA_CTX;
+
 #ifndef MIN
 #define MIN(a, b)     ((a) < (b) ? (a) : (b))
 #endif
@@ -559,6 +564,8 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
 	   char *msg, int add_nas_port, rc_standard_codes request_type);
+int rc_aaa_ctx(rc_handle *rh, RC_AAA_CTX **ctx, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
+	        char *msg, int add_nas_port, rc_standard_codes request_type);
 
 /* config.c */
 
@@ -612,6 +619,11 @@ void rc_openlog(char const *ident);
 
 int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
                     rc_type type);
+
+/* aaa_ctx.c */
+void rc_aaa_ctx_free(RC_AAA_CTX *ctx);
+const char *rc_aaa_ctx_get_secret(RC_AAA_CTX *ctx);
+const void *rc_aaa_ctx_get_vector(RC_AAA_CTX *ctx);
 
 __END_DECLS
 
