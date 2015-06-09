@@ -17,5 +17,6 @@ before_script:
   - sudo /usr/sbin/freeradius -fxx -l stdout >/dev/null 2>&1 &
   - touch config.rpath && autoreconf -fvi && ./configure --with-tls
 
-script: make && SERVER_IP=127.0.0.1 SERVER_IP6=127.0.0.1 make check
+script: make && SERVER_IP=127.0.0.1 SERVER_IP6=127.0.0.1 make check && make dist
+
 after_script: cppcheck -q -Iinclude lib src
