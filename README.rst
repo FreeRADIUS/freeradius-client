@@ -16,14 +16,16 @@ approach is to allow writing RADIUS-aware application in less than 50 lines
 of C code. It was based originally on freeradius-client and is source
 compatible with it.
 
-For my development of the openconnect VPN server, I needed a simple library to
+For the development of the openconnect VPN server, I needed a simple library to
 allow using radius for authentication and accounting without having to understand
 the internals of radius. Such library was the freeradius-client library, but
 it had too much legacy code centered around radlogin, a tool which is of no
 significance today, was IPv4-only and had no releases for several years.
-This library addresses these shortcomings, adds package management
-via pkg-config, adds support for TLS and DTLS, provides documentation of the API,
-and will include any new features for the task.
+This library addresses these shortcomings, adds package management via
+pkg-config, adds support for TLS and DTLS, provides documentation of the API,
+and will include any new features for the task. It is provided as a shared
+library in case it is useful to other projects as well, and is also made source
+compatible with radiusclient-ng and freeradius-client.
 
 
 2. Documentation
