@@ -36,13 +36,13 @@
 
 #define BUF_LEN 4096
 
-int process(void *, VALUE_PAIR *, int, int);
+int process(void *, VALUE_PAIR *, int, int, int);
 
 static void
 usage(void)
 {
 
-    fprintf(stderr, "usage: radiusclient [-f config_file] [-p nas_port] [-s | [-a] a1=v1 [a2=v2[...[aN=vN]...]]]\n");
+    fprintf(stderr, "usage: radiusclient [-f config_file] [-p nas_port] [-i] [-s | [-a] a1=v1 [a2=v2[...[aN=vN]...]]]\n");
     exit(1);
 }
 
@@ -55,13 +55,14 @@ main(int argc, char **argv)
     VALUE_PAIR *send;
     char *rc_conf, *cp;
     char lbuf[4096];
+    int info = 0;
 
     rc_conf = RC_CONFIG_FILE;
     nas_port = 5060;
 
     acct = 0;
     server = 0;
-    while ((ch = getopt(argc, argv, "af:p:s")) != -1) {
+    while ((ch = getopt(argc, argv, "af:p:si")) != -1) {
         switch (ch) {
         case 'f':
             rc_conf = optarg;
@@ -77,6 +78,10 @@ main(int argc, char **argv)
 
         case 's':
             server = 1;
+            break;
+
+        case 'i':
+            info = 1;
             break;
 
         default:
@@ -107,7 +112,7 @@ main(int argc, char **argv)
                 exit(3);
             }
         }
-        exit(process(rh, send, acct, nas_port));
+        exit(process(rh, send, acct, nas_port, info));
     }
     while (1 == 1) {
         send = NULL;
@@ -143,7 +148,7 @@ main(int argc, char **argv)
             }
         } while (theend == 0);
         if (send != NULL && ecount == 0)
-            printf("%d\n\n", process(rh, send, acct, nas_port));
+            printf("%d\n\n", process(rh, send, acct, nas_port, info));
         else
             printf("%d\n\n", -1);
         fflush(stdout);
@@ -156,19 +161,32 @@ main(int argc, char **argv)
 }
 
 int
-process(void *rh, VALUE_PAIR *send, int acct, int nas_port)
+process(void *rh, VALUE_PAIR *send, int acct, int nas_port, int send_info)
 {
-    VALUE_PAIR *received;
-    char msg[PW_MAX_MSG_SIZE];
+    VALUE_PAIR *received = NULL;
     char buf[BUF_LEN];
-    int i;
+    RC_AAA_CTX *ctx = NULL;
+    const unsigned char *p;
+    int i, j;
 
     received = NULL;
     if (acct == 0) {
-        i = rc_auth(rh, nas_port, send, &received, msg);
+        i = rc_aaa_ctx(rh, &ctx, nas_port, send, &received, NULL, 1, PW_ACCESS_REQUEST);
         if (received != NULL) {
             printf("%s", rc_avpair_log(rh, received, buf, BUF_LEN));
             rc_avpair_free(received);
+        }
+        if (ctx) {
+	    if (send_info) {
+		    printf("Request-Info-Secret = %s\n", rc_aaa_ctx_get_secret(ctx));
+		    printf("Request-Info-Vector = ");
+		    p = rc_aaa_ctx_get_vector(ctx);
+		    for (j=0;j<AUTH_VECTOR_LEN;j++) {
+		    	printf("%.2x", (unsigned)p[j]);
+		    }
+		    printf("\n");
+	    }
+	    rc_aaa_ctx_free(ctx);
         }
     } else {
         i = rc_acct(rh, nas_port, send);

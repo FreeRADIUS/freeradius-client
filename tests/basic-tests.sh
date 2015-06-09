@@ -21,7 +21,7 @@ fi
 sed 's/localhost/'$SERVER_IP'/g' <$srcdir/radiusclient.conf >radiusclient-temp.conf 
 sed 's/localhost/'$SERVER_IP'/g' <$srcdir/servers >servers-temp
 
-../src/radiusclient -f radiusclient-temp.conf  User-Name=test Password=test >$TMPFILE
+../src/radiusclient -i -f radiusclient-temp.conf  User-Name=test Password=test >$TMPFILE
 if test $? != 0;then
 	echo "Error in PAP auth"
 	exit 1
@@ -48,7 +48,22 @@ if test $? != 0;then
 	exit 1
 fi
 
+grep "^Request-Info-Secret = testing123$" $TMPFILE >/dev/null 2>&1
+if test $? != 0;then
+	echo "Error in request info data (secret)"
+	cat $TMPFILE
+	exit 1
+fi
+
+grep "^Request-Info-Vector = " $TMPFILE >/dev/null 2>&1
+if test $? != 0;then
+	echo "Error in request info data (vector)"
+	cat $TMPFILE
+	exit 1
+fi
+
 rm -f servers-temp 
+#cat $TMPFILE
 rm -f $TMPFILE
 rm -f radiusclient-temp.conf
 
