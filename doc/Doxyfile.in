@@ -758,7 +758,7 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../lib/ ../include/radcli/radcli.h ../src/radexample.c ../include/radcli/version.h
+INPUT                  = ../lib/ ../include/radcli/ ../src/radexample.c ../include/radiusclient-ng.h ../include/freeradius-client.h
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
