@@ -410,6 +410,7 @@ typedef struct value_pair
 #define OK_RC		0
 #define TIMEOUT_RC	1
 #define REJECT_RC	2
+#define READBLOCK_RC	3
 
 typedef struct send_data /* Used to pass information to sendserver() function */
 {
@@ -423,6 +424,25 @@ typedef struct send_data /* Used to pass information to sendserver() function */
 	VALUE_PAIR     *send_pairs;     //!< More a/v pairs to send.
 	VALUE_PAIR     *receive_pairs;  //!< Where to place received a/v pairs.
 } SEND_DATA;
+
+typedef struct send_context /* Used to pass information to cc_aaa_receive_async() function */
+{
+	int				idx;	   //!< index to the destination that was last tried
+	rc_handle		*rh;	   //!< rh a handle to parsed configuration.
+	char			*msg;	   //!< will contain the concatenation of any %PW_REPLY_MESSAGE received.
+	unsigned		type;	   //!< request type (accounting / authentification)
+	SEND_DATA	    *data;	   //!< used to pass information to sendserver() function
+	int				again;	   //!< first or second pass through all destinations;
+	int				sockfd;	   //!< socket to open connection
+	VALUE_PAIR		*adt_vp;   //!< internal rc_aaa parameter
+	struct addrinfo *auth_addr;//!< internal rc_aaa parameter
+	SERVER			*aaaserver;//!< server descriptions
+	int				skip_count;//!< internal rc_aaa parameter
+	double			start_time;//!< internal rc_aaa parameter
+	int				request_type;//!< acct or auth
+	unsigned char   vector[AUTH_VECTOR_LEN];//!< internal sendserver() param
+	char            secret[MAX_SECRET_LENGTH + 1];//!< radius secret
+} SEND_CONTEXT;
 
 #ifndef MIN
 #define MIN(a, b)     ((a) < (b) ? (a) : (b))
@@ -466,13 +486,24 @@ VALUE_PAIR *rc_avpair_readin(rc_handle const *, FILE *);
 void rc_buildreq(rc_handle const *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
 unsigned char rc_get_id();
 int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *);
+
+int rc_auth_async(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *, SEND_CONTEXT**);
+int rc_auth_resume(SEND_CONTEXT **, VALUE_PAIR **);
+
 int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_acct(rc_handle *, uint32_t, VALUE_PAIR *);
+
+int rc_acct_async(rc_handle *, uint32_t, VALUE_PAIR *, SEND_CONTEXT **);
+int rc_acct_resume(SEND_CONTEXT **);
+
 int rc_acct_proxy(rc_handle *, VALUE_PAIR *);
 int rc_check(rc_handle *, char *, char *, unsigned short, char *);
 
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
     char *msg, int add_nas_port, int request_type);
+int rc_aaa_async (rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
+	   char *msg, int add_nas_port, int request_type, SEND_CONTEXT **ctx);
+int rc_aaa_receive_async(SEND_CONTEXT **ctx, VALUE_PAIR **received, int request_type);
 
 /* clientid.c */
 
