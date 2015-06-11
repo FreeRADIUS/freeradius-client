@@ -481,7 +481,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 		{
 			rc_log(LOG_ERR, "rc_send_server: poll: %s", strerror(errno));
 			memset (secret, '\0', sizeof (secret));
-			close (sockfd);
+			SCLOSE (sockfd);
 			result = ERROR_RC;
 			goto cleanup;
 		}
@@ -558,25 +558,28 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg,
 		if (attr[0] == 0) {
 			rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: attribute zero is invalid",
 			       server_name, data->svc_port);
-			close(sockfd);
+			SCLOSE(sockfd);
 			memset(secret, '\0', sizeof(secret));
-			return ERROR_RC;
+			result = ERROR_RC;
+			goto cleanup;
 		}
 
 		if (attr[1] < 2) {
 			rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: attribute length is too small",
 			       server_name, data->svc_port);
-			close(sockfd);
+			SCLOSE(sockfd);
 			memset(secret, '\0', sizeof(secret));
-			return ERROR_RC;
+			result = ERROR_RC;
+			goto cleanup;
 		}
 
 		if ((attr + attr[1]) > (recv_buffer + length)) {
 			rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: attribute overflows the packet",
 			       server_name, data->svc_port);
-			close(sockfd);
+			SCLOSE(sockfd);
 			memset(secret, '\0', sizeof(secret));
-			return ERROR_RC;
+			result = ERROR_RC;
+			goto cleanup;
 		}
 
 		attr += attr[1];
