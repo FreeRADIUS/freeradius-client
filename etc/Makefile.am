@@ -24,6 +24,7 @@ radiusclient.conf: radiusclient.conf.in
 	sed -e 's|@sbin''dir@|$(sbindir)|g' \
 	    -e 's|@pkgsysconf''dir@|$(pkgsysconfdir)|g' \
 	    <$(srcdir)/radiusclient.conf.in >radiusclient.conf
+	chmod ogu-w $@
 
 install-data-local: servers servers-tls
 	$(mkinstalldirs) $(DESTDIR)$(pkgsysconfdir); \
@@ -36,6 +37,7 @@ radiusclient-tls.conf: radiusclient-tls.conf.in
 	sed -e 's|@sbin''dir@|$(sbindir)|g' \
 	    -e 's|@pkgsysconf''dir@|$(pkgsysconfdir)|g' \
 	    <$(srcdir)/radiusclient-tls.conf.in >radiusclient-tls.conf
+	chmod ogu-w $@
 
 uninstall-local:
 	rm -f $(DESTDIR)$(pkgsysconfdir)/servers
