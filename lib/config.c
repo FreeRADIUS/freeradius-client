@@ -121,6 +121,11 @@ static int set_option_srv(char const *filename, int line, OPTION *option, char c
 		serv->max = 0;
 	}
 
+	if (serv->max > 0) {
+		DEBUG(LOG_ERR, "cannot set multiple servers");
+		return -1;
+	}
+
 	p_pointer = strtok_r(p_dupe, ", \t", &p_save);
 
 	/* check to see for '[IPv6]:port' syntax */
@@ -212,7 +217,6 @@ static int set_option_srv(char const *filename, int line, OPTION *option, char c
 	}
 	free(p_dupe);
 
-	serv->deadtime_ends[serv->max] = -1;
 	serv->max++;
 
 	if (option->val == NULL)
@@ -643,7 +647,8 @@ int rc_test_config(rc_handle *rh, char const *filename)
 	if (!srv || !srv->max)
 	{
 		/* it is allowed not to have acct servers */
-		rc_log(LOG_DEBUG,"%s: no acctserver specified", filename);
+		if (rh->so_type != RC_SOCKET_TLS && rh->so_type != RC_SOCKET_DTLS)
+			rc_log(LOG_DEBUG,"%s: no acctserver specified", filename);
 	}
 	if (!rc_conf_str(rh, "dictionary"))
 	{
@@ -659,11 +664,6 @@ int rc_test_config(rc_handle *rh, char const *filename)
 	if (rc_conf_int(rh, "radius_retries") <= 0)
 	{
 		rc_log(LOG_ERR,"%s: radius_retries <= 0 is illegal", filename);
-		return -1;
-	}
-	if (rc_conf_int(rh, "radius_deadtime") < 0)
-	{
-		rc_log(LOG_ERR,"%s: radius_deadtime is illegal", filename);
 		return -1;
 	}
 
@@ -769,7 +769,6 @@ static int rc_is_myname(const struct addrinfo *info)
 int rc_find_server_addr (rc_handle const *rh, char const *server_name,
                          struct addrinfo** info, char *secret, rc_type type)
 {
-	int		i;
 	int             result = 0;
 	FILE           *clientfd;
 	char           *h;
@@ -791,29 +790,23 @@ int rc_find_server_addr (rc_handle const *rh, char const *server_name,
 		/* Check to see if the server secret is defined in the rh config */
 		if( (authservers = rc_conf_srv(rh, "authserver")) != NULL )
 		{
-			for( i = 0; i < authservers->max; i++ )
+			if( (strncmp(server_name, authservers->name[0], strlen(server_name)) == 0) &&
+			    (authservers->secret[0] != NULL) )
 			{
-				if( (strncmp(server_name, authservers->name[i], strlen(server_name)) == 0) &&
-				    (authservers->secret[i] != NULL) )
-				{
-					memset (secret, '\0', MAX_SECRET_LENGTH);
-					strlcpy (secret, authservers->secret[i], MAX_SECRET_LENGTH);
-					return 0;
-				}
+				memset (secret, '\0', MAX_SECRET_LENGTH);
+				strlcpy (secret, authservers->secret[0], MAX_SECRET_LENGTH);
+				return 0;
 			}
 		}
 	} else if (type == ACCT) {
 		if( (acctservers = rc_conf_srv(rh, "acctserver")) != NULL )
 		{
-			for( i = 0; i < acctservers->max; i++ )
+			if( (strncmp(server_name, acctservers->name[0], strlen(server_name)) == 0) &&
+			    (acctservers->secret[0] != NULL) )
 			{
-				if( (strncmp(server_name, acctservers->name[i], strlen(server_name)) == 0) &&
-				    (acctservers->secret[i] != NULL) )
-				{
-					memset (secret, '\0', MAX_SECRET_LENGTH);
-					strlcpy (secret, acctservers->secret[i], MAX_SECRET_LENGTH);
-					return 0;
-				}
+				memset (secret, '\0', MAX_SECRET_LENGTH);
+				strlcpy (secret, acctservers->secret[0], MAX_SECRET_LENGTH);
+				return 0;
 			}
 		}
 	}
@@ -922,7 +915,7 @@ int rc_find_server_addr (rc_handle const *rh, char const *server_name,
  */
 void rc_config_free(rc_handle *rh)
 {
-	int i, j;
+	int i;
 	SERVER *serv;
 
 	if (rh->config_options == NULL)
@@ -933,10 +926,8 @@ void rc_config_free(rc_handle *rh)
 			continue;
 		if (rh->config_options[i].type == OT_SRV) {
 		        serv = (SERVER *)rh->config_options[i].val;
-			for (j = 0; j < serv->max; j++){
-				free(serv->name[j]);
-				if(serv->secret[j]) free(serv->secret[j]);
-			}
+			free(serv->name[0]);
+			if(serv->secret[0]) free(serv->secret[0]);
 			free(serv);
 		} else {
 			free(rh->config_options[i].val);

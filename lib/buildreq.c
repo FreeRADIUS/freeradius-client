@@ -70,11 +70,9 @@ int rc_aaa_ctx(rc_handle *rh, RC_AAA_CTX **ctx, uint32_t client_port, VALUE_PAIR
 	SEND_DATA       data;
 	VALUE_PAIR	*adt_vp = NULL;
 	int		result;
-	int		i, skip_count;
 	SERVER		*aaaserver;
 	int		timeout = rc_conf_int(rh, "radius_timeout");
 	int		retries = rc_conf_int(rh, "radius_retries");
-	int		radius_deadtime = rc_conf_int(rh, "radius_deadtime");
 	double		start_time = 0;
 	double		now = 0;
 	time_t		dtime;
@@ -121,61 +119,21 @@ int rc_aaa_ctx(rc_handle *rh, RC_AAA_CTX **ctx, uint32_t client_port, VALUE_PAIR
 		}
 	}
 
-	skip_count = 0;
-	result = ERROR_RC;
-	for (i=0; (i < aaaserver->max) && (result != OK_RC) && (result != BADRESP_RC)
-	    ; i++, now = rc_getctime())
-	{
-		if (aaaserver->deadtime_ends[i] != -1 &&
-		    aaaserver->deadtime_ends[i] > start_time) {
-			skip_count++;
-			continue;
-		}
-		if (data.receive_pairs != NULL) {
-			rc_avpair_free(data.receive_pairs);
-			data.receive_pairs = NULL;
-		}
-		rc_buildreq(rh, &data, request_type, aaaserver->name[i],
-		    aaaserver->port[i], aaaserver->secret[i], timeout, retries);
-
-		if (request_type == PW_ACCOUNTING_REQUEST) {
-			dtime = now - start_time;
-			rc_avpair_assign(adt_vp, &dtime, 0);
-		}
-
-		result = rc_send_server_ctx (rh, ctx, &data, msg, type);
-		if (result == TIMEOUT_RC && radius_deadtime > 0)
-			aaaserver->deadtime_ends[i] = start_time + (double)radius_deadtime;
-	}
-	if (result == OK_RC || result == BADRESP_RC || skip_count == 0)
-		goto exit;
-
-	result = ERROR_RC;
-	for (i=0; (i < aaaserver->max) && (result != OK_RC) && (result != BADRESP_RC)
-	    ; i++)
-	{
-		if (aaaserver->deadtime_ends[i] == -1 ||
-		    aaaserver->deadtime_ends[i] <= start_time) {
-			continue;
-		}
-		if (data.receive_pairs != NULL) {
-			rc_avpair_free(data.receive_pairs);
-			data.receive_pairs = NULL;
-		}
-		rc_buildreq(rh, &data, request_type, aaaserver->name[i],
-		    aaaserver->port[i], aaaserver->secret[i], timeout, retries);
-
-		if (request_type == PW_ACCOUNTING_REQUEST) {
-			dtime = rc_getctime() - start_time;
-			rc_avpair_assign(adt_vp, &dtime, 0);
-		}
-
-		result = rc_send_server_ctx (rh, ctx, &data, msg, type);
-		if (result != TIMEOUT_RC)
-			aaaserver->deadtime_ends[i] = -1;
+	if (data.receive_pairs != NULL) {
+		rc_avpair_free(data.receive_pairs);
+		data.receive_pairs = NULL;
 	}
 
-exit:
+	rc_buildreq(rh, &data, request_type, aaaserver->name[0],
+		    aaaserver->port[0], aaaserver->secret[0], timeout, retries);
+
+	if (request_type == PW_ACCOUNTING_REQUEST) {
+		dtime = rc_getctime() - start_time;
+		rc_avpair_assign(adt_vp, &dtime, 0);
+	}
+
+	result = rc_send_server_ctx (rh, ctx, &data, msg, type);
+
 	if (request_type != PW_ACCOUNTING_REQUEST) {
 		*received = data.receive_pairs;
 	} else {

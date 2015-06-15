@@ -87,12 +87,15 @@ typedef enum rc_type {
 struct rc_conf;
 typedef struct rc_conf rc_handle;
 
+/** \struct server Avoid using this structure directly, it is included for backwards compatibility only.
+ * Several of its fields have been deprecated.
+ */
 typedef struct server {
-	int max;
+	int max; //!< for backwards compatibility; its value will be 1.
 	char *name[SERVER_MAX];
 	uint16_t port[SERVER_MAX];
 	char *secret[SERVER_MAX];
-	double deadtime_ends[SERVER_MAX];
+	double deadtime_ends[SERVER_MAX]; //!< unused
 } SERVER;
 
 /** \enum rc_socket_type Indicate the type of the socket
