@@ -1,5 +1,9 @@
 APIMANS =
 APIMANS += man/rc_aaa.3
+APIMANS += man/rc_aaa_ctx.3
+APIMANS += man/rc_aaa_ctx_free.3
+APIMANS += man/rc_aaa_ctx_get_secret.3
+APIMANS += man/rc_aaa_ctx_get_vector.3
 APIMANS += man/rc_acct.3
 APIMANS += man/rc_acct_proxy.3
 APIMANS += man/rc_add_config.3
