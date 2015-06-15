@@ -22,7 +22,7 @@ AC_SUBST(NUMBER_VERSION, `printf "0x%02x%02x%02x" $MAJOR_VERSION $MINOR_VERSION 
 # Interfaces added:                             AGE++
 # Interfaces removed:                           AGE=0
 V_CURRENT=3
-V_REVISION=0
+V_REVISION=1
 V_AGE=0
 LIBVERSION="$V_CURRENT:$V_REVISION:$V_AGE"
 LIBMAJOR=`expr $V_CURRENT - $V_AGE`
