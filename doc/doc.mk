@@ -9,6 +9,7 @@ APIMANS += man/rc_acct_proxy.3
 APIMANS += man/rc_add_config.3
 APIMANS += man/rc_auth.3
 APIMANS += man/rc_auth_proxy.3
+APIMANS += man/rc_avpair_add.3
 APIMANS += man/rc_avpair_assign.3
 APIMANS += man/rc_avpair_free.3
 APIMANS += man/rc_avpair_gen.3

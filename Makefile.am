@@ -20,4 +20,15 @@ LTLIBOBJS = @LTLIBOBJS@
 SUBDIRS = include lib src etc man doc tests
 EXTRA_DIST = NEWS COPYRIGHT README.rst
 
+compare-exported: include/radcli/radcli.h
+	doc/scripts/getfuncs.pl <$^|sort -u >tmp-head-$@
+	doc/scripts/getfuncs-map.pl <lib/radcli.map|sort -u >tmp-exp-$@
+	@echo "******************************************************************************"
+	@echo "If the following step fails there is a symbol in headers that is not exported or vice-versa"
+	@echo "******************************************************************************"
+	diff -u tmp-exp-$@ tmp-head-$@
+	rm -f tmp-exp-$@ tmp-head-$@
+
+dist-hook: compare-exported
+
 CLEANFILES = *~

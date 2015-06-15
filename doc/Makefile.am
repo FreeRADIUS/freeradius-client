@@ -15,7 +15,7 @@ APIMANS += man/radcli.h.3
 CLEANFILES = *~
 DISTCLEANFILES = stamp_mans
 
-EXTRA_DIST = Doxyfile.in scripts/getfuncs.pl doc.mk
+EXTRA_DIST = Doxyfile.in scripts/getfuncs.pl scripts/getfuncs-map.pl doc.mk
 
 dist_man_MANS = $(APIMANS)
 
