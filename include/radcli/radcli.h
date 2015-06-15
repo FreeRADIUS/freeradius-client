@@ -37,15 +37,11 @@
 #include <sys/socket.h>
 #include <netdb.h>
 
-#undef __BEGIN_DECLS
-#undef __END_DECLS
+/* *INDENT-OFF* */
 #ifdef __cplusplus
-# define __BEGIN_DECLS extern "C" {
-# define __END_DECLS }
-#else
-# define __BEGIN_DECLS /* empty */
-# define __END_DECLS /* empty */
+extern "C" {
 #endif
+/* *INDENT-ON* */
 
 /**
  * @defgroup radcli-api Main API
@@ -485,8 +481,6 @@ typedef struct rc_aaa_ctx_st RC_AAA_CTX;
 
 /** @} */
 
-__BEGIN_DECLS
-
 /*!\mainpage
  * \section Introduction
  *
@@ -628,6 +622,10 @@ void rc_aaa_ctx_free(RC_AAA_CTX *ctx);
 const char *rc_aaa_ctx_get_secret(RC_AAA_CTX *ctx);
 const void *rc_aaa_ctx_get_vector(RC_AAA_CTX *ctx);
 
-__END_DECLS
+/* *INDENT-OFF* */
+#ifdef __cplusplus
+}
+#endif
+/* *INDENT-ON* */
 
 #endif /* RADCLI_H */
