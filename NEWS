@@ -1,4 +1,4 @@
-* Version 1.2.1 (unreleaseD)
+* Version 1.2.1 (released 2015-06-15)
 - Removal of unused port-id-map file.
 - Corrections in the link creation during install.
 - Corrections in the types of the distributed dictionary.
