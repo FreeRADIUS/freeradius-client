@@ -40,6 +40,7 @@ char *rc_getstr (rc_handle *rh, char const *prompt, int do_echo)
 	int		flushed = 0;
 	sigset_t        newset;
 	sigset_t        oldset;
+	static char	buf[GETSTR_LENGTH];
 
 	in = fileno(stdin);
 	out = fileno(stdout);
@@ -88,7 +89,7 @@ char *rc_getstr (rc_handle *rh, char const *prompt, int do_echo)
 	/* well, this looks ugly, but it handles the following end of line
 	   markers: \r \r\0 \r\n \n \n\r, at least at a second pass */
 
-	p = rh->buf;
+	p = buf;
 	for (;;)
 	{
 		if (read(in, &c, 1) <= 0)
@@ -104,7 +105,7 @@ char *rc_getstr (rc_handle *rh, char const *prompt, int do_echo)
 
 		flushed = 1;
 
-		if (p < rh->buf + GETSTR_LENGTH)
+		if (p < buf + GETSTR_LENGTH)
 		{
 			if (do_echo && !is_term)
 				(void)write(out, &c, 1);
@@ -134,7 +135,7 @@ char *rc_getstr (rc_handle *rh, char const *prompt, int do_echo)
 
 	(void) sigprocmask (SIG_SETMASK, &oldset, NULL);
 
-	return rh->buf;
+	return buf;
 }
 #endif
 

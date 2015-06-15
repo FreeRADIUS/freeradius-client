@@ -198,8 +198,6 @@ struct rc_conf
 	struct dict_attr	*dictionary_attributes;
 	struct dict_value	*dictionary_values;
 	struct dict_vendor	*dictionary_vendors;
-	char			buf[GETSTR_LENGTH];
-	char			ifname[512];
 
 	rc_sockets_override	so;
 	unsigned		so_type; /* rc_socket_type */
