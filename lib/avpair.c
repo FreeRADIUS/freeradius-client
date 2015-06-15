@@ -17,6 +17,11 @@
 #include <radcli/radcli.h>
 #include "util.h"
 
+#define PARSE_MODE_NAME		0
+#define PARSE_MODE_EQUAL	1
+#define PARSE_MODE_VALUE	2
+#define PARSE_MODE_INVALID	3
+
 /**
  * @defgroup radcli-api Main API
  * @brief Main API Functions 
@@ -504,11 +509,6 @@ static void rc_fieldcpy(char *string, char const **uptr, char const *stopat, siz
 	*uptr = ptr;
 	return;
 }
-
-#define PARSE_MODE_NAME		0
-#define PARSE_MODE_EQUAL	1
-#define PARSE_MODE_VALUE	2
-#define PARSE_MODE_INVALID	3
 
 /** Parses the buffer to extract the attribute-value pairs
  *

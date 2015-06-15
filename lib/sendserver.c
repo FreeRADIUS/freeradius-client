@@ -12,13 +12,6 @@
  *
  */
 
-/**
- * @defgroup radcli-api Main API
- * @brief Main API Functions 
- *
- * @{
- */
-
 #include <includes.h>
 #include <radcli/radcli.h>
 #include <pathnames.h>
@@ -27,9 +20,17 @@
 #include "rc-md5.h"
 
 #define	SA(p)	((struct sockaddr *)(p))
+#define SCLOSE(fd) if (sfuncs->close_fd) sfuncs->close_fd(fd)
 
 static void rc_random_vector (unsigned char *);
 static int rc_check_reply (AUTH_HDR *, int, char const *, unsigned char const *, unsigned char);
+
+/**
+ * @defgroup radcli-api Main API
+ * @brief Main API Functions 
+ *
+ * @{
+ */
 
 /** Packs an attribute value pair list into a buffer
  *
@@ -276,8 +277,6 @@ static int populate_ctx(RC_AAA_CTX **ctx, char secret[MAX_SECRET_LENGTH+1], uint
 	}
 	return OK_RC;
 }
-
-#define SCLOSE(fd) if (sfuncs->close_fd) sfuncs->close_fd(fd)
 
 /** Sends a request to a RADIUS server and waits for the reply
  *
