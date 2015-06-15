@@ -1,0 +1,65 @@
+#
+# The symbol version must be updated on every radcli
+# library major number change.
+
+RADCLI_@LIBMAJOR@
+{
+  global:
+	rc_avpair_assign;
+	rc_avpair_new;
+	rc_avpair_gen;
+	rc_avpair_get;
+	rc_avpair_insert;
+	rc_avpair_free;
+	rc_avpair_parse;
+	rc_avpair_tostr;
+	rc_avpair_log;
+	rc_avpair_next;
+	rc_avpair_add;
+	rc_avpair_get_uint32;
+	rc_avpair_get_in6;
+	rc_avpair_get_raw;
+	rc_avpair_get_attr;
+	rc_buildreq;
+	rc_auth;
+	rc_auth_proxy;
+	rc_acct;
+	rc_acct_proxy;
+	rc_check;
+	rc_aaa;
+	rc_aaa_ctx;
+	rc_add_config;
+	rc_config_init;
+	rc_read_config;
+	rc_conf_str;
+	rc_conf_int;
+	rc_conf_srv;
+	rc_test_config;
+	rc_find_server_addr;
+	rc_config_free;
+	rc_new;
+	rc_destroy;
+	rc_get_socket_type;
+	rc_read_dictionary;
+	rc_dict_getattr;
+	rc_dict_findattr;
+	rc_dict_findval;
+	rc_dict_findvend;
+	rc_dict_getvend;
+	rc_dict_getval;
+	rc_dict_free;
+	rc_tls_fd;
+	rc_check_tls;
+	rc_getport;
+	rc_own_hostname;
+	rc_get_srcaddr;
+	rc_openlog;
+	rc_send_server;
+	rc_aaa_ctx_free;
+	rc_aaa_ctx_get_secret;
+	rc_aaa_ctx_get_vector;
+
+  local:
+    *;
+};
+

@@ -1,3 +1,7 @@
+* Version 1.2.2 (unreleased)
+- Added versioned symbols
+
+
 * Version 1.2.1 (released 2015-06-15)
 - Removal of unused port-id-map file.
 - Corrections in the link creation during install.

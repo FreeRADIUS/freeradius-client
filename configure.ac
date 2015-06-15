@@ -17,6 +17,19 @@ AC_SUBST(MINOR_VERSION, `echo $PACKAGE_VERSION | sed 's/.*\.\(.*\)\..*/\1/g'`)
 AC_SUBST(PATCH_VERSION, [[`echo $PACKAGE_VERSION | sed 's/.*\..*\.\([0-9]*\).*/\1/g'`]])
 AC_SUBST(NUMBER_VERSION, `printf "0x%02x%02x%02x" $MAJOR_VERSION $MINOR_VERSION $PATCH_VERSION`)
 
+# Library code modified:                              REVISION++
+# Interfaces changed/added/removed:   CURRENT++       REVISION=0
+# Interfaces added:                             AGE++
+# Interfaces removed:                           AGE=0
+V_CURRENT=3
+V_REVISION=0
+V_AGE=0
+LIBVERSION="$V_CURRENT:$V_REVISION:$V_AGE"
+LIBMAJOR=`expr $V_CURRENT - $V_AGE`
+
+AC_SUBST(LIBVERSION)
+AC_SUBST(LIBMAJOR)
+
 AM_INIT_AUTOMAKE([1.11.3 -Wall -Wno-override])
 
 pkgsysconfdir=${sysconfdir}/$PACKAGE
@@ -31,6 +44,8 @@ dnl Needed for normal compile
 AC_PATH_PROG(AR, ar)
 AM_PROG_LIBTOOL
 AC_PROG_LN_S
+
+gl_LD_VERSION_SCRIPT
 
 dnl HAVE_SHADOW_PASSWORDS
 AC_MSG_CHECKING(whether to enable legacy library compatibility)
@@ -48,15 +63,6 @@ AC_ARG_ENABLE(legacy-compat,
 
 AM_CONDITIONAL(ENABLE_LEGACY_COMPAT, test "$enable_compat" = "yes")
 
-# Library code modified:                              REVISION++
-# Interfaces changed/added/removed:   CURRENT++       REVISION=0
-# Interfaces added:                             AGE++
-# Interfaces removed:                           AGE=0
-V_CURRENT=3
-V_REVISION=0
-V_AGE=0
-LIBVERSION="$V_CURRENT:$V_REVISION:$V_AGE"
-AC_SUBST(LIBVERSION)
 
 dnl Check if we need -lsocket.
 AC_CHECK_LIB(socket, socket)
@@ -263,6 +269,7 @@ include/radcli/version.h
 doc/Makefile
 doc/Doxyfile
 lib/radcli.pc
+lib/radcli.map
 tests/Makefile
 tests/docker/Makefile
 ])

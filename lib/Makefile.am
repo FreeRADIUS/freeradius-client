@@ -10,6 +10,8 @@
 
 AUTOMAKE_OPTIONS = foreign
 
+EXTRA_DIST = radcli.map.in
+
 RC_LOG_FACILITY = @RC_LOG_FACILITY@
 LIBVERSION = @LIBVERSION@
 
@@ -27,13 +29,17 @@ lib_LTLIBRARIES =  libradcli.la
 libradcli_la_SOURCES = buildreq.c sendserver.c \
 	avpair.c config.c dict.c ip_util.c log.c util.c  \
 	options.h rc-md5.h rc-md5.c util.h tls.c tls.h \
-	aaa_ctx.c
+	aaa_ctx.c radcli.map
 
 if !ENABLE_NETTLE
 libradcli_la_SOURCES += md5.c md5.h
 endif
 
 libradcli_la_LDFLAGS = -version-info $(LIBVERSION)
+
+if HAVE_LD_VERSION_SCRIPT
+libradcli_la_LDFLAGS += -Wl,--version-script=$(srcdir)/radcli.map
+endif
 
 libradcli_la_LIBADD = $(CRYPTO_LIBS)
 
