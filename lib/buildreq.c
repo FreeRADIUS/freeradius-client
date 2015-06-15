@@ -50,7 +50,9 @@ void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, u
 	data->code = code;
 }
 
-/** Builds an authentication/accounting request for port id client_port with the value_pairs send and submits it to a server
+/** Builds an authentication/accounting request for port id client_port with the value_pairs send and submits it to a server.
+ * This function keeps its state in ctx after a successful operation. It can be deallocated using
+ * rc_aaa_ctx_free().
  *
  * @param rh a handle to parsed configuration.
  * @param ctx if non-NULL it will contain the context of the request; It must be released using rc_aaa_ctx_free().
