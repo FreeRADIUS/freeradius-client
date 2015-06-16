@@ -333,13 +333,13 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 	getnameinfo(SA(&our_sockaddr), SS_LEN(&our_sockaddr), NULL, 0, our_addr_txt, sizeof(our_addr_txt), NI_NUMERICHOST);
 	getnameinfo(auth_addr->ai_addr, auth_addr->ai_addrlen, NULL, 0, auth_addr_txt, sizeof(auth_addr_txt), NI_NUMERICHOST);
 
-	DEBUG(LOG_ERR, "DEBUG: local %s : 0, remote %s : %u\n", 
+	DEBUG(LOG_ERR, "DEBUG: local %s : 0, remote %s : %u\n",
 	      our_addr_txt, auth_addr_txt, data->svc_port);
 
 	for (;;)
 	{
 		do {
-			result = sendto (sockfd, (char *) auth, (unsigned int)total_length, 
+			result = sendto (sockfd, (char *) auth, (unsigned int)total_length,
 				(int) 0, SA(auth_addr->ai_addr), auth_addr->ai_addrlen);
 		} while (result == -1 && errno == EINTR);
 		if (result == -1) {
@@ -623,7 +623,8 @@ int rc_send_server_async(rc_handle *rh, SEND_DATA *data, char *msg, unsigned fla
 	/*
 	 * Fill in NAS-IP-Address (if needed)
 	 */
-	if (rc_avpair_get(data->send_pairs, PW_NAS_IP_ADDRESS, 0) == NULL) {
+	if (rc_avpair_get(data->send_pairs, PW_NAS_IP_ADDRESS, 0) == NULL &&
+	    rc_avpair_get(data->send_pairs, PW_NAS_IPV6_ADDRESS, 0) == NULL) {
 		if (our_sockaddr.ss_family == AF_INET) {
 			uint32_t ip;
 			ip = *((uint32_t*)(&((struct sockaddr_in*)&our_sockaddr)->sin_addr));
