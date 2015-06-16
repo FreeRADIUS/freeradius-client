@@ -55,7 +55,7 @@ void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, u
  * rc_aaa_ctx_free().
  *
  * @param rh a handle to parsed configuration.
- * @param ctx if non-NULL it will contain the context of the request; It must be released using rc_aaa_ctx_free().
+ * @param ctx if non-NULL it will contain the context of the request; Its initial value should be NULL and it must be released using rc_aaa_ctx_free().
  * @param client_port the client port number to use (may be zero to use any available).
  * @param send a VALUE_PAIR array of values (e.g., PW_USER_NAME).
  * @param received an allocated array of received values.

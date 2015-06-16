@@ -267,6 +267,9 @@ const static rc_sockets_override default_socket_funcs = {
 static int populate_ctx(RC_AAA_CTX **ctx, char secret[MAX_SECRET_LENGTH+1], uint8_t vector[AUTH_VECTOR_LEN])
 {
 	if (ctx) {
+		if (*ctx != NULL)
+			return ERROR_RC;
+
 		*ctx = malloc(sizeof(RC_AAA_CTX));
 		if (*ctx) {
 			memcpy((*ctx)->secret, secret, sizeof((*ctx)->secret));
