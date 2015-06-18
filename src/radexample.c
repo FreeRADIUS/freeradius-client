@@ -18,8 +18,6 @@ main (int argc, char **argv)
 	char            passwd[AUTH_PASS_LEN + 1];
 	VALUE_PAIR 	*send, *received;
 	uint32_t	service;
-	char 		username_realm[256];
-	char		*default_realm;
 	rc_handle	*rh;
 
 	/* Not needed if you already used openlog() */
@@ -27,8 +25,6 @@ main (int argc, char **argv)
 
 	if ((rh = rc_read_config(RC_CONFIG_FILE)) == NULL)
 		return ERROR_RC;
-
-	default_realm = rc_conf_str(rh, "default_realm");
 
 	strcpy(username, "my-username");
 	strcpy(passwd, "my-password");
@@ -38,12 +34,7 @@ main (int argc, char **argv)
 	/*
 	 * Fill in User-Name
 	 */
-	if (default_realm && default_realm[0] != 0)
-		snprintf(username_realm, sizeof(username_realm), "%s@%s", username, default_realm);
-	else
-		snprintf(username_realm, sizeof(username_realm), "%s", username);
-
-	if (rc_avpair_add(rh, &send, PW_USER_NAME, username_realm, -1, 0) == NULL)
+	if (rc_avpair_add(rh, &send, PW_USER_NAME, username, -1, 0) == NULL)
 		return ERROR_RC;
 
 	/*
