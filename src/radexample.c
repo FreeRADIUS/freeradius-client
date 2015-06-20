@@ -7,9 +7,8 @@
  */
 
 #include	<config.h>
-#include	<includes.h>
+#include	<stdio.h>
 #include	<radcli/radcli.h>
-#include	<pathnames.h>
 
 int
 main (int argc, char **argv)
@@ -23,7 +22,7 @@ main (int argc, char **argv)
 	char		*default_realm;
 	rc_handle	*rh;
 
-	/* Don't needed if you already used openlog() */
+	/* Not needed if you already used openlog() */
 	rc_openlog("my-prog-name");
 
 	if ((rh = rc_read_config(RC_CONFIG_FILE)) == NULL)
