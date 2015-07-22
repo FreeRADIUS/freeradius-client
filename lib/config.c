@@ -391,40 +391,41 @@ rc_handle *rc_config_init(rc_handle *rh)
 
 static int apply_config(rc_handle *rh)
 {
-	const char *txt;
-	int ret;
-
 	memset(&rh->own_bind_addr, 0, sizeof(rh->own_bind_addr));
 	rh->own_bind_addr_set = 0;
 	rc_own_bind_addr(rh, &rh->own_bind_addr);
 	rh->own_bind_addr_set = 1;
 #ifdef HAVE_GNUTLS
-	txt = rc_conf_str(rh, "serv-auth-type");
-	if (txt != NULL) {
-		if (strcasecmp(txt, "dtls") == 0) {
-		    	ret = rc_init_tls(rh, SEC_FLAG_DTLS);
-		} else if (strcasecmp(txt, "tls") == 0) {
-		    	ret = rc_init_tls(rh, 0);
-		} else {
-			rc_log(LOG_CRIT, "unknown server authentication type: %s", txt);
-			return -1;
-		}
+        {
+                const char *txt;
+                int ret;
+                txt = rc_conf_str(rh, "serv-auth-type");
+                if (txt != NULL) {
+                        if (strcasecmp(txt, "dtls") == 0) {
+                                ret = rc_init_tls(rh, SEC_FLAG_DTLS);
+                        } else if (strcasecmp(txt, "tls") == 0) {
+                                ret = rc_init_tls(rh, 0);
+                        } else {
+                                rc_log(LOG_CRIT, "unknown server authentication type: %s", txt);
+                                return -1;
+                        }
 
-	    	if (ret < 0) {
-	    		rc_log(LOG_CRIT, "error initializing %s", txt);
-			return -1;
-		}
-	}
+                        if (ret < 0) {
+                                rc_log(LOG_CRIT, "error initializing %s", txt);
+                                return -1;
+                        }
+                }
+        }
 #endif
 
-	return 0;	
+	return 0;
 
 }
 
 /** Read the global config file
  *
- * This function will load the provided configuration file, and 
- * any other files such as the dictionary. 
+ * This function will load the provided configuration file, and
+ * any other files such as the dictionary.
  *
  * Note: To preserve compatibility with libraries of the same API
  * which don't load the dictionary care is taken not to reload the
