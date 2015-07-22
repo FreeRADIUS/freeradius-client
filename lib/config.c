@@ -980,3 +980,10 @@ rc_socket_type rc_get_socket_type(rc_handle *rh)
 }
 
 /** @} */
+/*
+ /*
+ * Local Variables:
+ * c-basic-offset:8
+ * c-style: whitesmith
+ * End:
+ */
