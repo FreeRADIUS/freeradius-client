@@ -1,11 +1,11 @@
-# 
+#
 #  $Id: configure.in,v 1.38 2008/03/05 18:02:55 cparker Exp $
-# 
+#
 #  Copyright (C) 1996,1997 Lars Fenneberg
-# 
-#  See the file COPYRIGHT for the respective terms and conditions. 
-# 
-# 
+#
+#  See the file COPYRIGHT for the respective terms and conditions.
+#
+#
 
 AC_INIT([radcli], [1.2.2], [n.mavrogiannopoulos@gmail.com])
 
@@ -65,9 +65,6 @@ AM_CONDITIONAL(ENABLE_LEGACY_COMPAT, test "$enable_compat" = "yes")
 
 dnl Check if we need -lsocket.
 AC_CHECK_LIB(socket, socket)
-
-dnl Checks for endianness
-AC_C_BIGENDIAN
 
 dnl Checks for header files.
 AC_HEADER_DIRENT
@@ -232,10 +229,6 @@ AC_ARG_ENABLE(scp,
 AC_SUBST(RC_SECURE_PATH)
 AC_SUBST(RC_LOG_FACILITY)
 
-AH_OUTPUT([BIG_ENDIAN], [/* is big endian arch ? */
-#undef BIG_ENDIAN])
-AH_OUTPUT([LITTLE_ENDIAN], [/* is little endian arch ? */
-#undef LITTLE_ENDIAN])
 AH_OUTPUT([HAVE_DEV_URANDOM], [/* does /dev/urandom exist ? */
 #undef HAVE_DEV_URANDOM])
 AH_OUTPUT([HAVE_SHADOW_PASSWORDS], [/* shadow password support */
