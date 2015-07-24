@@ -569,6 +569,7 @@ typedef struct rc_aaa_ctx_st RC_AAA_CTX;
   VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 			  int length, int vendorpec);
 VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, int attrid, int vendorpec);
+VALUE_PAIR *rc_avpair_copy(VALUE_PAIR *p);
 void rc_avpair_insert(VALUE_PAIR **a, VALUE_PAIR *p, VALUE_PAIR *b);
 void rc_avpair_free (VALUE_PAIR *pair);
 int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first_pair);

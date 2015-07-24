@@ -394,6 +394,34 @@ VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, int attrid, int vendorpec)
 	return vp;
 }
 
+/*
+ * Function: rc_avpair_copy
+ *
+ * Purpose: Return a copy of the existing list "p" ala strdup().
+ *
+ */
+VALUE_PAIR *rc_avpair_copy(VALUE_PAIR *p)
+{
+	VALUE_PAIR *vp, *fp = NULL, *lp = NULL;
+
+	while (p) {
+		vp = malloc(sizeof(VALUE_PAIR));
+		if (!vp) {
+                  rc_log(LOG_CRIT, "rc_avpair_copy: out of memory");
+                  return NULL;  /* could leak pairs already copied */
+		}
+		*vp = *p;
+		if (!fp)
+			fp = vp;
+		if (lp)
+			lp->next = vp;
+		lp = vp;
+		p = p->next;
+	}
+
+	return fp;
+}
+
 /** Insert a VALUE_PAIR into a list
  *
  * Given the address of an existing list "a" and a pointer to an entry "p" in that list, add the value pair "b" to
