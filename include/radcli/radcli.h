@@ -563,10 +563,10 @@ typedef struct rc_aaa_ctx_st RC_AAA_CTX;
 
 /* avpair.c */
 
-VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, int attrid, void const *pval, int len, int vendorpec);
-int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len);
-VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, int len, int vendorpec);
-VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
+  VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, int attrid, void const *pval, int len, int vendorpec);
+  int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len);
+  VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, int len, int vendorpec);
+  VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
 			  int length, int vendorpec);
 VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, int attrid, int vendorpec);
 void rc_avpair_insert(VALUE_PAIR **a, VALUE_PAIR *p, VALUE_PAIR *b);
@@ -585,7 +585,8 @@ void rc_avpair_get_attr (VALUE_PAIR *vp, unsigned *type, unsigned *id);
 
 void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, unsigned short port,
 		 char *secret, int timeout, int retries);
-int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received, char *msg);
+int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send,
+            VALUE_PAIR **received, char *msg);
 int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *msg);
 int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send);
 int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send);
