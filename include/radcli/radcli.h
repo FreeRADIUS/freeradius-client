@@ -388,6 +388,38 @@ typedef enum rc_acct_auth_type {
 	PW_REMOTE=3
 } rc_acct_auth_type;
 
+/** \enum rc_vendor_pec --- http://www.iana.org/assignments/enterprise-numbers/enterprise-numbers
+ */
+typedef enum rc_vendor_pec {
+  VENDOR_NONE=(-1),
+  VENDOR_MICROSOFT	     = 311,
+  VENDOR_ROARING_PENGUIN     = 10055
+} rc_vendor_type;
+
+/* Vendor RADIUS attribute-value pairs for MICROSOFT */
+enum rc_vendor_attr_microsoft {
+  PW_MS_CHAP_CHALLENGE	=	11,	/* string */
+  PW_MS_CHAP_RESPONSE	=	1,	/* string */
+  PW_MS_CHAP2_RESPONSE	=	25,	/* string */
+  PW_MS_CHAP2_SUCCESS	=	26,	/* string */
+  PW_MS_MPPE_ENCRYPTION_POLICY=	7,	/* string */
+  PW_MS_MPPE_ENCRYPTION_TYPE=	8,	/* string */
+  PW_MS_MPPE_ENCRYPTION_TYPES=PW_MS_MPPE_ENCRYPTION_TYPE,
+  PW_MS_CHAP_MPPE_KEYS	=	12,	/* string */
+  PW_MS_MPPE_SEND_KEY	=	16,	/* string */
+  PW_MS_MPPE_RECV_KEY	=	17,	/* string */
+  PW_MS_PRIMARY_DNS_SERVER=	28,	/* ipaddr */
+  PW_MS_SECONDARY_DNS_SERVER=	29,	/* ipaddr */
+  PW_MS_PRIMARY_NBNS_SERVER=	30,	/* ipaddr */
+  PW_MS_SECONDARY_NBNS_SERVER=	31,	/* ipaddr */
+};
+
+/* Vendor RADIUS attribute-value pairs for Roaring Penguin: Bandwidth bit rate limits */
+enum rc_vendor_attr_roaringpenguin {
+  PW_RP_UPSTREAM_LIMIT        =1,  /* integer */
+  PW_RP_DOWNSTREAM_LIMIT      =2,  /* integer */
+};
+
 /* PROHIBIT PROTOCOL */
 #define PW_DUMB			0	//!< 1 and 2 are defined in FRAMED PROTOCOLS.
 #define PW_AUTH_ONLY		3
