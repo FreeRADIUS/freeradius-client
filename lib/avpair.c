@@ -1009,3 +1009,9 @@ void rc_avpair_get_attr (VALUE_PAIR *vp, unsigned *type, unsigned *id)
 }
 
 /** @} */
+/*
+ * Local Variables:
+ * c-basic-offset:8
+ * c-style: whitesmith
+ * End:
+ */
