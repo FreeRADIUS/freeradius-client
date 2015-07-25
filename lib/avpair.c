@@ -152,12 +152,18 @@ VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, in
 {
 	VALUE_PAIR     *vp = NULL;
 	DICT_ATTR      *pda;
+        int vattrid;
 
-	attrid = attrid | (vendorpec << 16);
-	if ((pda = rc_dict_getattr (rh, attrid)) == NULL)
+        if(vendorpec != VENDOR_NONE) {
+                vattrid = attrid | (vendorpec << 16);
+        } else {
+                vattrid = attrid;
+        }
+	if ((pda = rc_dict_getattr (rh, vattrid)) == NULL)
 	{
-		rc_log(LOG_ERR,"rc_avpair_new: no attribute %d in dictionary", attrid);
-		return NULL;
+                rc_log(LOG_ERR,"rc_avpair_new: no attribute %d/%u in dictionary",
+                       vendorpec,attrid);
+                return NULL;
 	}
 	if (vendorpec != 0 && rc_dict_getvend(rh, vendorpec) == NULL)
 	{
@@ -167,7 +173,7 @@ VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, in
 	if ((vp = malloc (sizeof (VALUE_PAIR))) != NULL)
 	{
 		strlcpy (vp->name, pda->name, sizeof (vp->name));
-		vp->attribute = attrid;
+		vp->attribute = vattrid;
 		vp->next = NULL;
 		vp->type = pda->type;
 		if (rc_avpair_assign (vp, pval, len) == 0)

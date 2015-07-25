@@ -391,7 +391,7 @@ typedef enum rc_acct_auth_type {
 /** \enum rc_vendor_pec --- http://www.iana.org/assignments/enterprise-numbers/enterprise-numbers
  */
 typedef enum rc_vendor_pec {
-  VENDOR_NONE=(-1),
+  VENDOR_NONE=0,
   VENDOR_MICROSOFT	     = 311,
   VENDOR_ROARING_PENGUIN     = 10055
 } rc_vendor_type;
