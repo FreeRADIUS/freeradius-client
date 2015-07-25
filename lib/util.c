@@ -122,3 +122,24 @@ rc_strlcpy(char *dst, char const *src, size_t siz)
 
 #endif
 
+/*
+ * Function: rc_mksid
+ *
+ * Purpose: generate a quite unique string
+ *
+ * Remarks: not that unique at all...
+ *
+ */
+
+char *
+rc_mksid (void)
+{
+  static char buf[15];
+  static unsigned short int cnt = 0;
+  sprintf (buf, "%08lX%04X%02hX",
+	   (unsigned long int) time (NULL),
+	   (unsigned int) getpid (),
+	   cnt & 0xFF);
+  cnt++;
+  return buf;
+}
