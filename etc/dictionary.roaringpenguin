@@ -1,0 +1,21 @@
+# Roaring Penguin Vendor-Specific Attributes
+
+# Our vendor ID from IANA
+VENDOR		RoaringPenguin	10055
+
+#
+# Roaring Penguin vendor-specific attributes
+#
+
+# Upstream speed limit in kb/s
+ATTRIBUTE	RP-Upstream-Speed-Limit		1	integer	RoaringPenguin
+
+# Downstream speed limit in kb/s
+ATTRIBUTE	RP-Downstream-Speed-Limit	2	integer	RoaringPenguin
+
+# Send a HURL
+ATTRIBUTE       RP-HURL                         3       string  RoaringPenguin
+
+# Send a MOTM
+ATTRIBUTE       RP-MOTM                         4       string  RoaringPenguin
+
