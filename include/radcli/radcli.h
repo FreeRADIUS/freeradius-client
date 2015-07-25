@@ -595,8 +595,13 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
 	   char *msg, int add_nas_port, rc_standard_codes request_type);
-int rc_aaa_ctx(rc_handle *rh, RC_AAA_CTX **ctx, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
-	        char *msg, int add_nas_port, rc_standard_codes request_type);
+int rc_aaa_ctx(rc_handle *rh, RC_AAA_CTX **ctx, uint32_t client_port, VALUE_PAIR *send,
+               VALUE_PAIR **received,
+               char *msg, int add_nas_port, rc_standard_codes request_type);
+int rc_aaa_ctx_server(rc_handle *rh, RC_AAA_CTX **ctx, SERVER *aaaserver,
+                      rc_type type, uint32_t client_port,
+                      VALUE_PAIR *send, VALUE_PAIR **received,
+                      char *msg, int add_nas_port, rc_standard_codes request_type);
 
 /* config.c */
 

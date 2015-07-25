@@ -69,15 +69,7 @@ void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, u
 int rc_aaa_ctx(rc_handle *rh, RC_AAA_CTX **ctx, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
 	   	char *msg, int add_nas_port, rc_standard_codes request_type)
 {
-	SEND_DATA       data;
-	VALUE_PAIR	*adt_vp = NULL;
-	int		result;
 	SERVER		*aaaserver;
-	int		timeout = rc_conf_int(rh, "radius_timeout");
-	int		retries = rc_conf_int(rh, "radius_retries");
-	double		start_time = 0;
-	double		now = 0;
-	time_t		dtime;
 	rc_type		type;
 
 	if (rh->so_type == RC_SOCKET_TLS || rh->so_type == RC_SOCKET_DTLS ||
@@ -90,6 +82,43 @@ int rc_aaa_ctx(rc_handle *rh, RC_AAA_CTX **ctx, uint32_t client_port, VALUE_PAIR
 	}
 	if (aaaserver == NULL)
 		return ERROR_RC;
+
+        return rc_aaa_ctx_server(rh, ctx, aaaserver, type,
+                                 client_port, send, received, msg,
+                                 add_nas_port, request_type);
+}
+
+/** Builds an authentication/accounting request for port id client_port with the value_pairs send and submits it to a specified server.
+ * This function keeps its state in ctx after a successful operation. It can be deallocated using
+ * rc_aaa_ctx_free().
+ *
+ * @param rh a handle to parsed configuration.
+ * @param ctx if non-NULL it will contain the context of the request; Its initial value should be NULL and it must be released using rc_aaa_ctx_free().
+ * @param aaaserver a non-NULL SERVER to send the message to.
+ * @param client_port the client port number to use (may be zero to use any available).
+ * @param send a VALUE_PAIR array of values (e.g., PW_USER_NAME).
+ * @param received an allocated array of received values.
+ * @param msg must be an array of PW_MAX_MSG_SIZE or NULL; will contain the concatenation of any
+ *	PW_REPLY_MESSAGE received.
+ * @param add_nas_port if non-zero it will include PW_NAS_PORT in sent pairs.
+ * @param request_type one of standard RADIUS codes (e.g., PW_ACCESS_REQUEST).
+ * @return received value_pairs in received, messages from the server in msg and OK_RC (0) on success, negative
+ *	on failure as return value.
+ */
+int rc_aaa_ctx_server(rc_handle *rh, RC_AAA_CTX **ctx, SERVER *aaaserver,
+                      rc_type type,
+                      uint32_t client_port,
+                      VALUE_PAIR *send, VALUE_PAIR **received,
+                      char *msg, int add_nas_port, rc_standard_codes request_type)
+{
+	SEND_DATA       data;
+	VALUE_PAIR	*adt_vp = NULL;
+	int		result;
+	int		timeout = rc_conf_int(rh, "radius_timeout");
+	int		retries = rc_conf_int(rh, "radius_retries");
+	double		start_time = 0;
+	double		now = 0;
+	time_t		dtime;
 
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
