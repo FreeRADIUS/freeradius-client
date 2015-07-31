@@ -66,6 +66,9 @@ AM_CONDITIONAL(ENABLE_LEGACY_COMPAT, test "$enable_compat" = "yes")
 dnl Check if we need -lsocket.
 AC_CHECK_LIB(socket, socket)
 
+dnl Checks for endianness
+AC_C_BIGENDIAN
+
 dnl Checks for header files.
 AC_HEADER_DIRENT
 AC_HEADER_STDC
@@ -107,7 +110,7 @@ then
 	AC_MSG_CHECKING([for field domainname in struct utsname])
 	AC_TRY_RUN([
 	#include <sys/utsname.h>
-	
+
 	main(int argc, char **argv)
 	{
 		struct utsname uts;
