@@ -69,11 +69,6 @@ AC_CHECK_LIB(socket, socket)
 
 dnl Checks for endianness
 AC_C_BIGENDIAN
-if test $ac_cv_c_bigendian = yes; then
-	AC_DEFINE(BIG_ENDIAN)
-else
-	AC_DEFINE(LITTLE_ENDIAN)
-fi
 
 dnl Checks for header files.
 AC_HEADER_DIRENT
