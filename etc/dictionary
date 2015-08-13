@@ -303,6 +303,6 @@ VALUE		Add-Port-To-IP-Address	Yes			1
 #VALUE		Server-Config		Password-Expiration	30
 #VALUE		Server-Config		Password-Warning	5
 
-$INCLUDE /etc/ppp/radiusclient/dictionary.microsoft
-$INCLUDE /etc/ppp/radiusclient/dictionary.roaringpenguin
+$INCLUDE dictionary.microsoft
+$INCLUDE dictionary.roaringpenguin
 
