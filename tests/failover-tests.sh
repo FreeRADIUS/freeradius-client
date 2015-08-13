@@ -18,7 +18,7 @@ if test -z "$SERVER_IP";then
 	exit 77
 fi
 
-sed 's/localhost/'$SERVER_IP'/g' <$srcdir/radiusclient.conf >radiusclient-temp.conf
+sed 's/localhost/127.1.1.1:9999,'$SERVER_IP'/g' <$srcdir/radiusclient.conf >radiusclient-temp.conf
 sed 's/localhost/'$SERVER_IP'/g' <$srcdir/servers >servers-temp
 
 ../src/radiusclient -D -i -f radiusclient-temp.conf  User-Name=test Password=test | tee $TMPFILE
@@ -62,7 +62,7 @@ if test $? != 0;then
 	exit 1
 fi
 
-rm -f servers-temp 
+rm -f servers-temp
 #cat $TMPFILE
 rm -f $TMPFILE
 rm -f radiusclient-temp.conf

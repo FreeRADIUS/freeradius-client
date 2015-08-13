@@ -1,3 +1,6 @@
-## Server Name or Client/Server pair		Key		
+## Server Name or Client/Server pair		Key
 ## ----------------				---------------
 localhost/localhost				testing123
+
+# used by failover test as a broken target. not supposed to respond.
+127.1.1.1/127.1.1.1				testing123
