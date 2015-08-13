@@ -45,7 +45,7 @@ extern "C" {
 
 /**
  * @defgroup radcli-api Main API
- * @brief Main API Functions 
+ * @brief Main API Functions
  *
  * @{
  */
@@ -536,7 +536,7 @@ typedef struct rc_aaa_ctx_st RC_AAA_CTX;
  *
  * Alternative operation without a configuration file is also possible, see
  * rc_add_config().
- * 
+ *
  * Check radexample.c for a functional example.
  *
  */
