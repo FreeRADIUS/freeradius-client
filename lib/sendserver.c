@@ -641,8 +641,8 @@ int rc_send_server_ctx (rc_handle *rh, RC_AAA_CTX **ctx, SEND_DATA *data, char *
 	getnameinfo(SA(&our_sockaddr), SS_LEN(&our_sockaddr), NULL, 0, our_addr_txt, sizeof(our_addr_txt), NI_NUMERICHOST);
 	getnameinfo(auth_addr->ai_addr, auth_addr->ai_addrlen, NULL, 0, auth_addr_txt, sizeof(auth_addr_txt), NI_NUMERICHOST);
 
-	DEBUG(LOG_ERR, "DEBUG: local %s : 0, remote %s : %u\n", 
-	      our_addr_txt, auth_addr_txt, data->svc_port);
+	DEBUG(LOG_ERR, "DEBUG: timeout=%d retries=%d local %s : 0, remote %s : %u\n",
+	      data->timeout, retry_max, our_addr_txt, auth_addr_txt, data->svc_port);
 
 	for (;;)
 	{

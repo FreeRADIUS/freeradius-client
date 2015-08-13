@@ -119,9 +119,23 @@ int rc_aaa_ctx_server(rc_handle *rh, RC_AAA_CTX **ctx, SERVER *aaaserver,
 	double		start_time = 0;
 	double		now = 0;
 	time_t		dtime;
+        int             servernum;
 
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
+
+        /*
+         * if there is more than zero servers, then divide waiting time
+         * among all the servers.
+         */
+        if(aaaserver->max > 0) {
+          if(timeout > 0) {
+            timeout = (timeout+1) / aaaserver->max;
+          }
+          if(retries > 0) {
+            retries = (retries+1) / aaaserver->max;
+          }
+        }
 
 	if (add_nas_port != 0 && rc_avpair_get(data.send_pairs, PW_NAS_PORT, 0) == NULL) {
 		/*
@@ -155,21 +169,29 @@ int rc_aaa_ctx_server(rc_handle *rh, RC_AAA_CTX **ctx, SERVER *aaaserver,
 		data.receive_pairs = NULL;
 	}
 
-	rc_buildreq(rh, &data, request_type, aaaserver->name[0],
-		    aaaserver->port[0], aaaserver->secret[0], timeout, retries);
+        servernum=0;
+        do {
+          rc_buildreq(rh, &data, request_type, aaaserver->name[servernum],
+                      aaaserver->port[servernum],
+                      aaaserver->secret[servernum], timeout, retries);
 
-	if (request_type == PW_ACCOUNTING_REQUEST) {
-		dtime = rc_getctime() - start_time;
-		rc_avpair_assign(adt_vp, &dtime, 0);
-	}
+          if (request_type == PW_ACCOUNTING_REQUEST) {
+            dtime = rc_getctime() - start_time;
+            rc_avpair_assign(adt_vp, &dtime, 0);
+          }
 
-	result = rc_send_server_ctx (rh, ctx, &data, msg, type);
+          result = rc_send_server_ctx (rh, ctx, &data, msg, type);
 
-	if (request_type != PW_ACCOUNTING_REQUEST) {
-		*received = data.receive_pairs;
-	} else {
-		rc_avpair_free(data.receive_pairs);
-	}
+          if (request_type != PW_ACCOUNTING_REQUEST) {
+            *received = data.receive_pairs;
+          } else {
+            rc_avpair_free(data.receive_pairs);
+          }
+
+          if(result == OK_RC) return result;
+
+          servernum++;
+        } while(servernum < aaaserver->max && result == TIMEOUT_RC);
 
 	return result;
 }

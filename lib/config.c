@@ -14,7 +14,7 @@
 
 /**
  * @defgroup radcli-api Main API
- * @brief Main API Functions 
+ * @brief Main API Functions
  *
  * @{
  */
@@ -121,104 +121,108 @@ static int set_option_srv(char const *filename, int line, OPTION *option, char c
 		serv->max = 0;
 	}
 
-	if (serv->max > 0) {
-		DEBUG(LOG_ERR, "cannot set multiple servers");
-		return -1;
-	}
-
 	p_pointer = strtok_r(p_dupe, ", \t", &p_save);
 
-	/* check to see for '[IPv6]:port' syntax */
-	if ((q = strchr(p_pointer,'[')) != NULL) {
-		*q = '\0';
-		q++;
-		p_pointer = q;
+        while(p_pointer != NULL) {
+                if (serv->max > SERVER_MAX) {
+                        DEBUG(LOG_ERR, "cannot set more than %d servers", SERVER_MAX);
+                        return -1;
+                }
 
-		q = strchr(p_pointer, ']');
-		if (q == NULL) {
-			free(p_dupe);
-			rc_log(LOG_CRIT, "read_config: IPv6 parse error");
-			return -1;
-		}
-		*q = '\0';
-		q++;
+		DEBUG(LOG_ERR, "processing server: %s", p_pointer);
+                /* check to see for '[IPv6]:port' syntax */
+                if ((q = strchr(p_pointer,'[')) != NULL) {
+                        *q = '\0';
+                        q++;
+                        p_pointer = q;
 
-		if (q[0] == ':') {
-			q++;
-		}
+                        q = strchr(p_pointer, ']');
+                        if (q == NULL) {
+                                free(p_dupe);
+                                rc_log(LOG_CRIT, "read_config: IPv6 parse error");
+                                return -1;
+                        }
+                        *q = '\0';
+                        q++;
 
-		/* Check to see if we have '[IPv6]:port:secret' syntax */
-		if((s=strchr(q, ':')) != NULL) {
-			*s = '\0';
-			s++;
-			serv->secret[serv->max] = strdup(s);
-			if (serv->secret[serv->max] == NULL) {
-				rc_log(LOG_CRIT, "read_config: out of memory");
-				if (option->val == NULL) {
-					free(p_dupe);
-					free(serv);
-				}
-				return -1;
-			}
-		}
+                        if (q[0] == ':') {
+                                q++;
+                        }
 
-	} else /* Check to see if we have 'servername:port' syntax */
-	if ((q = strchr(p_pointer,':')) != NULL) {
-		*q = '\0';
-		q++;
+                        /* Check to see if we have '[IPv6]:port:secret' syntax */
+                        if((s=strchr(q, ':')) != NULL) {
+                                *s = '\0';
+                                s++;
+                                serv->secret[serv->max] = strdup(s);
+                                if (serv->secret[serv->max] == NULL) {
+                                        rc_log(LOG_CRIT, "read_config: out of memory");
+                                        if (option->val == NULL) {
+                                                free(p_dupe);
+                                                free(serv);
+                                        }
+                                        return -1;
+                                }
+                        }
 
-		/* Check to see if we have 'servername:port:secret' syntax */
-		if((s = strchr(q,':')) != NULL) {
-			*s = '\0';
-			s++;
-			serv->secret[serv->max] = strdup(s);
-			if (serv->secret[serv->max] == NULL) {
-				rc_log(LOG_CRIT, "read_config: out of memory");
-				if (option->val == NULL) {
-					free(p_dupe);
-					free(serv);
-				}
-				return -1;
-			}
-		}
-	}
+                } else /* Check to see if we have 'servername:port' syntax */
+                        if ((q = strchr(p_pointer,':')) != NULL) {
+                                *q = '\0';
+                                q++;
 
-	if(q && strlen(q) > 0) {
-		serv->port[serv->max] = atoi(q);
-	} else {
-		if (!strcmp(option->name,"authserver"))
-			if ((svp = getservbyname ("radius", "udp")) == NULL)
-				serv->port[serv->max] = PW_AUTH_UDP_PORT;
-			else
-				serv->port[serv->max] = ntohs ((unsigned int) svp->s_port);
-		else if (!strcmp(option->name, "acctserver"))
-			if ((svp = getservbyname ("radacct", "udp")) == NULL)
-				serv->port[serv->max] = PW_ACCT_UDP_PORT;
-			else
-				serv->port[serv->max] = ntohs ((unsigned int) svp->s_port);
-		else {
-			rc_log(LOG_ERR, "%s: line %d: no default port for %s", filename, line, option->name);
-			if (option->val == NULL) {
-				free(p_dupe);
-				free(serv);
-			}
-			return -1;
-		}
-	}
+                                /* Check to see if we have 'servername:port:secret' syntax */
+                                if((s = strchr(q,':')) != NULL) {
+                                        *s = '\0';
+                                        s++;
+                                        serv->secret[serv->max] = strdup(s);
+                                        if (serv->secret[serv->max] == NULL) {
+                                                rc_log(LOG_CRIT, "read_config: out of memory");
+                                                if (option->val == NULL) {
+                                                        free(p_dupe);
+                                                        free(serv);
+                                                }
+                                                return -1;
+                                        }
+                                }
+                        }
 
-	serv->name[serv->max] = strdup(p_pointer);
-	if (serv->name[serv->max] == NULL) {
-		rc_log(LOG_CRIT, "read_config: out of memory");
-		if (option->val == NULL) {
-			free(p_dupe);
-			free(serv);
-		}
-		return -1;
-	}
-	free(p_dupe);
+                if(q && strlen(q) > 0) {
+                        serv->port[serv->max] = atoi(q);
+                } else {
+                        if (!strcmp(option->name,"authserver"))
+                                if ((svp = getservbyname ("radius", "udp")) == NULL)
+                                        serv->port[serv->max] = PW_AUTH_UDP_PORT;
+                                else
+                                        serv->port[serv->max] = ntohs ((unsigned int) svp->s_port);
+                        else if (!strcmp(option->name, "acctserver"))
+                                if ((svp = getservbyname ("radacct", "udp")) == NULL)
+                                        serv->port[serv->max] = PW_ACCT_UDP_PORT;
+                                else
+                                        serv->port[serv->max] = ntohs ((unsigned int) svp->s_port);
+                        else {
+                                rc_log(LOG_ERR, "%s: line %d: no default port for %s", filename, line, option->name);
+                                if (option->val == NULL) {
+                                        free(p_dupe);
+                                        free(serv);
+                                }
+                                return -1;
+                        }
+                }
 
-	serv->max++;
+                serv->name[serv->max] = strdup(p_pointer);
+                if (serv->name[serv->max] == NULL) {
+                        rc_log(LOG_CRIT, "read_config: out of memory");
+                        if (option->val == NULL) {
+                                free(p_dupe);
+                                free(serv);
+                        }
+                        return -1;
+                }
 
+                serv->max++;
+                p_pointer = strtok_r(NULL, ", \t", &p_save);
+        }
+
+        free(p_dupe);
 	if (option->val == NULL)
 		option->val = (void *)serv;
 
@@ -693,8 +697,8 @@ static int find_match (const struct addrinfo* addr, const struct addrinfo *hostn
 			len1 = SA_GET_INLEN(ptr->ai_addr);
 			len2 = SA_GET_INLEN(ptr2->ai_addr);
 
-			if (len1 > 0 && 
-			    len1 == len2 && 
+			if (len1 > 0 &&
+			    len1 == len2 &&
 			    memcmp(SA_GET_INADDR(ptr->ai_addr), SA_GET_INADDR(ptr2->ai_addr), len1) == 0) {
 				return 0;
 			}
@@ -764,7 +768,7 @@ static int rc_is_myname(const struct addrinfo *info)
  * @param info: will hold a pointer to addrinfo
  * @param secret will hold the server's secret (of %MAX_SECRET_LENGTH).
  * @param type %AUTH or %ACCT
- 
+
  * @return 0 on success, -1 on failure.
  */
 int rc_find_server_addr (rc_handle const *rh, char const *server_name,
@@ -892,7 +896,7 @@ int rc_find_server_addr (rc_handle const *rh, char const *server_name,
 			 server_name, rc_conf_str(rh, "servers"));
 		goto fail;
 	}
-	
+
 	result = 0;
 	goto cleanup;
 

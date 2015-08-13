@@ -87,7 +87,7 @@ typedef struct rc_conf rc_handle;
  * Several of its fields have been deprecated.
  */
 typedef struct server {
-	int max; //!< for backwards compatibility; its value will be 1.
+	int   max;
 	char *name[SERVER_MAX];
 	uint16_t port[SERVER_MAX];
 	char *secret[SERVER_MAX];
