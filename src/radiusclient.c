@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <syslog.h>
 #include	"common.h"
 
 #include <radcli/radcli.h>
@@ -42,7 +43,7 @@ static void
 usage(void)
 {
 
-    fprintf(stderr, "usage: radiusclient [-f config_file] [-p nas_port] [-i] [-s | [-a] a1=v1 [a2=v2[...[aN=vN]...]]]\n");
+    fprintf(stderr, "usage: radiusclient [-D] [-f config_file] [-p nas_port] [-i] [-s | [-a] a1=v1 [a2=v2[...[aN=vN]...]]]\n");
     exit(1);
 }
 
@@ -56,14 +57,18 @@ main(int argc, char **argv)
     char *rc_conf, *cp;
     char lbuf[4096];
     int info = 0;
+    int debug = 0;
 
     rc_conf = RC_CONFIG_FILE;
     nas_port = 5060;
 
     acct = 0;
     server = 0;
-    while ((ch = getopt(argc, argv, "af:p:si")) != -1) {
+    while ((ch = getopt(argc, argv, "Daf:p:si")) != -1) {
         switch (ch) {
+        case 'D':
+          debug = 1;
+          break;
         case 'f':
             rc_conf = optarg;
             break;
@@ -93,6 +98,13 @@ main(int argc, char **argv)
 
     if ((argc == 0 && server == 0) || (argc != 0 && server != 0))
         usage();
+
+    if(debug) {
+      rc_setdebug(1);
+      openlog("radiusclient", LOG_PERROR|LOG_NDELAY, LOG_LOCAL7);
+    } else {
+      openlog("radiusclient", LOG_NDELAY, LOG_AUTH);
+    }
 
     if ((rh = rc_read_config(rc_conf)) == NULL) {
         fprintf(stderr, "error opening radius configuration file\n");
