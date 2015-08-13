@@ -15,10 +15,12 @@
 #ifndef RADCLI_H
 #define RADCLI_H
 
+extern unsigned int radcli_debug;
+extern void rc_setdebug(int debug);
 #ifdef CP_DEBUG
-#define		DEBUG(args, ...)	rc_log(## args)
+#define		DEBUG(args...)	if(radcli_debug) syslog(args)
 #else
-#define		DEBUG(args, ...)	;
+#define		DEBUG(args...)	;
 #endif
 
 #include	<sys/types.h>

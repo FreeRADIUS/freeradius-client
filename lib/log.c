@@ -11,6 +11,13 @@
 #include <includes.h>
 #include <radcli/radcli.h>
 
+unsigned int radcli_debug = 0;
+
+void rc_setdebug(int debug)
+{
+  radcli_debug = debug;
+}
+
 /**
  * @defgroup misc-api Miscellaneous API
  * @brief Miscellaneous functions

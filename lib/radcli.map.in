@@ -55,6 +55,7 @@ RADCLI_@LIBMAJOR@
 	rc_get_srcaddr;
 	rc_openlog;
 	rc_send_server;
+        rc_setdebug;
 	rc_aaa_ctx_free;
 	rc_aaa_ctx_get_secret;
 	rc_aaa_ctx_get_vector;
