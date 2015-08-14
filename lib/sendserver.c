@@ -485,8 +485,6 @@ int rc_send_server_ctx (rc_handle *rh, RC_AAA_CTX **ctx, SEND_DATA *data, char *
 	unsigned char   vector[AUTH_VECTOR_LEN];
 	uint8_t          recv_buffer[BUFFER_LEN];
 	uint8_t          send_buffer[BUFFER_LEN];
-	char		our_addr_txt[50] = ""; /* hold a text IP */
-	char		auth_addr_txt[50] = ""; /* hold a text IP */
 	uint8_t		*attr;
 	int		retries;
 	VALUE_PAIR 	*vp;
@@ -638,16 +636,21 @@ int rc_send_server_ctx (rc_handle *rh, RC_AAA_CTX **ctx, SEND_DATA *data, char *
 		auth->length = htons ((unsigned short) total_length);
 	}
 
-	getnameinfo(SA(&our_sockaddr), SS_LEN(&our_sockaddr), NULL, 0, our_addr_txt, sizeof(our_addr_txt), NI_NUMERICHOST);
-	getnameinfo(auth_addr->ai_addr, auth_addr->ai_addrlen, NULL, 0, auth_addr_txt, sizeof(auth_addr_txt), NI_NUMERICHOST);
+        if(radcli_debug) {
+          char		our_addr_txt[50] = ""; /* hold a text IP */
+          char		auth_addr_txt[50] = ""; /* hold a text IP */
 
-	DEBUG(LOG_ERR, "DEBUG: timeout=%d retries=%d local %s : 0, remote %s : %u\n",
-	      data->timeout, retry_max, our_addr_txt, auth_addr_txt, data->svc_port);
+          getnameinfo(SA(&our_sockaddr), SS_LEN(&our_sockaddr), NULL, 0, our_addr_txt, sizeof(our_addr_txt), NI_NUMERICHOST);
+          getnameinfo(auth_addr->ai_addr, auth_addr->ai_addrlen, NULL, 0, auth_addr_txt, sizeof(auth_addr_txt), NI_NUMERICHOST);
+
+          DEBUG(LOG_ERR, "DEBUG: timeout=%d retries=%d local %s : 0, remote %s : %u\n",
+                data->timeout, retry_max, our_addr_txt, auth_addr_txt, data->svc_port);
+        }
 
 	for (;;)
 	{
 		do {
-			result = sfuncs->sendto (sfuncs->ptr, sockfd, (char *) auth, (unsigned int)total_length, 
+			result = sfuncs->sendto (sfuncs->ptr, sockfd, (char *) auth, (unsigned int)total_length,
 				(int) 0, SA(auth_addr->ai_addr), auth_addr->ai_addrlen);
 		} while (result == -1 && errno == EINTR);
 		if (result == -1) {
@@ -725,13 +728,17 @@ int rc_send_server_ctx (rc_handle *rh, RC_AAA_CTX **ctx, SEND_DATA *data, char *
 		 */
 		if (retries++ >= retry_max)
 		{
-			rc_log(LOG_ERR,
-				"rc_send_server: no reply from RADIUS server %s:%u",
-				 auth_addr_txt, data->svc_port);
-			SCLOSE (sockfd);
-			memset (secret, '\0', sizeof (secret));
-			result = TIMEOUT_RC;
-			goto cleanup;
+                  char radius_server_ip[128];
+                  struct sockaddr_in *si = (struct sockaddr_in *)auth_addr->ai_addr;
+                  inet_ntop(auth_addr->ai_family, &si->sin_addr,
+                            radius_server_ip, sizeof(radius_server_ip));
+                  rc_log(LOG_ERR,
+                         "rc_send_server: no reply from RADIUS server %s:%u",
+                         radius_server_ip, data->svc_port);
+                  SCLOSE (sockfd);
+                  memset (secret, '\0', sizeof (secret));
+                  result = TIMEOUT_RC;
+                  goto cleanup;
 		}
 	}
 
