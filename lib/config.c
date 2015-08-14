@@ -26,6 +26,11 @@
 #include "util.h"
 #include "tls.h"
 
+#ifndef TRUE
+#define TRUE  1
+#define FALSE 0
+#endif
+
 /** Find an option in the option list
  *
  * @param rh a handle to parsed configuration.
@@ -552,6 +557,13 @@ rc_handle *rc_read_config(char const *filename)
 		return NULL;
 	}
 
+        {
+                int clientdebug = rc_conf_int_2(rh, "clientdebug", FALSE);
+                if(clientdebug > 0) {
+                        radcli_debug = clientdebug;
+                }
+        }
+
 	p = rc_conf_str(rh, "dictionary");
 	if (p != NULL) {
 		if (rc_read_dictionary(rh, p) != 0) {
@@ -592,7 +604,7 @@ char *rc_conf_str(rc_handle const *rh, char const *optname)
  * @param optname the name of an option.
  * @return config option value.
  */
-int rc_conf_int(rc_handle const *rh, char const *optname)
+int rc_conf_int_2(rc_handle const *rh, char const *optname, int complain)
 {
 	OPTION *option;
 
@@ -601,14 +613,19 @@ int rc_conf_int(rc_handle const *rh, char const *optname)
 	if (option != NULL) {
 		if (option->val) {
 			return *((int *)option->val);
-		} else {
+		} else if(complain) {
 			rc_log(LOG_ERR, "rc_conf_int: config option %s was not set", optname);
-			return 0;
 		}
+                return 0;
 	} else {
 		rc_log(LOG_CRIT, "rc_conf_int: unkown config option requested: %s", optname);
 		return 0;
 	}
+}
+
+int rc_conf_int(rc_handle const *rh, char const *optname)
+{
+        return rc_conf_int_2(rh, optname, TRUE);
 }
 
 /** Get the value of a config option

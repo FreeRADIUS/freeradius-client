@@ -45,6 +45,7 @@ static OPTION config_options_default[] = {
 {"radius_retries",	OT_INT,	ST_UNDEF, NULL},
 {"radius_deadtime",	OT_INT, ST_UNDEF, NULL},
 {"bindaddr",		OT_STR, ST_UNDEF, NULL},
+{"clientdebug",		OT_INT, ST_UNDEF, NULL},
 /* Deprecated options */
 {"login_radius",	OT_STR, ST_UNDEF, NULL},
 {"seqfile",		OT_STR, ST_UNDEF, NULL},
