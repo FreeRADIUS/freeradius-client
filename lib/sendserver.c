@@ -490,6 +490,7 @@ int rc_send_server_ctx (rc_handle *rh, RC_AAA_CTX **ctx, SEND_DATA *data, char *
 	VALUE_PAIR 	*vp;
 	struct pollfd	pfd;
 	double		start_time, timeout;
+        char           *server_type = "auth";
 
 	server_name = data->server;
 	if (server_name == NULL || server_name[0] == '\0')
@@ -616,6 +617,7 @@ int rc_send_server_ctx (rc_handle *rh, RC_AAA_CTX **ctx, SEND_DATA *data, char *
 
 	if (data->code == PW_ACCOUNTING_REQUEST)
 	{
+                server_type = "acct";
 		total_length = rc_pack_list(data->send_pairs, secret, auth) + AUTH_HDR_LEN;
 
 		auth->length = htons ((unsigned short) total_length);
@@ -733,8 +735,8 @@ int rc_send_server_ctx (rc_handle *rh, RC_AAA_CTX **ctx, SEND_DATA *data, char *
                   inet_ntop(auth_addr->ai_family, &si->sin_addr,
                             radius_server_ip, sizeof(radius_server_ip));
                   rc_log(LOG_ERR,
-                         "rc_send_server: no reply from RADIUS server %s:%u",
-                         radius_server_ip, data->svc_port);
+                         "rc_send_server: no reply from RADIUS %s server %s:%u",
+                         server_type, radius_server_ip, data->svc_port);
                   SCLOSE (sockfd);
                   memset (secret, '\0', sizeof (secret));
                   result = TIMEOUT_RC;
