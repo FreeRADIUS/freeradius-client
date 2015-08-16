@@ -15,6 +15,7 @@
 #ifndef RADCLI_H
 #define RADCLI_H
 
+#undef CP_DEBUG
 extern unsigned int radcli_debug;
 extern void rc_setdebug(int debug);
 #ifdef CP_DEBUG

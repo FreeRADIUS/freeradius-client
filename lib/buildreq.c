@@ -188,8 +188,14 @@ int rc_aaa_ctx_server(rc_handle *rh, RC_AAA_CTX **ctx, SERVER *aaaserver,
             rc_avpair_free(data.receive_pairs);
           }
 
-          if(result == OK_RC) return result;
+          if(result == OK_RC) {
+            DEBUG(LOG_INFO,
+                  "servernum %u returned success", servernum);
+            return result;
+          }
 
+          //rc_log(LOG_ERR,
+          //       "servernum %u returned error: %d", servernum, result);
           servernum++;
         } while(servernum < aaaserver->max && result == TIMEOUT_RC);
 
