@@ -203,11 +203,12 @@ struct rc_conf
 	unsigned		so_type; /* rc_socket_type */
 };
 
-typedef struct rc_aaa_ctx_st
+/* older compilers don't like seeing this typedef along with the one in radcli.h */
+struct rc_aaa_ctx_st
 {
 	char	secret[MAX_SECRET_LENGTH + 1]; //!< The secret used for this request
 	uint8_t	request_vector[AUTH_VECTOR_LEN]; //< The auth vector used in this request
-} RC_AAA_CTX;
+};
 
 int rc_send_server_ctx (rc_handle *rh, RC_AAA_CTX **ctx, SEND_DATA *data,
                         char *msg, rc_type type);
