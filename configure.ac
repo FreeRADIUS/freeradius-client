@@ -253,7 +253,7 @@ AH_OUTPUT([PACKAGE], [
 AH_OUTPUT([VERSION], [
 #undef VERSION])
 
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS([config.h])
 dnl LTLIBOBJS=`echo "$LIB@&t@OBJS" | sed 's,\.[[^.]]* ,.lo ,g;s,\.[[^.]]*$,.lo,'`
 dnl AC_SUBST(LTLIBOBJS)
 AC_CONFIG_FILES([
