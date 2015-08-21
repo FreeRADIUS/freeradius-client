@@ -36,13 +36,12 @@ pkgsysconfdir=${sysconfdir}/$PACKAGE
 AC_SUBST(pkgsysconfdir)
 
 PKG_PROG_PKG_CONFIG
-AC_PROG_LIBTOOL
+LT_INIT([win32-dll,shared])
 
 AC_PROG_CC
 
 dnl Needed for normal compile
 AC_PATH_PROG(AR, ar)
-AM_PROG_LIBTOOL
 AC_PROG_LN_S
 
 gl_LD_VERSION_SCRIPT
