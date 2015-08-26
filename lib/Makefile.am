@@ -3,8 +3,8 @@
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
-# See the file COPYRIGHT for the respective terms and conditions. 
-# If the file is missing contact me at lf@elemental.net 
+# See the file COPYRIGHT for the respective terms and conditions.
+# If the file is missing contact me at lf@elemental.net
 # and I'll send you a copy.
 #
 
@@ -23,6 +23,7 @@ CLEANFILES = *~
 # Pkg-config script.
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = radcli.pc
+sharedir = $(datadir)/@PACKAGE@
 DISTCLEANFILES = $(pkgconfig_DATA)
 
 lib_LTLIBRARIES =  libradcli.la

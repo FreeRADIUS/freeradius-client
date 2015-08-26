@@ -3,8 +3,8 @@
 #
 # Copyright (C) 1997,1998 Lars Fenneberg
 #
-# See the file COPYRIGHT for the respective terms and conditions. 
-# If the file is missing contact me at lf@elemental.net 
+# See the file COPYRIGHT for the respective terms and conditions.
+# If the file is missing contact me at lf@elemental.net
 # and I'll send you a copy.
 #
 
@@ -14,8 +14,10 @@ CLEANFILES = *~ radiusclient.conf radiusclient-tls.conf
 
 sbindir = @sbindir@
 pkgsysconfdir = @pkgsysconfdir@
-pkgsysconf_DATA = radiusclient.conf \
-	dictionary radiusclient-tls.conf
+pkgsysconf_DATA = radiusclient.conf radiusclient-tls.conf
+
+sharedir = $(datadir)/@PACKAGE@
+share_DATA = dictionary dictionary.microsoft dictionary.roaringpenguin
 
 EXTRA_DIST = dictionary servers servers-tls radiusclient.conf.in \
 	radiusclient-tls.conf.in
