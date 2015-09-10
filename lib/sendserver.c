@@ -299,7 +299,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 	if(PROTO_TCP == data->radius_proto)
 		sockfd = socket (our_sockaddr.ss_family, SOCK_STREAM, 0);
 	else
-		sockfd = socket (our_sockaddr.ss_family, SOCK_DGRAM, 0);$
+		sockfd = socket (our_sockaddr.ss_family, SOCK_DGRAM, 0);
 
 	if (sockfd < 0)
 	{

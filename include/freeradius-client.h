@@ -434,7 +434,7 @@ typedef struct send_data /* Used to pass information to sendserver() function */
 	int            retries;
 	VALUE_PAIR     *send_pairs;     //!< More a/v pairs to send.
 	VALUE_PAIR     *receive_pairs;  //!< Where to place received a/v pairs.
-	uint8_t        proto_type;		//!< Transport protocol type. 
+	uint8_t        radius_proto;	//!< Transport protocol type. 
 } SEND_DATA;
 
 #ifndef MIN
