@@ -299,11 +299,15 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 
 /* Select the Transport protocol for RADIUS Messages based on the configuration */
 	radius_proto = rc_conf_str(rh, "radius_proto");
+    printf("!!!!RADIUS PROTO NOT NULL!!!!");
+    if(radius_proto != NULL)
+        sockfd = socket (our_sockaddr.ss_family, SOCK_DGRAM, 0);
+#if 0
 	if((strcmp(radius_proto, "UDP")) == 0)
 		sockfd = socket (our_sockaddr.ss_family, SOCK_DGRAM, 0);
 	else
 		sockfd = socket (our_sockaddr.ss_family, SOCK_STREAM, 0);
-
+#endif
 	if (sockfd < 0)
 	{
 		memset (secret, '\0', sizeof (secret));
