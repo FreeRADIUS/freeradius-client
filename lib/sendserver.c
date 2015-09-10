@@ -297,14 +297,12 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		}
 	}
 
-#if 0
 /* Select the Transport protocol for RADIUS Messages based on the configuration */
 	radius_proto = rc_conf_str(rh, "radius_proto");
-	if((strcmp(radius_proto, "TCP")) == 0)
-		sockfd = socket (our_sockaddr.ss_family, SOCK_STREAM, 0);
-	else
-#endif
+	if((strcmp(radius_proto, "UDP")) == 0)
 		sockfd = socket (our_sockaddr.ss_family, SOCK_DGRAM, 0);
+	else
+		sockfd = socket (our_sockaddr.ss_family, SOCK_STREAM, 0);
 
 	if (sockfd < 0)
 	{
