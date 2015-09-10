@@ -87,9 +87,9 @@ radius_deadtime	0
 # local address from which radius packets have to be sent
 bindaddr *
 
-# Protocol Support
-# Use "TCP" for using TCP protocol. 
-# Default is UDP
+# Transport Protocol Support
+# Use "TCP" for using TCP protocol. For "UDP, no need to mention. 
+# Default is UDP and UDP will be if "TCP" is not explicitly mentioned.
 radius_proto
 
 # LOCAL settings
