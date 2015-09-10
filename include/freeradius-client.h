@@ -419,6 +419,10 @@ typedef struct value_pair
 #define TIMEOUT_RC	1
 #define REJECT_RC	2
 
+/* Transport Protocol Types */
+#define PROTO_TCP 1
+#define PROTO_UDP 2
+
 typedef struct send_data /* Used to pass information to sendserver() function */
 {
 	uint8_t        code;		//!< RADIUS packet code.
@@ -430,6 +434,7 @@ typedef struct send_data /* Used to pass information to sendserver() function */
 	int            retries;
 	VALUE_PAIR     *send_pairs;     //!< More a/v pairs to send.
 	VALUE_PAIR     *receive_pairs;  //!< Where to place received a/v pairs.
+	uint8_t        proto_type;		//!< Transport protocol type. 
 } SEND_DATA;
 
 #ifndef MIN
