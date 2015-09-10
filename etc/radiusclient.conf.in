@@ -89,7 +89,7 @@ bindaddr *
 
 # Transport Protocol Support
 # Use "TCP" for using TCP protocol. For "UDP, no need to mention. 
-# Default is UDP and UDP will be if "TCP" is not explicitly mentioned.
+# Default is UDP and UDP will be used if "TCP" is not explicitly mentioned.
 radius_proto
 
 # LOCAL settings
