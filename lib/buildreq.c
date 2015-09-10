@@ -86,10 +86,10 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 		return ERROR_RC;
 
 	radius_proto = rc_conf_str(rh, "radius_proto");
-    if(NULL != radius_proto)
+	if(NULL != radius_proto)
 		data.radius_proto = PROTO_TCP;
-    else
-        data.radius_proto = PROTO_UDP;
+	else
+		data.radius_proto = PROTO_UDP;
 
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
