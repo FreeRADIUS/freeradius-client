@@ -88,9 +88,9 @@ radius_deadtime	0
 bindaddr *
 
 # Protocol Support
-# Use "TCP" for using TCP protocol and "UDP" for using UDP protocol
+# Use "TCP" for using TCP protocol. 
 # Default is UDP
-radius_proto	UDP
+radius_proto
 
 # LOCAL settings
 
