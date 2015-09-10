@@ -90,7 +90,7 @@ bindaddr *
 # Protocol Support
 # Use "TCP" for using TCP protocol and "UDP" for using UDP protocol
 # Default is UDP
-radius_proto	UDP
+#radius_proto	UDP
 
 # LOCAL settings
 

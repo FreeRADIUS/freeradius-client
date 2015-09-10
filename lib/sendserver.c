@@ -297,11 +297,13 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		}
 	}
 
+#if 0
 /* Select the Transport protocol for RADIUS Messages based on the configuration */
 	radius_proto = rc_conf_str(rh, "radius_proto");
 	if((strcmp(radius_proto, "TCP")) == 0)
 		sockfd = socket (our_sockaddr.ss_family, SOCK_STREAM, 0);
 	else
+#endif
 		sockfd = socket (our_sockaddr.ss_family, SOCK_DGRAM, 0);
 
 	if (sockfd < 0)
@@ -393,6 +395,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 	for (;;)
 	{
 		do {
+#if 0
 			if((strcmp(radius_proto, "TCP")) == 0)
 			{
 				/* Transport Protocol is TCP */
@@ -403,6 +406,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 					break;
 				}
 			}
+#endif
 			result = sendto (sockfd, (char *) auth, (unsigned int)total_length, 
 				(int) 0, SA(auth_addr->ai_addr), auth_addr->ai_addrlen);
 		} while (result == -1 && errno == EINTR);
