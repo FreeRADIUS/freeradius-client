@@ -73,6 +73,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	double		now = 0;
 	time_t		dtime;
 	unsigned	type;
+	int radius_proto = 0;
 
 	if (request_type != PW_ACCOUNTING_REQUEST) {
 		aaaserver = rc_conf_srv(rh, "authserver");
@@ -83,6 +84,12 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	}
 	if (aaaserver == NULL)
 		return ERROR_RC;
+
+    radius_proto = rc_conf_int(rh, "radius_proto");
+	if(1 == radius_proto)
+		data.radius_proto = PROTO_UDP;
+	else
+		data.radius_proto = PROTO_TCP;
 
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
