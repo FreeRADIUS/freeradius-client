@@ -790,7 +790,7 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 
 	    case PW_TYPE_IPV6PREFIX: {
 	    	uint8_t ip[16];
-	    	uint8_t txt[48];
+	    	char txt[48];
 	    	if (pair->lvalue < 2)
 	    		return -1;
 
