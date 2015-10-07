@@ -23,6 +23,7 @@
  * @param secret the secret used by the server.
  * @param timeout the timeout in seconds of a message.
  * @param retries the number of retries.
+ * @param timeout_ms the timeout in miliseconds of a message.
  */
 void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, unsigned short port,
 		 char *secret, int timeout, int retries,int timeout_ms)
