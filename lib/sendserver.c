@@ -396,13 +396,23 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		pfd.fd = sockfd;
 		pfd.events = POLLIN;
 		pfd.revents = 0;
-		start_time = rc_getctime();
-		for (timeout = data->timeout; timeout > 0;
-		    timeout -= rc_getctime() - start_time) {
-			result = poll(&pfd, 1, timeout * 1000);
-			if (result != -1 || errno != EINTR)
-				break;
-		}
+		
+		if(data->timeout_ms > 0){
+                        start_time = rc_getctime_ms();
+                        for (timeout = data->timeout_ms; timeout > 0;timeout -= rc_getctime() - start_time) {
+                            result = poll(&pfd, 1, timeout );
+                            if (result != -1 || errno != EINTR)
+                                    break;
+                    }
+                }else{
+                    start_time = rc_getctime();
+                    for (timeout = data->timeout; timeout > 0;timeout -= rc_getctime_ms() - start_time) {
+                            result = poll(&pfd, 1, timeout* 1000);
+                            if (result != -1 || errno != EINTR)
+                                    break;
+                    }
+                }
+                
 		if (result == -1)
 		{
 			rc_log(LOG_ERR, "rc_send_server: poll: %s", strerror(errno));
