@@ -430,6 +430,7 @@ typedef struct send_data /* Used to pass information to sendserver() function */
 	int            retries;
 	VALUE_PAIR     *send_pairs;     //!< More a/v pairs to send.
 	VALUE_PAIR     *receive_pairs;  //!< Where to place received a/v pairs.
+	int            timeout_ms;      //!< Session timeout in miliseconds
 } SEND_DATA;
 
 #ifndef MIN
