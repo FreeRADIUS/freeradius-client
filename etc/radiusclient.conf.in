@@ -92,3 +92,8 @@ bindaddr *
 # program to execute for local login
 # it must support the -f flag for preauthenticated login
 login_local	/bin/login
+
+# radius_timeout with miliseconds. to active 
+# this parameter needs to set bigger than 0
+# it is suprass the radius_timeout.
+radius_timeout_ms=0
