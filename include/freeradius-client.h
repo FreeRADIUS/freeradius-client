@@ -472,7 +472,7 @@ VALUE_PAIR *rc_avpair_readin(rc_handle const *, FILE *);
 
 /* buildreq.c */
 
-void rc_buildreq(rc_handle const *, SEND_DATA *, int, char *, unsigned short, char *, int, int);
+void rc_buildreq(rc_handle const *, SEND_DATA *, int, char *, unsigned short, char *, int, int,int);
 unsigned char rc_get_id();
 int rc_auth(rc_handle *, uint32_t, VALUE_PAIR *, VALUE_PAIR **, char *);
 int rc_auth_proxy(rc_handle *, VALUE_PAIR *, VALUE_PAIR **, char *);
