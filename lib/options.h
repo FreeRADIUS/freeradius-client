@@ -52,6 +52,7 @@ static OPTION config_options_default[] = {
 {"bindaddr",		OT_STR, ST_UNDEF, NULL},
 /* local options */
 {"login_local",		OT_STR, ST_UNDEF, NULL},
+{"radius_timeout_ms",	OT_INT, ST_UNDEF, NULL},
 };
 
 #define	NUM_OPTIONS	((sizeof(config_options_default))/(sizeof(config_options_default[0])))
