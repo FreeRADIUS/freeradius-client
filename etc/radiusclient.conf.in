@@ -95,5 +95,5 @@ login_local	/bin/login
 
 # radius_timeout with miliseconds. to active 
 # this parameter needs to set bigger than 0
-# it is suprass the radius_timeout.
+# it suppress  radius_timeout.
 radius_timeout_ms 0
