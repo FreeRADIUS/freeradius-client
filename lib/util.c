@@ -328,7 +328,7 @@ double rc_getctime(void)
 }
 /** Returns the current time as a double.
  *
- * @return current time (seconds since epoch) expressed as
+ * @return current time (miliseconds since epoch) expressed as
  * 	double-precision floating point number.
  */
 double rc_getctime_ms(void)
