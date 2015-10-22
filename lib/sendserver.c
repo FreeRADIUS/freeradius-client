@@ -539,6 +539,7 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 	}
 	else
 	{
+		rc_log(LOG_ERR, "rc_send_server: received RADIUS server response neither ACCEPT nor REJECT, invalid");
 		result = BADRESP_RC;
 	}
 
