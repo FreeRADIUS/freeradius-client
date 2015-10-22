@@ -23,4 +23,3 @@ test6	Cleartext-Password := "test"
 	Framed-IP-Netmask = 255.255.255.0,
 	Framed-Routing = Broadcast-Listen,
 	Framed-MTU = 1500,
-

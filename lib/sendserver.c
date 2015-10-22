@@ -296,7 +296,11 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		}
 	}
 
-	sockfd = socket (our_sockaddr.ss_family, SOCK_DGRAM, 0);
+	if(PROTO_TCP == data->radius_proto)
+		sockfd = socket (our_sockaddr.ss_family, SOCK_STREAM, 0);
+	else
+		sockfd = socket (our_sockaddr.ss_family, SOCK_DGRAM, 0);
+
 	if (sockfd < 0)
 	{
 		memset (secret, '\0', sizeof (secret));
@@ -386,6 +390,14 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 	for (;;)
 	{
 		do {
+			if(PROTO_TCP == data->radius_proto) {
+				if((connect(sockfd, SA(auth_addr->ai_addr), auth_addr->ai_addrlen)) != 0)
+				{
+					rc_log(LOG_ERR, "%s: Connect Call Failed : %s", __FUNCTION__, strerror(errno));
+					result = -1;
+					break;
+				}
+			}
 			result = sendto (sockfd, (char *) auth, (unsigned int)total_length, 
 				(int) 0, SA(auth_addr->ai_addr), auth_addr->ai_addrlen);
 		} while (result == -1 && errno == EINTR);
