@@ -54,10 +54,6 @@ dictionary 	@pkgsysconfdir@/dictionary
 # program to call for a RADIUS authenticated login
 login_radius	@sbindir@/login.radius
 
-# file which holds sequence number for communication with the
-# RADIUS server
-seqfile		/var/run/radius.seq
-
 # file which specifies mapping between ttyname and NAS-Port attribute
 mapfile		@pkgsysconfdir@/port-id-map
 

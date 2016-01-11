@@ -73,13 +73,6 @@ main (int argc, char **argv)
 		exit(1);
 	}
 	
-	if (rc_add_config(rh, "seqfile", "/var/run/radius.seq", "config", 0) != 0)
-	{
-		printf("ERROR: Unable to set seq file.\n");
-		rc_destroy(rh);
-		exit(1);
-	}
-	
 	if (rc_add_config(rh, "radius_retries", "3", "config", 0) != 0) 
 	{
 		printf("ERROR: Unable to set radius_retries.\n");

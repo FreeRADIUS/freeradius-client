@@ -43,7 +43,6 @@ static OPTION config_options_default[] = {
 {"servers",		OT_STR, ST_UNDEF, NULL},
 {"dictionary",		OT_STR, ST_UNDEF, NULL},
 {"login_radius",	OT_STR, ST_UNDEF, NULL},
-{"seqfile",		OT_STR, ST_UNDEF, NULL},
 {"mapfile",		OT_STR, ST_UNDEF, NULL},
 {"default_realm",	OT_STR, ST_UNDEF, NULL},
 {"radius_timeout",	OT_INT, ST_UNDEF, NULL},
