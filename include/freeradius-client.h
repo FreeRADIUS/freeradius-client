@@ -266,11 +266,6 @@ typedef struct rc_conf rc_handle;
 #define PW_DIGEST_NONCE_COUNT		1071	//!< string.
 #define PW_DIGEST_USER_NAME		1072	//!< string.
 
-/* Merit Experimental Extensions */
-
-#define PW_USER_ID			222	//!< string.
-#define PW_USER_REALM			223	//!< string.
-
 /* Integer Translations */
 
 /* SERVICE TYPES */
