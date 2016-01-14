@@ -403,9 +403,6 @@ typedef struct value_pair
 	struct value_pair *next;
 } VALUE_PAIR;
 
-/* don't change this, as it has to be the same as in the Merit radiusd code */
-#define MGMT_POLL_SECRET	"Hardlyasecret"
-
 /* Define return codes from "SendServer" utility */
 
 #define BADRESP_RC	-2
