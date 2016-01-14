@@ -14,12 +14,3 @@ merit-2.4.21-CHAP.diff
 	attribute.  Doesn't work with earlier version of Merit radiusd. I sent
 	this patch to Merit, so hopefully it'll be included in the next release.
 	Apply this patch from the "src" directory of the radiusd sources.
-
-rename.patch
-
-        The patch renames the library to radiusclient-ng (that means 
-	radiusclient.h will be renamed to radiusclient-ng.h, libradiusclient.so
-	to libradiusclient-ng.so and so on). This is useful if you want the
-	original radiusclient library coexist on the same system with this
-	version.
-	Jan Janak <jan@iptel.org>
