@@ -35,43 +35,9 @@ LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char const *username, cha
 	 * Determine and fill in Service-Type
 	 */
 
-#ifdef SCP
-	/* determine based on the username what kind of service is requested.
-	   this allows you to use one password for all accounts, but the
-	   Merit radiusd supplies you just with the right information you
-	   need for the specified service type	-lf, 03/15/96 */
-
-	switch (*username)
-	{
-		case 'S':
-				service = PW_FRAMED;
-				ftype = PW_SLIP;
-				ctype = 0;
-				username++;
-				break;
-		case 'C':
-				service = PW_FRAMED;
-				ftype = PW_SLIP;
-				ctype = PW_VAN_JACOBSON_TCP_IP;
-				username++;
-				break;
-		case 'P':
-				service = PW_FRAMED;
-				ftype = PW_PPP;
-				ctype = 0;
-				username++;
-				break;
-		default:
-				service = PW_LOGIN;
-				ftype = 0;
-				ctype = 0;
-				break;
-	}
-#else
 	service = PW_LOGIN;
 	ftype = 0;
 	ctype = 0;
-#endif
 
 	if (rc_avpair_add(rh, &send, PW_SERVICE_TYPE, &service, -1, 0) == NULL)
 		return NULL;

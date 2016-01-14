@@ -291,19 +291,6 @@ AC_ARG_WITH(facility,
 ]
 )
 
-dnl SCP
-AC_MSG_CHECKING(whether to add service type hints derived from username prefix)
-AC_ARG_ENABLE(scp,
-[  --enable-scp            Add service type hints derived from username prefix],
-[
-        AC_MSG_RESULT(yes)
-	AC_DEFINE(SCP)
-],
-[
-        AC_MSG_RESULT(no)
-]
-)
-
 AC_SUBST(RC_SECURE_PATH)
 AC_SUBST(RC_LOG_FACILITY)
 
@@ -319,8 +306,6 @@ AH_OUTPUT([HAVE_STRUCT_UTSNAME_DOMAINNAME], [/*struct utsname has domainname fie
 #undef HAVE_STRUCT_UTSNAME_DOMAINNAME])
 AH_OUTPUT([NEED_SIG_PROTOTYPES], [/* do you need the sig* prototypes ? */
 #undef NEED_SIG_PROTOTYPES])
-AH_OUTPUT([SCP], [/* SCP support */
-#undef SCP])
 AH_OUTPUT([PACKAGE], [
 #undef PACKAGE])
 AH_OUTPUT([VERSION], [
