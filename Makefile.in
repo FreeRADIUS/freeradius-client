@@ -336,7 +336,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 INCLUDES = -D_GNU_SOURCE
-SUBDIRS = include lib src etc man doc patches login.radius rpm
+SUBDIRS = include lib src etc man doc login.radius rpm
 EXTRA_DIST = BUGS CHANGES COPYRIGHT README README.radexample
 CLEANFILES = *~
 all: config.h

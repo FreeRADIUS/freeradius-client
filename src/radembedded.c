@@ -19,10 +19,6 @@ main (int argc, char **argv)
 	uint32_t 		client_port = 0;
 	uint32_t		status_type = PW_STATUS_STOP; 
         VALUE_PAIR      *send = NULL;
-/*
-	VALUE_PAIR 	*vp = NULL;
-	DICT_VALUE 	*dval = NULL;
-*/
 	char		username[255] = "bob@somedomain.here";
 	char		callfrom[255] = "8475551212";
 	char		callto[255] = "8479630116";

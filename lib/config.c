@@ -236,9 +236,7 @@ static int set_option_auo(char const *filename, int line, OPTION *option, char c
 	}
 
 	*iptr = 0;
-	/*if(strstr(p_dupe,", \t") != NULL) {*/
-		p_pointer = strtok_r(p_dupe, ", \t", &p_save);
-	/*}*/
+	p_pointer = strtok_r(p_dupe, ", \t", &p_save);
 
 	if (!strncmp(p_pointer, "local", 5))
 			*iptr = AUTH_LOCAL_FST;
@@ -582,10 +580,6 @@ SERVER *rc_conf_srv(rc_handle const *rh, char const *optname)
  */
 int test_config(rc_handle const *rh, char const *filename)
 {
-#if 0
-	struct stat st;
-	char	    *file;
-#endif
 	SERVER *srv;
 
 	srv = rc_conf_srv(rh, "authserver");
@@ -627,31 +621,6 @@ int test_config(rc_handle const *rh, char const *filename)
 		rc_log(LOG_ERR,"%s: radius_deadtime is illegal", filename);
 		return -1;
 	}
-#if 0
-	file = rc_conf_str(rh, "login_local");
-	if (stat(file, &st) == 0)
-	{
-		if (!S_ISREG(st.st_mode)) {
-			rc_log(LOG_ERR,"%s: not a regular file: %s", filename, file);
-			return -1;
-		}
-	} else {
-		rc_log(LOG_ERR,"%s: file not found: %s", filename, file);
-		return -1;
-	}
-	file = rc_conf_str(rh, "login_radius");
-	if (stat(file, &st) == 0)
-	{
-		if (!S_ISREG(st.st_mode)) {
-			rc_log(LOG_ERR,"%s: not a regular file: %s", filename, file);
-			return -1;
-		}
-	} else {
-		rc_log(LOG_ERR,"%s: file not found: %s", filename, file);
-		return -1;
-	}
-#endif
-
 	if (rc_conf_int(rh, "login_tries") <= 0)
 	{
 		rc_log(LOG_ERR,"%s: login_tries <= 0 is illegal", filename);

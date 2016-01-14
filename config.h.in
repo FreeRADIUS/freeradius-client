@@ -238,14 +238,8 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* include code to kludge aroung Livingston RADIUS server 1.16 */
-#undef RADIUS_116
-
 /* Define as the return type of signal handlers (`int' or `void'). */
 #undef RETSIGTYPE
-
-/* SCP support */
-#undef SCP
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be

@@ -266,11 +266,6 @@ typedef struct rc_conf rc_handle;
 #define PW_DIGEST_NONCE_COUNT		1071	//!< string.
 #define PW_DIGEST_USER_NAME		1072	//!< string.
 
-/* Merit Experimental Extensions */
-
-#define PW_USER_ID			222	//!< string.
-#define PW_USER_REALM			223	//!< string.
-
 /* Integer Translations */
 
 /* SERVICE TYPES */
@@ -407,9 +402,6 @@ typedef struct value_pair
 	char               strvalue[AUTH_STRING_LEN + 1];
 	struct value_pair *next;
 } VALUE_PAIR;
-
-/* don't change this, as it has to be the same as in the Merit radiusd code */
-#define MGMT_POLL_SECRET	"Hardlyasecret"
 
 /* Define return codes from "SendServer" utility */
 
