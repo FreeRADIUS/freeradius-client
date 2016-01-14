@@ -291,24 +291,6 @@ AC_ARG_WITH(facility,
 ]
 )
 
-dnl RADIUS_116
-AC_MSG_CHECKING(whether to include Livingston's RADIUS server 1.16 kludge)
-AC_ARG_ENABLE(radius-116,
-[  --enable-radius-116     Include support for Livingston's RADIUS server 1.16],
-[
-        AC_MSG_RESULT(yes)
-	AC_DEFINE(RADIUS_116)
-	AC_MSG_WARN([!! This is a bug in Livingston's RADIUS server v1.16. There])
-	AC_MSG_WARN([!! is a patch included with radiusclient which fixes this])
-	AC_MSG_WARN([!! problem. See patches/radiusd-1.16.accounting.diff. With])
-	AC_MSG_WARN([!! the patched RADIUS server you no longer need to activate])
-	AC_MSG_WARN([!! this hack.])
-],
-[
-        AC_MSG_RESULT(no)
-]
-)
-
 dnl SCP
 AC_MSG_CHECKING(whether to add service type hints derived from username prefix)
 AC_ARG_ENABLE(scp,
@@ -337,8 +319,6 @@ AH_OUTPUT([HAVE_STRUCT_UTSNAME_DOMAINNAME], [/*struct utsname has domainname fie
 #undef HAVE_STRUCT_UTSNAME_DOMAINNAME])
 AH_OUTPUT([NEED_SIG_PROTOTYPES], [/* do you need the sig* prototypes ? */
 #undef NEED_SIG_PROTOTYPES])
-AH_OUTPUT([RADIUS_116], [/* include code to kludge aroung Livingston RADIUS server 1.16 */
-#undef RADIUS_116])
 AH_OUTPUT([SCP], [/* SCP support */
 #undef SCP])
 AH_OUTPUT([PACKAGE], [

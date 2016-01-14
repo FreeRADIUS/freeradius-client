@@ -6,11 +6,5 @@ Testing can show the presense of bugs, but not their absence.
 Radlogin respectively send_server in sendserver.c does not honour a 
 ACCESS_CHALLENGE packet from the RADIUS server. 
 
-There are interoperability problems with radiusd 1.16... but all the Merit
-radiusds I tried worked (last one I tried 2.4.21). There is an option to
-configure (--enable-radius-116) to kludge around this... It turned out to be
-a bug in radiusd 1.16: it doesn't include the shared secret in the digest
-calculation. See patches/radiusd-1.16.accounting.diff for a real fix.
-
 There are some issues that occur on occasion when defining clients with
 hostnames, rather than dotted-quad IPs.  

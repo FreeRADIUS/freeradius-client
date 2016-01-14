@@ -15,21 +15,6 @@ merit-2.4.21-CHAP.diff
 	this patch to Merit, so hopefully it'll be included in the next release.
 	Apply this patch from the "src" directory of the radiusd sources.
 
-radiusd-1.16.shadow.diff
-
-	Patch to the original radiusd by Livingston to recognize "*"
-	as a special password to look for shadow passwords.
-	Apply this patch from the "src" directory of the radiusd sources.
-
-
-radiusd-1.16.accounting.diff
-
-	The patch for Livingston's (now Lucent's) radiusd 1.16 fixes the
-	accounting reply digest bug. When you've applied this patch to your
-	RADIUS server you no longer need to compile radiusclient with
-	--enable-radius-116. This patch was contributed by Tilman
-	Mueller-Gerbes <tmg@suse.de>. Thanks, Tilman!
-
 rename.patch
 
         The patch renames the library to radiusclient-ng (that means 

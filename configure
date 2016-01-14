@@ -783,7 +783,6 @@ enable_shadow
 with_nettle
 with_secure_path
 with_facility
-enable_radius_116
 enable_scp
 '
       ac_precious_vars='build_alias
@@ -1432,7 +1431,6 @@ Optional Features:
                           speeds up one-time build
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-shadow         Enable shadow password support
-  --enable-radius-116     Include support for Livingston's RADIUS server 1.16
   --enable-scp            Add service type hints derived from username prefix
 
 Optional Packages:
@@ -14314,35 +14312,6 @@ else
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: LOG_DAEMON" >&5
 $as_echo "LOG_DAEMON" >&6; }
         RC_LOG_FACILITY=LOG_DAEMON
-
-
-fi
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to include Livingston's RADIUS server 1.16 kludge" >&5
-$as_echo_n "checking whether to include Livingston's RADIUS server 1.16 kludge... " >&6; }
-# Check whether --enable-radius-116 was given.
-if test "${enable_radius_116+set}" = set; then :
-  enableval=$enable_radius_116;
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-	$as_echo "#define RADIUS_116 1" >>confdefs.h
-
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: !! This is a bug in Livingston's RADIUS server v1.16. There" >&5
-$as_echo "$as_me: WARNING: !! This is a bug in Livingston's RADIUS server v1.16. There" >&2;}
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: !! is a patch included with radiusclient which fixes this" >&5
-$as_echo "$as_me: WARNING: !! is a patch included with radiusclient which fixes this" >&2;}
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: !! problem. See patches/radiusd-1.16.accounting.diff. With" >&5
-$as_echo "$as_me: WARNING: !! problem. See patches/radiusd-1.16.accounting.diff. With" >&2;}
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: !! the patched RADIUS server you no longer need to activate" >&5
-$as_echo "$as_me: WARNING: !! the patched RADIUS server you no longer need to activate" >&2;}
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: !! this hack." >&5
-$as_echo "$as_me: WARNING: !! this hack." >&2;}
-
-else
-
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
 
 
 fi

@@ -12,5 +12,4 @@ AUTOMAKE_OPTIONS = foreign
 
 CLEANFILES = *~
 
-EXTRA_DIST = README merit-2.4.21-CHAP.diff radiusd-1.16.shadow.diff \
-	radiusd-1.16.accounting.diff
+EXTRA_DIST = README merit-2.4.21-CHAP.diff
