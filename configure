@@ -14352,7 +14352,7 @@ fi
 
 ac_config_headers="$ac_config_headers config.h"
 
-ac_config_files="$ac_config_files Makefile include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile doc/Makefile patches/Makefile login.radius/Makefile login.radius/migs/Makefile rpm/Makefile debian/Makefile"
+ac_config_files="$ac_config_files Makefile include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile doc/Makefile login.radius/Makefile login.radius/migs/Makefile rpm/Makefile debian/Makefile"
 
 ac_config_commands="$ac_config_commands default"
 
@@ -15381,7 +15381,6 @@ do
     "man/Makefile") CONFIG_FILES="$CONFIG_FILES man/Makefile" ;;
     "etc/Makefile") CONFIG_FILES="$CONFIG_FILES etc/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
-    "patches/Makefile") CONFIG_FILES="$CONFIG_FILES patches/Makefile" ;;
     "login.radius/Makefile") CONFIG_FILES="$CONFIG_FILES login.radius/Makefile" ;;
     "login.radius/migs/Makefile") CONFIG_FILES="$CONFIG_FILES login.radius/migs/Makefile" ;;
     "rpm/Makefile") CONFIG_FILES="$CONFIG_FILES rpm/Makefile" ;;

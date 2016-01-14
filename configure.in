@@ -332,7 +332,7 @@ dnl AC_SUBST(LTLIBOBJS)
 AC_CONFIG_FILES([
 Makefile
 include/Makefile lib/Makefile src/Makefile man/Makefile etc/Makefile
-doc/Makefile patches/Makefile
+doc/Makefile
 login.radius/Makefile login.radius/migs/Makefile
 tests/Makefile
 tests/docker/Makefile
