@@ -46,7 +46,7 @@ security at freeradius dot org
 
 or via the FreeRADIUS bugtracker:
 
-http://bugs.freeradius.org/
+https://github.com/FreeRADIUS/freeradius-client
 
 As is the case with any open-source project, patches in addition to
 bug reports are always welcome.
