@@ -385,7 +385,7 @@ out_err:
 /*rc_receive async name*/
 int rc_aaa_receive_async(SEND_CONTEXT **ctx, VALUE_PAIR **received, int request_type)
 {
-	int i, j;
+	int i;
 	int		result;
 
 	if (*ctx == NULL) {
@@ -396,6 +396,7 @@ int rc_aaa_receive_async(SEND_CONTEXT **ctx, VALUE_PAIR **received, int request_
 	result = rc_receive_async(ctx);
 
 	if (result != READBLOCK_RC) {
+		i = (*ctx)->idx;
 		(*ctx)->aaaserver->deadtime_ends[i] = -1;
 		if (request_type != PW_ACCOUNTING_REQUEST) {
 			*received = (*ctx)->data->receive_pairs;
