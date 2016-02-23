@@ -537,31 +537,14 @@ int rc_send_server_async(rc_handle *rh, SEND_DATA *data, char *msg, unsigned fla
 	if (server_name == NULL || server_name[0] == '\0')
 		return ERROR_RC;
 
-
-	if ((vp = rc_avpair_get(data->send_pairs, PW_SERVICE_TYPE, 0)) && \
-	    (vp->lvalue == PW_ADMINISTRATIVE))
+	if(data->secret != NULL)
 	{
-		strcpy(secret, MGMT_POLL_SECRET);
-		auth_addr = rc_getaddrinfo(server_name, flags==AUTH?PW_AI_AUTH:PW_AI_ACCT);
-		if (auth_addr == NULL)
-			return ERROR_RC;
+		strlcpy(secret, data->secret, MAX_SECRET_LENGTH);
 	}
-	else
+	if (rc_find_server_addr (rh, server_name, &auth_addr, secret, flags) != 0)
 	{
-		if(data->secret != NULL)
-		{
-			strlcpy(secret, data->secret, MAX_SECRET_LENGTH);
-		}
-		/*
-		else
-		{
-		*/
-		if (rc_find_server_addr (rh, server_name, &auth_addr, secret, flags) != 0)
-		{
-			rc_log(LOG_ERR, "rc_send_server_async: unable to find server: %s", server_name);
-			return ERROR_RC;
-		}
-		/*}*/
+		rc_log(LOG_ERR, "rc_send_server: unable to find server: %s", server_name);
+		return ERROR_RC;
 	}
 
 	rc_own_bind_addr(rh, &our_sockaddr);
