@@ -107,7 +107,6 @@ struct rc_conf
 	struct dict_value	*dictionary_values;
 	struct dict_vendor	*dictionary_vendors;
 	char			buf[GETSTR_LENGTH];
-	char			buf1[14];
 	char			ifname[512];
 };
 
@@ -527,7 +526,6 @@ void rc_str2tm(char const *, struct tm *);
 char *rc_getifname(rc_handle *, char const *);
 char *rc_getstr(rc_handle *, char const *, int);
 void rc_mdelay(int);
-char *rc_mksid(rc_handle *);
 rc_handle *rc_new(void);
 void rc_destroy(rc_handle *);
 char *rc_fgetln(FILE *, size_t *);

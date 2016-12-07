@@ -223,20 +223,6 @@ void rc_mdelay(int msecs)
 	select(0, NULL, NULL, NULL, &tv);
 }
 
-/** Generate a quite unique string
- *
- * @note not that unique at all...
- *
- * @param rh a handle to parsed configuration.
- * @return unique string. Memory does not need to be freed.
- */
-
-char *rc_mksid (rc_handle *rh)
-{
-  snprintf (rh->buf1, sizeof(rh->buf1), "%08lX%04X", (unsigned long int) time (NULL), (unsigned int) getpid ());
-  return rh->buf1;
-}
-
 /** Initialises new Radius Client handle
  *
  * @return a new rc_handle (free with rc_destroy).
