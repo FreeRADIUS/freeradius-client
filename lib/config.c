@@ -443,17 +443,13 @@ rc_handle *rc_read_config(char const *filename)
 		p[pos] = '\0';
 
 		if ((option = find_option(rh, p, OT_ANY)) == NULL) {
-			rc_log(LOG_ERR, "%s: line %d: unrecognized keyword: %s", filename, line, p);
-			fclose(configfd);
-			rc_destroy(rh);
-			return NULL;
+			rc_log(LOG_INFO, "%s: line %d: unrecognized keyword: %s", filename, line, p);
+			continue;
 		}
 
 		if (option->status != ST_UNDEF) {
-			rc_log(LOG_ERR, "%s: line %d: duplicate option line: %s", filename, line, p);
-			fclose(configfd);
-			rc_destroy(rh);
-			return NULL;
+			rc_log(LOG_INFO, "%s: line %d: duplicate option line: %s", filename, line, p);
+			continue;
 		}
 
 		p += pos+1;
