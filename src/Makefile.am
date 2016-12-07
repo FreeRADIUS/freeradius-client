@@ -20,9 +20,9 @@ CLEANFILES = *~
 noinst_HEADERS = radlogin.h
 
 sbin_PROGRAMS = radlogin radstatus radacct radexample radiusclient radembedded
-radlogin_SOURCES = radlogin.c radius.c local.c
+radlogin_SOURCES = radlogin.c radius.c local.c common.c common.h
 radacct_SOURCES = radacct.c
 radstatus_SOURCES = radstatus.c
-radexample_SOURCES = radexample.c
-radiusclient_SOURCES = radiusclient.c
+radexample_SOURCES = radexample.c common.c common.h
+radiusclient_SOURCES = radiusclient.c common.c common.h
 radembedded_SOURCES = radembedded.c
