@@ -30,6 +30,7 @@ main (int argc, char **argv)
 	uint32_t		service;
 	char 		msg[PW_MAX_MSG_SIZE], username_realm[256];
 	char		*default_realm;
+    char *radius_proto = NULL;
 	rc_handle	*rh;
 
 	pname = (pname = strrchr(argv[0],'/'))?pname+1:argv[0];
@@ -43,6 +44,10 @@ main (int argc, char **argv)
 		return ERROR_RC;
 
 	default_realm = rc_conf_str(rh, "default_realm");
+	radius_proto = rc_conf_str(rh, "radius_proto");
+    printf("\n\rproto %s\n\r", radius_proto);
+    if((strcmp(radius_proto, "UDP")) == 0)
+    printf("\n\r!!! Its UDP Dude !!!!\n\r");
 
 	strncpy(username, rc_getstr (rh, "login: ",1), sizeof(username));
 	strncpy (passwd, rc_getstr(rh, "Password: ",0), sizeof (passwd));

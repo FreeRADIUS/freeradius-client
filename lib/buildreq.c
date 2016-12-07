@@ -12,6 +12,7 @@
 #include <includes.h>
 #include <freeradius-client.h>
 #include "util.h"
+#include <stdbool.h>
 
 /** Build a skeleton RADIUS request using information from the config file
  *
@@ -73,6 +74,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	double		now = 0;
 	time_t		dtime;
 	unsigned	type;
+    char        *radius_proto = NULL;
 
 	if (request_type != PW_ACCOUNTING_REQUEST) {
 		aaaserver = rc_conf_srv(rh, "authserver");
@@ -84,6 +86,9 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	if (aaaserver == NULL)
 		return ERROR_RC;
 
+    radius_proto = rc_conf_str(rh, "radius_proto");
+    if(radius_proto != NULL)
+        data.radius_proto = true;
 	data.send_pairs = send;
 	data.receive_pairs = NULL;
 
