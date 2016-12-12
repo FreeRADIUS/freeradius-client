@@ -187,12 +187,11 @@ static void strappend(char *dest, unsigned max_size, int *pos, const char *src)
  *
  * @param rh - A handle to parsed configuration
  * @param secret - The server's secret string
- * @param secretlen - The secret string length
- * @param auth - Pointer to the AUTH_HDR structure
+ * @param auth - Pointer to the #AUTH_HDR structure
  * @param total_length - Total packet length before Message Authenticator
  *                is added.
  *
- * @return int - Total packet length after Message Authenticator is added.
+ * @return Total packet length after Message Authenticator is added.
  */
 static int add_msg_auth_attr(rc_handle * rh, char * secret,
 			AUTH_HDR *auth, int total_length)
@@ -201,18 +200,18 @@ static int add_msg_auth_attr(rc_handle * rh, char * secret,
 	uint8_t *msg_auth = (uint8_t *)auth + total_length;
 	msg_auth[0] = PW_MESSAGE_AUTHENTICATOR;
 	msg_auth[1] = 18;
-	memset(&msg_auth[2], 0, AUTH_VECTOR_LEN);
+	memset(&msg_auth[2], 0, MD5_DIGEST_SIZE);
 	total_length += 18;
 	auth->length = htons((unsigned short)total_length);
 
 	/* Calulate HMAC-MD5 [RFC2104] hash */
 	struct hmac_md5_ctx md5;
 	uint8_t digest[MD5_DIGEST_SIZE];
-	memset(digest, 0, sizeof(digest));
+	memset(digest, 0, MD5_DIGEST_SIZE);
 	hmac_md5_set_key(&md5, secretlen, (unsigned char *)secret);
 	hmac_md5_update(&md5, total_length, (unsigned char *)auth);
 	hmac_md5_digest(&md5, MD5_DIGEST_SIZE, digest);
-	memcpy(&msg_auth[2], digest, sizeof(digest));
+	memcpy(&msg_auth[2], digest, MD5_DIGEST_SIZE);
 
 	return total_length;
 }
@@ -224,8 +223,9 @@ static int add_msg_auth_attr(rc_handle * rh, char * secret,
  * @param msg must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of
  *	any %PW_REPLY_MESSAGE received.
  * @param flags must be %AUTH or %ACCT
- * @return %OK_RC (0) on success, %TIMEOUT_RC on timeout %REJECT_RC on acess reject, or negative
- *	on failure as return value.
+ * @return %OK_RC (0) on success, %CHALLENGE_RC when an Access-Challenge
+ *  response is received, %TIMEOUT_RC on timeout %REJECT_RC on access
+ *  reject, or negative on failure as return value.
  */
 int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 {
