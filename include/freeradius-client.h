@@ -410,6 +410,7 @@ typedef struct value_pair
 #define OK_RC		0
 #define TIMEOUT_RC	1
 #define REJECT_RC	2
+#define CHALLENGE_RC	3
 
 typedef struct send_data /* Used to pass information to sendserver() function */
 {

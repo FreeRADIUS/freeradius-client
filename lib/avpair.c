@@ -269,7 +269,7 @@ VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char c
 	/* Insert this new pair at the beginning of the list */
 	rpair->next = pair;
 	pair = rpair;
-	strcpy(pair->name, attr->name);
+	strlcpy(pair->name, attr->name, sizeof(pair->name));
 	pair->attribute = attr->value;
 	pair->type = attr->type;
 
@@ -732,12 +732,15 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 	    case PW_TYPE_STRING:
 	    	lv--;
 	    	pos = 0;
+		unsigned int slen;
 		ptr = (unsigned char *) pair->strvalue;
 		if (pair->attribute == PW_DIGEST_ATTRIBUTES) {
-			pair->strvalue[*(ptr + 1)] = '\0';
+			slen = ptr[1] - 2;
 			ptr += 2;
+		} else {
+			slen = pair->lvalue;
 		}
-		while (*ptr != '\0')
+		while (slen-- > 0)
 		{
 			if (!(isprint (*ptr)))
 			{

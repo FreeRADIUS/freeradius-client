@@ -154,6 +154,9 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
+/* Define to 1 if you have the `strlcpy' function. */
+#undef HAVE_STRLCPY
+
 /*struct utsname has domainname field */
 #undef HAVE_STRUCT_UTSNAME_DOMAINNAME
 
@@ -210,8 +213,7 @@
 /* is little endian arch ? */
 #undef LITTLE_ENDIAN
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 
 /* do you need the sig* prototypes ? */
