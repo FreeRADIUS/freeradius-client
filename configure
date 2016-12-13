@@ -783,6 +783,7 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 enable_shadow
+with_nettle
 with_secure_path
 with_facility
 '
@@ -1456,6 +1457,7 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot[=DIR]    Search for dependent libraries within DIR (or the
                           compiler's sysroot if not specified).
+  --with-nettle           use nettle for crypto [default=no]
   --with-secure-path      PATH setting for exec'ed programs
   --with-facility         Syslog facility to use
 
@@ -14558,6 +14560,16 @@ $as_echo "no" >&6; }
 fi
 
 
+# Check whether --with-nettle was given.
+if test "${with_nettle+set}" = set; then :
+  withval=$with_nettle; with_nettle=$withval
+else
+  with_nettle=no
+fi
+
+
+if test "$with_nettle" != no; then
+
 
 
 
@@ -14736,31 +14748,11 @@ fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$NETTLE_PKG_ERRORS" >&5
 
-	as_fn_error $? "Package requirements (nettle >= 2.4) were not met:
-
-$NETTLE_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables NETTLE_CFLAGS
-and NETTLE_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details." "$LINENO" 5
+	use_nettle=no
 elif test $pkg_failed = untried; then
      	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
-	{ { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables NETTLE_CFLAGS
-and NETTLE_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://pkg-config.freedesktop.org/>.
-See \`config.log' for more details" "$LINENO" 5; }
+	use_nettle=no
 else
 	NETTLE_CFLAGS=$pkg_cv_NETTLE_CFLAGS
 	NETTLE_LIBS=$pkg_cv_NETTLE_LIBS
@@ -14769,12 +14761,13 @@ $as_echo "yes" >&6; }
 	use_nettle=yes
 fi
 
-if test "$use_nettle" = yes;then
-	CRYPTO_CFLAGS="$NETTLE_CFLAGS"
-	CRYPTO_LIBS="$NETTLE_LIBS"
+	if test "$use_nettle" = yes;then
+		CRYPTO_CFLAGS="$NETTLE_CFLAGS"
+		CRYPTO_LIBS="$NETTLE_LIBS"
 
 $as_echo "#define HAVE_NETTLE 1" >>confdefs.h
 
+	fi
 fi
 
  if test "$use_nettle" = "yes"; then

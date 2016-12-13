@@ -21,7 +21,7 @@
 #include <freeradius-client.h>
 #include <pathnames.h>
 #include "util.h"
-#include <nettle/hmac.h>
+#include "rc-hmac.h"
 
 #define	SA(p)	((struct sockaddr *)(p))
 
@@ -205,12 +205,8 @@ static int add_msg_auth_attr(rc_handle * rh, char * secret,
 	auth->length = htons((unsigned short)total_length);
 
 	/* Calulate HMAC-MD5 [RFC2104] hash */
-	struct hmac_md5_ctx md5;
 	uint8_t digest[MD5_DIGEST_SIZE];
-	memset(digest, 0, MD5_DIGEST_SIZE);
-	hmac_md5_set_key(&md5, secretlen, (unsigned char *)secret);
-	hmac_md5_update(&md5, total_length, (unsigned char *)auth);
-	hmac_md5_digest(&md5, MD5_DIGEST_SIZE, digest);
+	rc_hmac_md5((unsigned char *)auth, total_length, (unsigned char *)secret, secretlen, digest);
 	memcpy(&msg_auth[2], digest, MD5_DIGEST_SIZE);
 
 	return total_length;

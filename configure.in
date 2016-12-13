@@ -1,11 +1,11 @@
-#
+# 
 #  $Id: configure.in,v 1.38 2008/03/05 18:02:55 cparker Exp $
-#
+# 
 #  Copyright (C) 1996,1997 Lars Fenneberg
-#
-#  See the file COPYRIGHT for the respective terms and conditions.
-#
-#
+# 
+#  See the file COPYRIGHT for the respective terms and conditions. 
+# 
+# 
 
 AC_INIT
 
@@ -137,7 +137,7 @@ if test "x$gethostbynamerstyle" = "x"; then
 #include <stdio.h>
 #include <netdb.h>
 ], [ gethostbyname_r(NULL, NULL, NULL, 0, NULL) ] , [
-        AC_DEFINE(GETHOSTBYNAME_R)
+        AC_DEFINE(GETHOSTBYNAME_R)        
 	AC_DEFINE([GETHOSTBYNAMERSTYLE_SYSV], [], [Define to 1 to use sysv-style gethostbyname_r()])
         gethostbynamerstyle=SYSV
 ])
@@ -211,7 +211,7 @@ then
 	AC_MSG_CHECKING([for field domainname in struct utsname])
 	AC_TRY_RUN([
 	#include <sys/utsname.h>
-
+	
 	main(int argc, char **argv)
 	{
 		struct utsname uts;
@@ -243,12 +243,19 @@ else
 	AC_MSG_RESULT(no)
 fi
 
-PKG_CHECK_MODULES(NETTLE, [nettle >= 2.4], [use_nettle=yes])
+AC_ARG_WITH([nettle], [AS_HELP_STRING([--with-nettle],
+	[use nettle for crypto @<:@default=no@:>@])],
+	[with_nettle=$withval],
+	[with_nettle=no])
 
-if test "$use_nettle" = yes;then
-	CRYPTO_CFLAGS="$NETTLE_CFLAGS"
-	CRYPTO_LIBS="$NETTLE_LIBS"
-	AC_DEFINE([HAVE_NETTLE], 1, [Define to 1 to use nettle for MD5.])
+if test "$with_nettle" != no; then
+	PKG_CHECK_MODULES(NETTLE, [nettle >= 2.4], [use_nettle=yes], [use_nettle=no])
+
+	if test "$use_nettle" = yes;then
+		CRYPTO_CFLAGS="$NETTLE_CFLAGS"
+		CRYPTO_LIBS="$NETTLE_LIBS"
+		AC_DEFINE([HAVE_NETTLE], 1, [Define to 1 to use nettle for MD5.])
+	fi
 fi
 
 AM_CONDITIONAL(ENABLE_NETTLE, test "$use_nettle" = "yes")

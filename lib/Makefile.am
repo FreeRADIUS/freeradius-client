@@ -3,8 +3,8 @@
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
-# See the file COPYRIGHT for the respective terms and conditions. 
-# If the file is missing contact me at lf@elemental.net 
+# See the file COPYRIGHT for the respective terms and conditions.
+# If the file is missing contact me at lf@elemental.net
 # and I'll send you a copy.
 #
 
@@ -21,10 +21,12 @@ CLEANFILES = *~
 lib_LTLIBRARIES =   libfreeradius-client.la
 libfreeradius_client_la_SOURCES = buildreq.c clientid.c env.c sendserver.c \
 	avpair.c config.c dict.c ip_util.c log.c util.c  \
-	options.h rc-md5.h rc-md5.c util.h
+	options.h rc-md5.h rc-md5.c util.h rc-hmac.h
 
 if !ENABLE_NETTLE
-libfreeradius_client_la_SOURCES += md5.c md5.h
+libfreeradius_client_la_SOURCES += md5.c md5.h hmac.c hmac.h
+else
+libfreeradius_client_la_SOURCES += nettle-hmac.c
 endif
 
 libfreeradius_client_la_LDFLAGS = -version-info $(LIBVERSION)
