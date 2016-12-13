@@ -19,8 +19,8 @@
 #
 # Copyright (C) 1995,1997,1998 Lars Fenneberg
 #
-# See the file COPYRIGHT for the respective terms and conditions. 
-# If the file is missing contact me at lf@elemental.net 
+# See the file COPYRIGHT for the respective terms and conditions.
+# If the file is missing contact me at lf@elemental.net
 # and I'll send you a copy.
 #
 
@@ -99,7 +99,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@ENABLE_NETTLE_FALSE@am__append_1 = md5.c md5.h
+@ENABLE_NETTLE_FALSE@am__append_1 = md5.c md5.h hmac.c hmac.h
+@ENABLE_NETTLE_TRUE@am__append_2 = nettle-hmac.c
 subdir = lib
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
@@ -143,11 +144,13 @@ am__DEPENDENCIES_1 =
 libfreeradius_client_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am__libfreeradius_client_la_SOURCES_DIST = buildreq.c clientid.c env.c \
 	sendserver.c avpair.c config.c dict.c ip_util.c log.c util.c \
-	options.h rc-md5.h rc-md5.c util.h md5.c md5.h
-@ENABLE_NETTLE_FALSE@am__objects_1 = md5.lo
+	options.h rc-md5.h rc-md5.c util.h rc-hmac.h md5.c md5.h \
+	hmac.c hmac.h nettle-hmac.c
+@ENABLE_NETTLE_FALSE@am__objects_1 = md5.lo hmac.lo
+@ENABLE_NETTLE_TRUE@am__objects_2 = nettle-hmac.lo
 am_libfreeradius_client_la_OBJECTS = buildreq.lo clientid.lo env.lo \
 	sendserver.lo avpair.lo config.lo dict.lo ip_util.lo log.lo \
-	util.lo rc-md5.lo $(am__objects_1)
+	util.lo rc-md5.lo $(am__objects_1) $(am__objects_2)
 libfreeradius_client_la_OBJECTS =  \
 	$(am_libfreeradius_client_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
@@ -360,7 +363,8 @@ CLEANFILES = *~
 lib_LTLIBRARIES = libfreeradius-client.la
 libfreeradius_client_la_SOURCES = buildreq.c clientid.c env.c \
 	sendserver.c avpair.c config.c dict.c ip_util.c log.c util.c \
-	options.h rc-md5.h rc-md5.c util.h $(am__append_1)
+	options.h rc-md5.h rc-md5.c util.h rc-hmac.h $(am__append_1) \
+	$(am__append_2)
 libfreeradius_client_la_LDFLAGS = -version-info $(LIBVERSION)
 libfreeradius_client_la_LIBADD = $(CRYPTO_LIBS)
 all: all-am
@@ -447,9 +451,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/config.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dict.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/env.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hmac.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ip_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nettle-hmac.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rc-md5.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sendserver.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Plo@am__quote@
