@@ -206,7 +206,7 @@ static int add_msg_auth_attr(rc_handle * rh, char * secret,
 
 	/* Calulate HMAC-MD5 [RFC2104] hash */
 	uint8_t digest[MD5_DIGEST_SIZE];
-	rc_hmac_md5((unsigned char *)auth, total_length, (unsigned char *)secret, secretlen, digest);
+	rc_hmac_md5((uint8_t *)auth, (size_t)total_length, (uint8_t *)secret, secretlen, digest);
 	memcpy(&msg_auth[2], digest, MD5_DIGEST_SIZE);
 
 	return total_length;

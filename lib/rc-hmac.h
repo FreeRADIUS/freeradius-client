@@ -26,20 +26,19 @@
 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
-* The views and conclusions contained in the software and documentation are those
-* of the authors and should not be interpreted as representing official policies,
-* either expressed or implied, of the FreeBSD Project.
 */
 
 #include "config.h" /* HAVE_NETTLE */
 
 #ifdef HAVE_NETTLE
 
+#include <stddef.h>
+#include <stdint.h>
 #include <nettle/hmac.h>
-extern void nettle_hmac_md5(unsigned char *data, int  data_len,
-                            unsigned char *key,  int  key_len,
-                            unsigned char  digest[MD5_DIGEST_SIZE]);
-#define rc_hmac_md5      nettle_hmac_md5
+extern void hmac_md5_with_nettle(uint8_t *data, size_t  data_len,
+                                 uint8_t *key,  size_t  key_len,
+                                 uint8_t  digest[MD5_DIGEST_SIZE]);
+#define rc_hmac_md5      hmac_md5_with_nettle
 
 #else  /* HAVE_NETTLE */
 
