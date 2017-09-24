@@ -13,7 +13,6 @@
 static char	rcsid[] =
 		"$Id: radexample.c,v 1.8 2007/07/11 17:29:30 cparker Exp $";
 
-#include	<config.h>
 #include	<includes.h>
 #include	<freeradius-client.h>
 #include	<pathnames.h>
