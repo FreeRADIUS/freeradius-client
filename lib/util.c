@@ -180,7 +180,7 @@ char *rc_getstr (rc_handle *rh, char const *prompt, int do_echo)
 
 		flushed = 1;
 
-		if (p < rh->buf + GETSTR_LENGTH)
+		if (p < rh->buf + sizeof(rh->buf))
 		{
 			if (do_echo && !is_term)
 				(void)write(out, &c, 1);
