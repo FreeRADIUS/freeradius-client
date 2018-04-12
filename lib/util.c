@@ -326,7 +326,20 @@ double rc_getctime(void)
 
     return timev.tv_sec + ((double)timev.tv_usec) / 1000000.0;
 }
+/** Returns the current time as a double.
+ *
+ * @return current time (miliseconds since epoch) expressed as
+ * 	double-precision floating point number.
+ */
+double rc_getctime_ms(void)
+{
+    struct timeval timev;
 
+    if (gettimeofday(&timev, NULL) == -1)
+        return -1;
+
+    return (timev.tv_sec + ((double)timev.tv_usec) / 1000000.0)*1000.0;
+}
 /*
  * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
  *

@@ -613,6 +613,11 @@ int test_config(rc_handle const *rh, char const *filename)
 		rc_log(LOG_ERR,"%s: radius_timeout <= 0 is illegal", filename);
 		return -1;
 	}
+	if (rc_conf_int(rh, "radius_timeout_ms") < 0)
+	{
+		rc_log(LOG_ERR,"%s: radius_timeout_ms < 0 is illegal", filename);
+		return -1;
+	}
 	if (rc_conf_int(rh, "radius_retries") <= 0)
 	{
 		rc_log(LOG_ERR,"%s: radius_retries <= 0 is illegal", filename);

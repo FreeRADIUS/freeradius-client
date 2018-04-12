@@ -23,9 +23,10 @@
  * @param secret the secret used by the server.
  * @param timeout the timeout in seconds of a message.
  * @param retries the number of retries.
+ * @param timeout_ms the timeout in miliseconds of a message.
  */
 void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, unsigned short port,
-		 char *secret, int timeout, int retries)
+		 char *secret, int timeout, int retries,int timeout_ms)
 {
 	data->server = server;
 	data->secret = secret;
@@ -34,6 +35,7 @@ void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, u
 	data->timeout = timeout;
 	data->retries = retries;
 	data->code = code;
+	data->timeout_ms=timeout_ms;
 }
 
 /** Generates a random ID
@@ -73,7 +75,8 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	double		now = 0;
 	time_t		dtime;
 	unsigned	type;
-
+	int		timeout_ms = rc_conf_int(rh, "radius_timeout_ms");
+	
 	if (request_type != PW_ACCOUNTING_REQUEST) {
 		aaaserver = rc_conf_srv(rh, "authserver");
 		type = AUTH;
@@ -129,7 +132,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 			data.receive_pairs = NULL;
 		}
 		rc_buildreq(rh, &data, request_type, aaaserver->name[i],
-		    aaaserver->port[i], aaaserver->secret[i], timeout, retries);
+		    aaaserver->port[i], aaaserver->secret[i], timeout, retries,timeout_ms);
 
 		if (request_type == PW_ACCOUNTING_REQUEST) {
 			dtime = now - start_time;
@@ -156,7 +159,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 			data.receive_pairs = NULL;
 		}
 		rc_buildreq(rh, &data, request_type, aaaserver->name[i],
-		    aaaserver->port[i], aaaserver->secret[i], timeout, retries);
+		    aaaserver->port[i], aaaserver->secret[i], timeout, retries,timeout_ms);
 
 		if (request_type == PW_ACCOUNTING_REQUEST) {
 			dtime = rc_getctime() - start_time;
@@ -258,7 +261,8 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 	uint32_t		service_type;
 	int		timeout = rc_conf_int(rh, "radius_timeout");
 	int		retries = rc_conf_int(rh, "radius_retries");
-
+	int		timeout_ms = rc_conf_int(rh, "radius_timeout_ms");
+	
 	data.send_pairs = data.receive_pairs = NULL;
 
 	/*
@@ -268,7 +272,7 @@ int rc_check(rc_handle *rh, char *host, char *secret, unsigned short port, char 
 	service_type = PW_ADMINISTRATIVE;
 	rc_avpair_add(rh, &(data.send_pairs), PW_SERVICE_TYPE, &service_type, 0, 0);
 
-	rc_buildreq(rh, &data, PW_STATUS_SERVER, host, port, secret, timeout, retries);
+	rc_buildreq(rh, &data, PW_STATUS_SERVER, host, port, secret, timeout, retries,timeout_ms);
 	result = rc_send_server (rh, &data, msg, ACCT);
 
 	rc_avpair_free(data.receive_pairs);
