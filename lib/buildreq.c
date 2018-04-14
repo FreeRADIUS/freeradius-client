@@ -55,8 +55,9 @@ unsigned char rc_get_id()
  *	%PW_REPLY_MESSAGE received.
  * @param add_nas_port if non-zero it will include %PW_NAS_PORT in sent pairs.
  * @param request_type one of standard RADIUS codes (e.g., %PW_ACCESS_REQUEST).
- * @return received value_pairs in received, messages from the server in msg and %OK_RC (0) on success, negative
- *	on failure as return value.
+ * @return received value_pairs in received, messages from the server in
+ *  msg and %OK_RC (0) on success, %CHALLENGE_RC (3) on Access-Challenge
+ *  received, negative on failure as return value.
  */
 int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
 	   char *msg, int add_nas_port, int request_type)
@@ -116,7 +117,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 
 	skip_count = 0;
 	result = ERROR_RC;
-	for (i=0; (i < aaaserver->max) && (result != OK_RC) && (result != REJECT_RC)
+	for (i=0; (i < aaaserver->max) && (result != OK_RC) && (result != CHALLENGE_RC) && (result != REJECT_RC)
 	    ; i++, now = rc_getctime())
 	{
 		if (aaaserver->deadtime_ends[i] != -1 &&
@@ -140,11 +141,11 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 		if (result == TIMEOUT_RC && radius_deadtime > 0)
 			aaaserver->deadtime_ends[i] = start_time + (double)radius_deadtime;
 	}
-	if (result == OK_RC || result == REJECT_RC || skip_count == 0)
+	if (result == OK_RC || result == CHALLENGE_RC || result == REJECT_RC || skip_count == 0)
 		goto exit;
 
 	result = ERROR_RC;
-	for (i=0; (i < aaaserver->max) && (result != OK_RC) && (result != REJECT_RC)
+	for (i=0; (i < aaaserver->max) && (result != OK_RC) && (result != CHALLENGE_RC) && (result != REJECT_RC)
 	    ; i++)
 	{
 		if (aaaserver->deadtime_ends[i] == -1 ||
@@ -187,7 +188,8 @@ exit:
  * @param msg must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of any
  *	%PW_REPLY_MESSAGE received.
  * @return received value_pairs in @received, messages from the server in msg (if non-NULL),
- *	and %OK_RC (0) on success, negative on failure as return value.
+ *	and %OK_RC (0) on success, %CHALLENGE_RC (3) on Access-Challenge
+ *  received, negative on failure as return value.
  */
 int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **received,
     char *msg)
@@ -208,7 +210,8 @@ int rc_auth(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **
  * @param msg must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of
  *	any %PW_REPLY_MESSAGE received.
  * @return received value_pairs in @received, messages from the server in msg (if non-NULL)
- *	and %OK_RC (0) on success, negative on failure as return value.
+ *	and %OK_RC (0) on success, %CHALLENGE_RC (3) on Access-Challenge
+ *  received, negative on failure as return value.
  */
 int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *msg)
 {
@@ -222,7 +225,9 @@ int rc_auth_proxy(rc_handle *rh, VALUE_PAIR *send, VALUE_PAIR **received, char *
  * @param rh a handle to parsed configuration.
  * @param client_port the client port number to use (may be zero to use any available).
  * @param send a #VALUE_PAIR array of values (e.g., %PW_USER_NAME).
- * @return received value_pairs in @received, and %OK_RC (0) on success, negative on failure as return value.
+ * @return received value_pairs in @received, and %OK_RC (0) on success,
+ *  %CHALLENGE_RC (3) on Access-Challenge received, negative on failure as
+ *  return value.
  */
 int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send)
 {
@@ -233,7 +238,8 @@ int rc_acct(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send)
  *
  * @param rh a handle to parsed configuration.
  * @param send a #VALUE_PAIR array of values (e.g., %PW_USER_NAME).
- * @return %OK_RC (0) on success, negative on failure as return value.
+ * @return %OK_RC (0) on success, %CHALLENGE_RC (3) on Access-Challenge
+ *  received, negative on failure as return value.
  */
 int rc_acct_proxy(rc_handle *rh, VALUE_PAIR *send)
 {

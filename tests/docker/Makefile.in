@@ -13,16 +13,6 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
-
-#
-# $Id: Makefile.am,v 1.1 2003/12/02 10:39:22 sobomax Exp $
-#
-# Copyright (C) 1995 Lars Fenneberg
-#
-# See the file COPYRIGHT for the respective terms and conditions. 
-# If the file is missing contact me at lf@elemental.net 
-# and I'll send you a copy.
-#
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -98,7 +88,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = man
+subdir = tests/docker
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -263,8 +253,7 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = foreign
-CLEANFILES = *~
+EXTRA_DIST = Dockerfile-radius 	freeradius-users radius-clients.conf
 all: all-am
 
 .SUFFIXES:
@@ -277,9 +266,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign man/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu tests/docker/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign man/Makefile
+	  $(AUTOMAKE) --gnu tests/docker/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -366,7 +355,6 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)

@@ -21,6 +21,7 @@
 #include <freeradius-client.h>
 #include <pathnames.h>
 #include "util.h"
+#include "rc-hmac.h"
 
 #define	SA(p)	((struct sockaddr *)(p))
 
@@ -180,6 +181,37 @@ static void strappend(char *dest, unsigned max_size, int *pos, const char *src)
 	return;
 }
 
+/** Add a Message-Authenticator attribute to a message. This is mandatory,
+ *  for example, when sending a message containing an EAP-Message
+ *  attribute.
+ *
+ * @param rh - A handle to parsed configuration
+ * @param secret - The server's secret string
+ * @param auth - Pointer to the #AUTH_HDR structure
+ * @param total_length - Total packet length before Message Authenticator
+ *                is added.
+ *
+ * @return Total packet length after Message Authenticator is added.
+ */
+static int add_msg_auth_attr(rc_handle * rh, char * secret,
+			AUTH_HDR *auth, int total_length)
+{
+	size_t secretlen = strlen(secret);
+	uint8_t *msg_auth = (uint8_t *)auth + total_length;
+	msg_auth[0] = PW_MESSAGE_AUTHENTICATOR;
+	msg_auth[1] = 18;
+	memset(&msg_auth[2], 0, MD5_DIGEST_SIZE);
+	total_length += 18;
+	auth->length = htons((unsigned short)total_length);
+
+	/* Calulate HMAC-MD5 [RFC2104] hash */
+	uint8_t digest[MD5_DIGEST_SIZE];
+	rc_hmac_md5((uint8_t *)auth, (size_t)total_length, (uint8_t *)secret, secretlen, digest);
+	memcpy(&msg_auth[2], digest, MD5_DIGEST_SIZE);
+
+	return total_length;
+}
+
 /** Sends a request to a RADIUS server and waits for the reply
  *
  * @param rh a handle to parsed configuration
@@ -187,8 +219,9 @@ static void strappend(char *dest, unsigned max_size, int *pos, const char *src)
  * @param msg must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of
  *	any %PW_REPLY_MESSAGE received.
  * @param flags must be %AUTH or %ACCT
- * @return %OK_RC (0) on success, %TIMEOUT_RC on timeout %REJECT_RC on acess reject, or negative
- *	on failure as return value.
+ * @return %OK_RC (0) on success, %CHALLENGE_RC when an Access-Challenge
+ *  response is received, %TIMEOUT_RC on timeout %REJECT_RC on access
+ *  reject, or negative on failure as return value.
  */
 int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 {
@@ -328,18 +361,22 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		total_length = rc_pack_list(data->send_pairs, secret, auth) + AUTH_HDR_LEN;
 
 		auth->length = htons ((unsigned short) total_length);
+
+		/* If EAP message we MUST add a Message-Authenticator attribute */
+		if (rc_avpair_get(data->send_pairs, PW_EAP_MESSAGE, 0) != NULL)
+		    total_length = add_msg_auth_attr(rh, secret, auth, total_length);
 	}
 
 	getnameinfo(SA(&our_sockaddr), SS_LEN(&our_sockaddr), NULL, 0, our_addr_txt, sizeof(our_addr_txt), NI_NUMERICHOST);
 	getnameinfo(auth_addr->ai_addr, auth_addr->ai_addrlen, NULL, 0, auth_addr_txt, sizeof(auth_addr_txt), NI_NUMERICHOST);
 
-	DEBUG(LOG_ERR, "DEBUG: local %s : 0, remote %s : %u\n", 
+	DEBUG(LOG_ERR, "DEBUG: local %s : 0, remote %s : %u\n",
 	      our_addr_txt, auth_addr_txt, data->svc_port);
 
 	for (;;)
 	{
 		do {
-			result = sendto (sockfd, (char *) auth, (unsigned int)total_length, 
+			result = sendto (sockfd, (char *) auth, (unsigned int)total_length,
 				(int) 0, SA(auth_addr->ai_addr), auth_addr->ai_addrlen);
 		} while (result == -1 && errno == EINTR);
 		if (result == -1) {
@@ -479,20 +516,25 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		}
 	}
 
-	if ((recv_auth->code == PW_ACCESS_ACCEPT) ||
-		(recv_auth->code == PW_PASSWORD_ACK) ||
-		(recv_auth->code == PW_ACCOUNTING_RESPONSE))
-	{
+	switch (recv_auth->code) {
+	case PW_ACCESS_ACCEPT:
+	case PW_PASSWORD_ACK:
+	case PW_ACCOUNTING_RESPONSE:
 		result = OK_RC;
-	}
-	else if ((recv_auth->code == PW_ACCESS_REJECT) ||
-		(recv_auth->code == PW_PASSWORD_REJECT))
-	{
+		break;
+
+	case PW_ACCESS_REJECT:
+	case PW_PASSWORD_REJECT:
 		result = REJECT_RC;
-	}
-	else
-	{
-		rc_log(LOG_ERR, "rc_send_server: received RADIUS server response neither ACCEPT nor REJECT, invalid");
+		break;
+
+	case PW_ACCESS_CHALLENGE:
+		result = CHALLENGE_RC;
+		break;
+
+	default:
+		rc_log(LOG_ERR, "rc_send_server: received RADIUS server response neither ACCEPT nor REJECT, code=%d is invalid",
+		       recv_auth->code);
 		result = BADRESP_RC;
 	}
 
