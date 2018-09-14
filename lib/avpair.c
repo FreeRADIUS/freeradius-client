@@ -803,10 +803,20 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 
 		break;
 	    }
-	    case PW_TYPE_DATE:
-		strftime (value, lv, "%m/%d/%y %H:%M:%S",
-			  gmtime ((time_t *) & pair->lvalue));
+	    case PW_TYPE_DATE: {
+		struct tm * ptm = gmtime((time_t *) & pair->lvalue);
+		if (!ptm) /* NOTE: It is possible for gmtime to return NULL, so check for it */
+		{
+			/* The time value is bad, so we will use the current time instead. The alternative would be to return "01/01/70 00:00:00" */
+			rc_log(LOG_WARNING, "rc_avpair_tostr: bad time value, using current time instead. errno = %d", errno);
+			time_t now;
+			time(&now);
+			ptm = gmtime(&now);
+		}
+
+		strftime(value, lv, "%m/%d/%y %H:%M:%S", ptm);
 		break;
+	    }
 
 	    default:
 		rc_log(LOG_ERR, "rc_avpair_tostr: unknown attribute type %d", pair->type);
