@@ -60,8 +60,8 @@
 
 #define MAX_SECRET_LENGTH	(3 * 16) /* MUST be multiple of 16 */
 
-#define VENDOR(x)		(((x) >> 16) & 0xffff)
-#define ATTRID(x)		((x) & 0xffff)
+#define VENDOR(x)		(((x) >> 8) & 0xffffff)
+#define ATTRID(x)		((x) & 0xff)
 
 #define PW_MAX_MSG_SIZE		4096
 
@@ -372,7 +372,7 @@ typedef struct rc_conf rc_handle;
 typedef struct dict_attr
 {
 	char              name[NAME_LENGTH + 1];	//!< attribute name.
-	int               value;			//!< attribute index.
+	uint32_t          value;			//!< attribute index.
 	int               type;				//!< string, int, etc..
 	struct dict_attr *next;
 } DICT_ATTR;
@@ -381,21 +381,21 @@ typedef struct dict_value
 {
 	char               attrname[NAME_LENGTH +1];
 	char               name[NAME_LENGTH + 1];
-	int                value;
+	int32_t            value;
 	struct dict_value *next;
 } DICT_VALUE;
 
 typedef struct dict_vendor
 {
 	char               vendorname[NAME_LENGTH +1];
-	int                vendorpec;
+	uint32_t           vendorpec;
 	struct dict_vendor *next;
 } DICT_VENDOR;
 
 typedef struct value_pair
 {
 	char               name[NAME_LENGTH + 1];
-	int                attribute;
+	uint32_t           attribute;
 	int                type;
 	uint32_t           lvalue;
 	char               strvalue[AUTH_STRING_LEN + 1];
@@ -448,11 +448,11 @@ __BEGIN_DECLS
 
 /* avpair.c */
 
-VALUE_PAIR *rc_avpair_add(rc_handle const *, VALUE_PAIR **, int, void const *, int, int);
+VALUE_PAIR *rc_avpair_add(rc_handle const *, VALUE_PAIR **, uint32_t, void const *, int, uint32_t);
 int rc_avpair_assign(VALUE_PAIR *, void const *, int);
-VALUE_PAIR *rc_avpair_new(rc_handle const *, int, void const *, int, int);
-VALUE_PAIR *rc_avpair_gen(rc_handle const *, VALUE_PAIR *, unsigned char const *, int, int);
-VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, int, int);
+VALUE_PAIR *rc_avpair_new(rc_handle const *, uint32_t, void const *, int, uint32_t);
+VALUE_PAIR *rc_avpair_gen(rc_handle const *, VALUE_PAIR *, unsigned char const *, int, uint32_t);
+VALUE_PAIR *rc_avpair_get(VALUE_PAIR *, uint32_t, uint32_t);
 void rc_avpair_insert(VALUE_PAIR **, VALUE_PAIR *, VALUE_PAIR *);
 void rc_avpair_free(VALUE_PAIR *);
 int rc_avpair_parse(rc_handle const *, char const *, VALUE_PAIR **);
@@ -493,11 +493,11 @@ int test_config(rc_handle const *, char const *);
 /* dict.c */
 
 int rc_read_dictionary(rc_handle *, char const *);
-DICT_ATTR *rc_dict_getattr(rc_handle const *, int);
+DICT_ATTR *rc_dict_getattr(rc_handle const *, uint32_t);
 DICT_ATTR *rc_dict_findattr(rc_handle const *, char const *);
 DICT_VALUE *rc_dict_findval(rc_handle const *, char const *);
 DICT_VENDOR *rc_dict_findvend(rc_handle const *, char const *);
-DICT_VENDOR *rc_dict_getvend(rc_handle const *, int);
+DICT_VENDOR *rc_dict_getvend(rc_handle const *, uint32_t);
 DICT_VALUE * rc_dict_getval(rc_handle const *, uint32_t, char const *);
 void rc_dict_free(rc_handle *);
 

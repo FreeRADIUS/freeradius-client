@@ -30,7 +30,7 @@
  * @param vendorpec The vendor ID in case of a vendor specific value - 0 otherwise.
  * @return pointer to added a/v pair upon success, NULL pointer upon failure.
  */
-VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, int attrid, void const *pval, int len, int vendorpec)
+VALUE_PAIR *rc_avpair_add (rc_handle const *rh, VALUE_PAIR **list, uint32_t attrid, void const *pval, int len, uint32_t vendorpec)
 {
 	VALUE_PAIR     *vp;
 
@@ -108,12 +108,22 @@ int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len)
  * @param vendorpec The vendor ID in case of a vendor specific value - 0 otherwise.
  * @return pointer to generated a/v pair when successful, NULL when failure.
  */
-VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, int len, int vendorpec)
+VALUE_PAIR *rc_avpair_new (rc_handle const *rh, uint32_t attrid, void const *pval, int len, uint32_t vendorpec)
 {
 	VALUE_PAIR     *vp = NULL;
 	DICT_ATTR      *pda;
 
-	attrid = attrid | (vendorpec << 16);
+	if(attrid > UINT8_MAX)
+	{
+		rc_log(LOG_ERR,"rc_avpair_new: too large attribute %u", attrid);
+		return NULL;
+	}
+	if(vendorpec >= (1l << 24))
+	{
+		rc_log(LOG_ERR,"rc_avpair_new: too large Vendor-Id %u", vendorpec);
+		return NULL;
+	}
+	attrid = attrid | (vendorpec << 8);
 	if ((pda = rc_dict_getattr (rh, attrid)) == NULL)
 	{
 		rc_log(LOG_ERR,"rc_avpair_new: unknown attribute %d", attrid);
@@ -181,11 +191,11 @@ VALUE_PAIR *rc_avpair_new (rc_handle const *rh, int attrid, void const *pval, in
  * @return value_pair list or %NULL on failure.
  */
 VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char const *ptr,
-			  int length, int vendorpec)
+			  int length, uint32_t vendorpec)
 {
-	int attribute, attrlen, x_len;
+	int attrlen, x_len;
 	unsigned char const *x_ptr;
-	uint32_t lvalue;
+	uint32_t attribute, lvalue;
 	DICT_ATTR *attr;
 	VALUE_PAIR *rpair;
 	char buffer[(AUTH_STRING_LEN * 2) + 1];
@@ -208,12 +218,12 @@ VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char c
 	if (length != attrlen) {
 		pair = rc_avpair_gen(rh, pair, ptr + attrlen, length - attrlen,
 		    vendorpec);
-		if (pair == NULL)
+		if ((pair == NULL) && (vendorpec != 0))
 			return NULL;
 	}
 
 	/* Actual processing */
-	attribute = ptr[0] | (vendorpec << 16);
+	attribute = ptr[0] | (vendorpec << 8);
 	ptr += 2;
 	attrlen -= 2;
 
@@ -253,7 +263,7 @@ VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char c
 		} else {
 			rc_log(LOG_WARNING, "rc_avpair_gen: received "
 			    "unknown VSA attribute %d, vendor %d of "
-			    "length %d: 0x%s", attribute & 0xffff,
+			    "length %d: 0x%s", ATTRID(attribute),
 			    VENDOR(attribute), attrlen + 2, buffer);
 		}
 		goto skipit;
@@ -345,7 +355,7 @@ shithappens:
  * @param vendorpec The vendor ID in case of a vendor specific value - 0 otherwise.
  * @return the value pair found.
  */
-VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, int attrid, int vendorpec)
+VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, uint32_t attrid, uint32_t vendorpec)
 {
 	for (; vp != NULL && !(ATTRID(vp->attribute) == ATTRID(attrid) &&
 	    VENDOR(vp->attribute) == vendorpec); vp = vp->next)
