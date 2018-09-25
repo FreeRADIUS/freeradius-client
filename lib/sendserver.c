@@ -190,7 +190,7 @@ static void strappend(char *dest, unsigned max_size, int *pos, const char *src)
  * @return %OK_RC (0) on success, %TIMEOUT_RC on timeout %REJECT_RC on acess reject, or negative
  *	on failure as return value.
  */
-int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
+int rc_send_server (rc_handle const *rh, SEND_DATA *data, char *msg, unsigned flags)
 {
 	int             sockfd;
 	AUTH_HDR       *auth, *recv_auth;
@@ -222,9 +222,16 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 
 	if(data->secret != NULL)
 	{
+		// no need to look up the secret from configuration
 		strlcpy(secret, data->secret, MAX_SECRET_LENGTH);
+		auth_addr = rc_getaddrinfo (server_name, flags==AUTH?PW_AI_AUTH:PW_AI_ACCT);
+		if(auth_addr == NULL)
+		{
+			rc_log(LOG_ERR, "rc_send_server: unable to resolve server: %s", server_name);
+			return ERROR_RC;
+		}
 	}
-	if (rc_find_server_addr (rh, server_name, &auth_addr, secret, flags) != 0)
+	else if (rc_find_server_addr (rh, server_name, &auth_addr, secret, flags) != 0)
 	{
 		rc_log(LOG_ERR, "rc_send_server: unable to find server: %s", server_name);
 		return ERROR_RC;

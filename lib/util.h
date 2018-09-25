@@ -43,7 +43,7 @@ int rc_find_server_addr(rc_handle const *, char const *, struct addrinfo **, cha
 #define PW_AI_ACCT		(1<<2)
 
 struct addrinfo *rc_getaddrinfo (char const *host, unsigned flags);
-void rc_own_bind_addr(rc_handle *rh, struct sockaddr_storage *lia);
+void rc_own_bind_addr(rc_handle const *rh, struct sockaddr_storage *lia);
 
 #endif /* UTIL_H */
 

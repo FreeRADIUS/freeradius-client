@@ -154,7 +154,7 @@ int rc_get_srcaddr(struct sockaddr *lia, const struct sockaddr *ria)
  * for sending requests in host order.
  *
  **/
-void rc_own_bind_addr(rc_handle *rh, struct sockaddr_storage *lia)
+void rc_own_bind_addr(rc_handle const *rh, struct sockaddr_storage *lia)
 {
 	char *txtaddr = rc_conf_str(rh, "bindaddr");
 	struct addrinfo *info;
