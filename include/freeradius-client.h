@@ -530,7 +530,7 @@ char *rc_mksid(rc_handle *);
 rc_handle *rc_new(void);
 void rc_destroy(rc_handle *);
 char *rc_fgetln(FILE *, size_t *);
-double rc_getctime(void);
+double rc_getmtime(void);
 
 /* env.c */
 

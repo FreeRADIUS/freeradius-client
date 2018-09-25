@@ -349,9 +349,9 @@ int rc_send_server (rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags)
 		pfd.fd = sockfd;
 		pfd.events = POLLIN;
 		pfd.revents = 0;
-		start_time = rc_getctime();
+		start_time = rc_getmtime();
 		for (timeout = data->timeout; timeout > 0;
-		    timeout -= rc_getctime() - start_time) {
+		    timeout -= rc_getmtime() - start_time) {
 			result = poll(&pfd, 1, timeout * 1000);
 			if (result != -1 || errno != EINTR)
 				break;

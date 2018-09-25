@@ -101,7 +101,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 		 * Fill in Acct-Delay-Time
 		 */
 		dtime = 0;
-		now = rc_getctime();
+		now = rc_getmtime();
 		adt_vp = rc_avpair_get(data.send_pairs, PW_ACCT_DELAY_TIME, 0);
 		if (adt_vp == NULL) {
 			adt_vp = rc_avpair_add(rh, &(data.send_pairs),
@@ -117,7 +117,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	skip_count = 0;
 	result = ERROR_RC;
 	for (i=0; (i < aaaserver->max) && (result != OK_RC) && (result != REJECT_RC)
-	    ; i++, now = rc_getctime())
+	    ; i++, now = rc_getmtime())
 	{
 		if (aaaserver->deadtime_ends[i] != -1 &&
 		    aaaserver->deadtime_ends[i] > start_time) {
@@ -159,7 +159,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 		    aaaserver->port[i], aaaserver->secret[i], timeout, retries);
 
 		if (request_type == PW_ACCOUNTING_REQUEST) {
-			dtime = rc_getctime() - start_time;
+			dtime = rc_getmtime() - start_time;
 			rc_avpair_assign(adt_vp, &dtime, 0);
 		}
 

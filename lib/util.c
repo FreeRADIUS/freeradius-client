@@ -312,19 +312,30 @@ char *rc_fgetln(FILE *fp, size_t *len)
 	return buf;
 }
 
-/** Returns the current time as a double.
+/** Returns the monotonic time as a double.
  *
- * @return current time (seconds since epoch) expressed as
- * 	double-precision floating point number.
+ * @return monotonic time (seconds since epoch) expressed as
+ * 	double-precision floating point number. As fallback, the
+ * 	wall-clock time is returned.
  */
-double rc_getctime(void)
+double rc_getmtime(void)
 {
-    struct timeval timev;
+    static clockid_t clock = CLOCK_REALTIME;
+    static int check = 1;
+    struct timespec timespec = {0, 0};
 
-    if (gettimeofday(&timev, NULL) == -1)
+    if(0 != check) {
+        check = 0;
+#ifdef CLOCK_MONOTONIC
+        if (0 == clock_gettime(CLOCK_MONOTONIC, &timespec))
+            clock = CLOCK_MONOTONIC;
+#endif
+    }
+
+    if (0 != clock_gettime(clock, &timespec))
         return -1;
 
-    return timev.tv_sec + ((double)timev.tv_usec) / 1000000.0;
+    return timespec.tv_sec + ((double)timespec.tv_nsec) / 1000000000.0;
 }
 
 /*
