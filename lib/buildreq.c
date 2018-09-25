@@ -117,7 +117,7 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 	skip_count = 0;
 	result = ERROR_RC;
 	for (i=0; (i < aaaserver->max) && (result != OK_RC) && (result != REJECT_RC)
-	    ; i++, now = rc_getctime())
+	    && (result != CHALLENGE_RC); i++, now = rc_getctime())
 	{
 		if (aaaserver->deadtime_ends[i] != -1 &&
 		    aaaserver->deadtime_ends[i] > start_time) {
@@ -140,12 +140,12 @@ int rc_aaa(rc_handle *rh, uint32_t client_port, VALUE_PAIR *send, VALUE_PAIR **r
 		if (result == TIMEOUT_RC && radius_deadtime > 0)
 			aaaserver->deadtime_ends[i] = start_time + (double)radius_deadtime;
 	}
-	if (result == OK_RC || result == REJECT_RC || skip_count == 0)
+	if (result == OK_RC || result == REJECT_RC || result == CHALLENGE_RC || skip_count == 0)
 		goto exit;
 
 	result = ERROR_RC;
 	for (i=0; (i < aaaserver->max) && (result != OK_RC) && (result != REJECT_RC)
-	    ; i++)
+	    && (result != CHALLENGE_RC); i++)
 	{
 		if (aaaserver->deadtime_ends[i] == -1 ||
 		    aaaserver->deadtime_ends[i] <= start_time) {
