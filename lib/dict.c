@@ -42,9 +42,9 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 	DICT_VALUE     *dval;
 	DICT_VENDOR    *dvend;
 	char            buffer[256];
-	int             value;
+	int32_t         value;
 	int             type;
-	unsigned attr_vendorspec = 0;
+	uint32_t attr_vendorspec = 0;
 
 	if ((dictfd = fopen (filename, "r")) == NULL)
 	{
@@ -104,7 +104,15 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 				fclose(dictfd);
 				return -1;
 			}
-			value = atoi (valstr);
+			value = atol (valstr);
+			if (value > UINT8_MAX)
+			{
+				rc_log(LOG_ERR,
+				 "rc_read_dictionary: too large value on line %d of dictionary %s",
+					 line_no, filename);
+				fclose(dictfd);
+				return -1;
+			}
 
 			if (strcmp (typestr, "string") == 0)
 			{
@@ -169,13 +177,12 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 				return -1;
 			}
 			strcpy (attr->name, namestr);
-			attr->value = value | (attr_vendorspec << 16);
 			attr->type = type;
 
 			if (dvend != NULL) {
-				attr->value = value | (dvend->vendorpec << 16);
+				attr->value = value | (dvend->vendorpec << 8);
 			} else {
-				attr->value = value | (attr_vendorspec << 16);
+				attr->value = value | (attr_vendorspec << 8);
 			}
 
 			/* Insert it into the list */
@@ -224,7 +231,7 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 				fclose(dictfd);
 				return -1;
 			}
-			value = atoi (valstr);
+			value = atol (valstr);
 
 			/* Create a new VALUE entry for the list */
 			if ((dval = malloc (sizeof (DICT_VALUE))) == NULL)
@@ -327,7 +334,15 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 				fclose(dictfd);
 				return -1;
 			}
-			value = atoi (valstr);
+			value = atol (valstr);
+			if (value >= (1l << 24))
+			{
+				rc_log(LOG_ERR,
+				 "rc_read_dictionary: too large Vendor-Id on line %d of dictionary %s",
+					 line_no, filename);
+				fclose(dictfd);
+				return -1;
+			}
 
 			/* Create a new VENDOR entry for the list */
 			dvend = malloc(sizeof(DICT_VENDOR));
@@ -355,7 +370,7 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
  * @param attribute the attribute ID.
  * @return the full attribute structure based on the attribute id number.
  */
-DICT_ATTR *rc_dict_getattr(rc_handle const *rh, int attribute)
+DICT_ATTR *rc_dict_getattr(rc_handle const *rh, uint32_t attribute)
 {
 	DICT_ATTR      *attr;
 
@@ -439,7 +454,7 @@ DICT_VENDOR *rc_dict_findvend(rc_handle const *rh, char const *vendorname)
  * @param vendorpec the vendor ID.
  * @return the full vendor structure based on the vendor id number.
  */
-DICT_VENDOR *rc_dict_getvend (rc_handle const *rh, int vendorpec)
+DICT_VENDOR *rc_dict_getvend (rc_handle const *rh, uint32_t vendorpec)
 {
         DICT_VENDOR      *vend;
 

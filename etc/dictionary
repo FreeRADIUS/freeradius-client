@@ -135,30 +135,30 @@ ATTRIBUTE	Route-IPv6-Information	170	ipv6prefix
 #
 #	Experimental Non Protocol Attributes used by Cistron-Radiusd
 #
-ATTRIBUTE	Huntgroup-Name		221	string
-ATTRIBUTE	User-Category		1029	string
-ATTRIBUTE	Group-Name		1030	string
-ATTRIBUTE	Simultaneous-Use	1034	integer
-ATTRIBUTE	Strip-User-Name		1035	integer
-ATTRIBUTE	Fall-Through		1036	integer
-ATTRIBUTE	Add-Port-To-IP-Address	1037	integer
-ATTRIBUTE	Exec-Program		1038	string
-ATTRIBUTE	Exec-Program-Wait	1039	string
-ATTRIBUTE	Hint			1040	string
+#ATTRIBUTE	Huntgroup-Name		221	string
+#ATTRIBUTE	User-Category		1029	string
+#ATTRIBUTE	Group-Name		1030	string
+#ATTRIBUTE	Simultaneous-Use	1034	integer
+#ATTRIBUTE	Strip-User-Name		1035	integer
+#ATTRIBUTE	Fall-Through		1036	integer
+#ATTRIBUTE	Add-Port-To-IP-Address	1037	integer
+#ATTRIBUTE	Exec-Program		1038	string
+#ATTRIBUTE	Exec-Program-Wait	1039	string
+#ATTRIBUTE	Hint			1040	string
 
 #
 #	Non-Protocol Attributes
 #	These attributes are used internally by the server
 #
-ATTRIBUTE	Expiration		  21	date
-ATTRIBUTE	Auth-Type		1000	integer
-ATTRIBUTE	Menu			1001	string
-ATTRIBUTE	Termination-Menu	1002	string
-ATTRIBUTE	Prefix			1003	string
-ATTRIBUTE	Suffix			1004	string
-ATTRIBUTE	Group			1005	string
-ATTRIBUTE	Crypt-Password		1006	string
-ATTRIBUTE	Connect-Rate		1007	integer
+#ATTRIBUTE	Expiration		  21	date
+#ATTRIBUTE	Auth-Type		1000	integer
+#ATTRIBUTE	Menu			1001	string
+#ATTRIBUTE	Termination-Menu	1002	string
+#ATTRIBUTE	Prefix			1003	string
+#ATTRIBUTE	Suffix			1004	string
+#ATTRIBUTE	Group			1005	string
+#ATTRIBUTE	Crypt-Password		1006	string
+#ATTRIBUTE	Connect-Rate		1007	integer
 
 #
 #	Integer Translations
