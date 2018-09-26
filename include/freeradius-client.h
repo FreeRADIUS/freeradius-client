@@ -518,7 +518,7 @@ void rc_log(int, char const *, ...);
 
 /* sendserver.c */
 
-int rc_send_server(rc_handle *, SEND_DATA *, char *, unsigned flags);
+int rc_send_server(rc_handle const*, SEND_DATA *, char *, unsigned flags);
 
 /* util.c */
 
