@@ -402,8 +402,6 @@ rc_handle *rc_read_config(char const *filename)
 	size_t pos;
 	rc_handle *rh;
 
-	srandom((unsigned int)(time(NULL)+getpid()));
-
 	rh = rc_new();
 	if (rh == NULL)
 		return NULL;

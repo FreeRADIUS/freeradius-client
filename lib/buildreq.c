@@ -42,7 +42,7 @@ void rc_buildreq(rc_handle const *rh, SEND_DATA *data, int code, char *server, u
  */
 unsigned char rc_get_id()
 {
-	return (unsigned char)(random() & UCHAR_MAX);
+	return (unsigned char)(rc_random() & UCHAR_MAX);
 }
 
 /** Builds an authentication/accounting request for port id client_port with the value_pairs send and submits it to a server

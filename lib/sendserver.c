@@ -658,7 +658,7 @@ static void rc_random_vector (unsigned char *vector)
  fallback:
 	for (i = 0; i < AUTH_VECTOR_LEN;)
 	{
-		randno = random ();
+		randno = rc_random();
 		memcpy ((char *) vector, (char *) &randno, sizeof (int));
 		vector += sizeof (int);
 		i += sizeof (int);
