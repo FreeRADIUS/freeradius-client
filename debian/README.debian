@@ -1,4 +1,4 @@
-radiusclient-ng for DEBIAN
+radiusclient for DEBIAN
 --------------------------
 
 Radiusclient is a /bin/login replacement  which gets called by a getty
@@ -11,9 +11,9 @@ authenticate the user.
 radiusclient-ng is a version with enhanced API in the libradiusclient
 library by Maxim Sobolev <sobomax@portaone.com>
 
-Please view /usr/doc/radiusclient-ng/instop.html with your favourite WWW
+Please view /usr/doc/radiusclient/instop.html with your favourite WWW
 browser, e.g lynx or netscape.
 
-Config files are in /etc/radiusclient-ng.
+Config files are in /etc/radiusclient.
 
 Jan Janak <jan@iptel.org>, Mon, 15 Nov 2004 12:20:42 +0100

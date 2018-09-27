@@ -1,10 +1,10 @@
-radiusclient-ng (0.5.0) unstable; urgency=low
+radiusclient (0.5.0~u1) unstable; urgency=low
 
   * New upstream release
 
  -- Jan Janak <jan@iptel.org>  Mon, 23 May 2005 20:37:22 +0200
 
-radiusclient-ng (0.4.8) unstable; urgency=low
+radiusclient (0.4.8) unstable; urgency=low
 
   * Initial Release.
 
