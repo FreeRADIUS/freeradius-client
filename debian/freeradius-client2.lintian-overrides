@@ -1,0 +1,12 @@
+# upstream does not provide changelog
+freeradius-client2: debian-changelog-file-missing-or-wrong-name
+# we do use helper template
+freeradius-client2: helper-templates-in-copyright
+# upstream does not provide man pages
+freeradius-client2: binary-without-manpage usr/sbin/login.radius
+freeradius-client2: binary-without-manpage usr/sbin/radacct
+freeradius-client2: binary-without-manpage usr/sbin/radembedded
+freeradius-client2: binary-without-manpage usr/sbin/radexample
+freeradius-client2: binary-without-manpage usr/sbin/radiusclient
+freeradius-client2: binary-without-manpage usr/sbin/radlogin
+freeradius-client2: binary-without-manpage usr/sbin/radstatus
