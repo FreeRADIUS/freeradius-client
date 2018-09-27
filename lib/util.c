@@ -338,6 +338,23 @@ double rc_getmtime(void)
     return timespec.tv_sec + ((double)timespec.tv_nsec) / 1000000000.0;
 }
 
+/** Returns a pseudo-random number
+ * It ensures, that the PRNG is initialised properly.
+ *
+ * @return pseudo-random number
+ */
+long int rc_random(void)
+{
+	static int initialised = 0;
+	if (0 == initialised)
+	{
+		srandom((unsigned int)(time(NULL)+getpid()));
+		initialised = 1;
+	}
+
+	return random();
+}
+
 /*
  * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
  *
@@ -390,4 +407,3 @@ rc_strlcpy(char *dst, char const *src, size_t siz)
 }
 
 #endif
-
