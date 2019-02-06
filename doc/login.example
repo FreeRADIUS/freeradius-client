@@ -119,7 +119,7 @@ if ($ENV{"RADIUS_SERVICE_TYPE"} =~ /Login/)
        $prog_run = $prog_tcpclear;
        $login_port = $ENV{"RADIUS_LOGIN_PORT"};
     } else {
-        die "unkown login_service $login_service\n";
+        die "unknown login_service $login_service\n";
     }
 
     # Start accounting.  Send the record.
@@ -179,7 +179,7 @@ if ($ENV{"RADIUS_SERVICE_TYPE"} =~ /Login/)
        $prog_run = $prog_tcpclear;
        $login_port = $ENV{"RADIUS_LOGIN_PORT"};
     } else {
-        die "unkown login_service $login_service\n";
+        die "unknown login_service $login_service\n";
     }
 
     # Start accounting.  Send the record.
