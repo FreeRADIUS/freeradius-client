@@ -770,10 +770,7 @@ int rc_avpair_tostr (rc_handle const *rh, VALUE_PAIR *pair, char *name, int ln, 
 			}
 			ptr++;
 		}
-		if (lv > 0)
-			value[pos++] = 0;
-		else
-			value[pos-1] = 0;
+		value[pos] = 0;
 		break;
 
 	    case PW_TYPE_INTEGER:
