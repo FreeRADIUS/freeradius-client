@@ -369,11 +369,27 @@ typedef struct rc_conf rc_handle;
 
 /* Server data structures */
 
+typedef struct attr_flags 
+{
+	char         has_tag;     /* attribute allows tags */
+	signed char  tag;
+	uint8_t      encrypt;     /* encryption method */
+} ATTR_FLAGS;
+
+/*
+ *     Values of the encryption flags.
+ */
+#define FLAG_ENCRYPT_NONE               (0)
+#define FLAG_ENCRYPT_USER_PASSWORD      (1)
+#define FLAG_ENCRYPT_TUNNEL_PASSWORD    (2)
+#define FLAG_ENCRYPT_ASCEND_SECRET      (3)
+
 typedef struct dict_attr
 {
 	char              name[NAME_LENGTH + 1];	//!< attribute name.
 	uint32_t          value;			//!< attribute index.
 	int               type;				//!< string, int, etc..
+	ATTR_FLAGS        flags;
 	struct dict_attr *next;
 } DICT_ATTR;
 
@@ -399,6 +415,7 @@ typedef struct value_pair
 	int                type;
 	uint32_t           lvalue;
 	char               strvalue[AUTH_STRING_LEN + 1];
+	ATTR_FLAGS         flags;
 	struct value_pair *next;
 } VALUE_PAIR;
 
@@ -459,6 +476,8 @@ int rc_avpair_parse(rc_handle const *, char const *, VALUE_PAIR **);
 int rc_avpair_tostr(rc_handle const *, VALUE_PAIR *, char *, int, char *, int);
 char *rc_avpair_log(rc_handle const *, VALUE_PAIR *, char *buf, size_t buf_len);
 VALUE_PAIR *rc_avpair_readin(rc_handle const *, FILE *);
+
+int rc_tunnel_pwdecode(uint8_t *, int *, const char *, const char *);
 
 /* buildreq.c */
 

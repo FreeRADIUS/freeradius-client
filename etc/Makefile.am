@@ -16,7 +16,7 @@ sbindir = @sbindir@
 pkgsysconfdir = @pkgsysconfdir@
 pkgsysconf_DATA = issue port-id-map radiusclient.conf \
 	dictionary dictionary.ascend dictionary.compat dictionary.merit \
-	dictionary.sip
+	dictionary.sip dictionary.rfc2868
 
 EXTRA_DIST = issue port-id-map dictionary dictionary.ascend \
 	dictionary.compat dictionary.merit servers radiusclient.conf.in \
