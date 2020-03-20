@@ -27,6 +27,72 @@
 static void rc_random_vector (unsigned char *);
 static int rc_check_reply (AUTH_HDR *, int, char const *, unsigned char const *, unsigned char);
 
+/** Encodes CHAP password and stores it in an output buffer 
+ *
+ * @param  vp a pointer to a #VALUE_PAIR.
+ * @param  auth a pointer to #AUTH_HDR.
+ * @param  id a chap identifier to use for encryption.
+ * @param  output a buffer to store encrypted chap password string
+ * @return value 0 on success
+ */
+static int rc_chap_encode(VALUE_PAIR *vp, AUTH_HDR *auth, int id, uint8_t *output)
+{
+    /* variables */
+    uint8_t       *ptr;
+    uint8_t       str_val[(AUTH_STRING_LEN + 1) * 2 + 1];
+    int           str_len;
+    VALUE_PAIR    *password;
+    VALUE_PAIR    *challenge;
+    VALUE_PAIR    *vp_ptr = vp;
+
+    /* sanity check */
+    if (vp_ptr == NULL || output == NULL) {
+            rc_log(LOG_ERR, "rc_chap_encode: unintialized pointer");
+            return -1;
+    }
+
+    str_len = 0;
+    ptr     = str_val;
+
+    /* Add chap identifier */
+    *ptr++  = id;
+    str_len++;
+
+    /* Retrieve unencrypted CHAP-password */
+    vp_ptr   = vp;
+    password = rc_avpair_get(vp_ptr, PW_CHAP_PASSWORD, 0);
+    if (password) {
+            memcpy(ptr, password->strvalue, password->lvalue);
+            ptr     += password->lvalue;
+            str_len += password->lvalue;
+    } else {
+           rc_log(LOG_ERR, "rc_chap_encode: cannot retrieve chap password attribute");
+           return -1;
+    }
+	
+    /* Use CHAP-challenge pair, otherwise use request-auhenticator */
+    vp_ptr    = vp;
+    challenge = rc_avpair_get(vp_ptr, PW_CHAP_CHALLENGE, 0);
+    if (challenge) {
+            memcpy(ptr, challenge->strvalue, challenge->lvalue);
+            str_len += challenge->lvalue;
+    } else {
+            if(auth) {
+                    memcpy(ptr, auth->vector, AUTH_VECTOR_LEN);
+                    str_len += AUTH_VECTOR_LEN;
+            } else {
+                    rc_log(LOG_ERR, "rc_chap_encode: authorization vector uinitialized");
+                    return -1;
+            }
+    }
+
+    rc_md5_calc(output, str_val, str_len);
+
+    return 0;
+}
+
+
+
 /** Packs an attribute value pair list into a buffer
  *
  * @param vp a pointer to a #VALUE_PAIR.
@@ -36,13 +102,15 @@ static int rc_check_reply (AUTH_HDR *, int, char const *, unsigned char const *,
  */
 static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 {
-	int             length, i, pc, padded_length;
-	int             total_length = 0;
-	size_t			secretlen;
-	uint32_t           lvalue, vendor;
-	unsigned char   passbuf[MAX(AUTH_PASS_LEN, CHAP_VALUE_LENGTH)];
-	unsigned char   md5buf[256];
-	unsigned char   *buf, *vector, *vsa_length_ptr;
+	int             length, i, pc, padded_length, chap_id;
+        int             total_length = 0;
+        size_t          secretlen;
+        uint32_t        lvalue, vendor;
+        unsigned char   passbuf[MAX(AUTH_PASS_LEN, CHAP_VALUE_LENGTH)];
+        unsigned char   md5buf[256];
+        unsigned char   *buf, *vector, *vsa_length_ptr;
+        VALUE_PAIR      *vp_start = vp; /* preserve the start of vp pointer */
+        uint8_t         chap_pass_encode[CHAP_VALUE_LENGTH];
 
 	buf = auth->data;
 
@@ -105,6 +173,33 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		  total_length += padded_length + 2;
 
 		  break;
+		 case PW_CHAP_PASSWORD:
+
+                        /* Encrypt the password */
+
+                        /* Record the attribute length 
+                         * Type(1) + Length(1) + Chap-ident(1) + Chap-string(16) 
+                         * */
+                        *buf++ = CHAP_VALUE_LENGTH + 3;
+
+                        /* Get random chap identifier */
+                        chap_id = random() & 0xff;
+
+                        /* Record chap identifier */
+                        *buf++ = chap_id;
+
+                        /* Encode cap password string */
+                        rc_chap_encode(vp_start, auth, chap_id, chap_pass_encode);
+
+                        /* Record encoded chap password */
+                        memcpy(buf, chap_pass_encode, sizeof(chap_pass_encode));
+
+                        /* Update buf pointer */
+                        buf += CHAP_VALUE_LENGTH;
+
+                        total_length += CHAP_VALUE_LENGTH + 3;
+
+                        break;
 		 default:
 		  switch (vp->type)
 		  {
