@@ -403,7 +403,7 @@ DICT_ATTR *rc_dict_getattr(rc_handle const *rh, uint32_t attribute)
  * @param vendor the vendor ID.
  * @return the full attribute structure based on the attribute id number.
  */
-DICT_ATTR *rc_dict_vendor_attr(rc_handle const *rh, uint32_t attribute, uint32_t vendor)
+DICT_ATTR *rc_dict_get_vendor_attr(rc_handle const *rh, uint32_t attribute, uint32_t vendor)
 {
 	DICT_ATTR      *attr;
 
