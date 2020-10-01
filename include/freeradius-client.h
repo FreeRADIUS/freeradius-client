@@ -493,7 +493,7 @@ int test_config(rc_handle const *, char const *);
 
 int rc_read_dictionary(rc_handle *, char const *);
 DICT_ATTR *rc_dict_getattr(rc_handle const *, uint32_t);
-DICT_ATTR *rc_dict_get_vendor_attr(rc_handle const *, uint32_t, uint32);
+DICT_ATTR *rc_dict_get_vendor_attr(rc_handle const *, uint32_t, uint32_t);
 DICT_ATTR *rc_dict_findattr(rc_handle const *, char const *);
 DICT_VALUE *rc_dict_findval(rc_handle const *, char const *);
 DICT_VENDOR *rc_dict_findvend(rc_handle const *, char const *);
