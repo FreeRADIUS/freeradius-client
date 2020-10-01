@@ -12,6 +12,7 @@
 
 #ifndef HAVE_STRLCPY
 size_t rc_strlcpy(char *dst, char const *src, size_t siz);
+# undef strlcpy
 # define strlcpy rc_strlcpy
 #endif
 

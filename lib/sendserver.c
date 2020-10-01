@@ -20,6 +20,11 @@
 #include <includes.h>
 #include <freeradius-client.h>
 #include <pathnames.h>
+
+#if (defined(__APPLE__) || defined(__FreeBSD__)) && defined(HAVE_GETENTROPY)
+# include <sys/random.h>
+#endif
+
 #include "util.h"
 
 #define	SA(p)	((struct sockaddr *)(p))
