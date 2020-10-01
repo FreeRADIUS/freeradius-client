@@ -60,9 +60,6 @@
 
 #define MAX_SECRET_LENGTH	(3 * 16) /* MUST be multiple of 16 */
 
-#define VENDOR(x)		(((x) >> 8) & 0xffffff)
-#define ATTRID(x)		((x) & 0xff)
-
 #define PW_MAX_MSG_SIZE		4096
 
 /* codes for radius_buildreq, radius_getport, etc. */
@@ -372,6 +369,7 @@ typedef struct rc_conf rc_handle;
 typedef struct dict_attr
 {
 	char              name[NAME_LENGTH + 1];	//!< attribute name.
+	uint32_t          vendor;			//!< vendor number
 	uint32_t          value;			//!< attribute index.
 	int               type;				//!< string, int, etc..
 	struct dict_attr *next;
@@ -395,6 +393,7 @@ typedef struct dict_vendor
 typedef struct value_pair
 {
 	char               name[NAME_LENGTH + 1];
+	uint32_t	   vendor;
 	uint32_t           attribute;
 	int                type;
 	uint32_t           lvalue;
@@ -494,6 +493,7 @@ int test_config(rc_handle const *, char const *);
 
 int rc_read_dictionary(rc_handle *, char const *);
 DICT_ATTR *rc_dict_getattr(rc_handle const *, uint32_t);
+DICT_ATTR *rc_dict_get_vendor_attr(rc_handle const *, uint32_t, uint32);
 DICT_ATTR *rc_dict_findattr(rc_handle const *, char const *);
 DICT_VALUE *rc_dict_findval(rc_handle const *, char const *);
 DICT_VENDOR *rc_dict_findvend(rc_handle const *, char const *);

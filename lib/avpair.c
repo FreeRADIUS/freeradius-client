@@ -113,18 +113,7 @@ VALUE_PAIR *rc_avpair_new (rc_handle const *rh, uint32_t attrid, void const *pva
 	VALUE_PAIR     *vp = NULL;
 	DICT_ATTR      *pda;
 
-	if(attrid > UINT8_MAX)
-	{
-		rc_log(LOG_ERR,"rc_avpair_new: too large attribute %u", attrid);
-		return NULL;
-	}
-	if(vendorpec >= (1l << 24))
-	{
-		rc_log(LOG_ERR,"rc_avpair_new: too large Vendor-Id %u", vendorpec);
-		return NULL;
-	}
-	attrid = attrid | (vendorpec << 8);
-	if ((pda = rc_dict_getattr (rh, attrid)) == NULL)
+	if ((pda = rc_dict_get_vendor_attr(rh, attrid, vendorpec)) == NULL)
 	{
 		rc_log(LOG_ERR,"rc_avpair_new: unknown attribute %d", attrid);
 		return NULL;
@@ -137,6 +126,7 @@ VALUE_PAIR *rc_avpair_new (rc_handle const *rh, uint32_t attrid, void const *pva
 	if ((vp = malloc (sizeof (VALUE_PAIR))) != NULL)
 	{
 		strlcpy (vp->name, pda->name, sizeof (vp->name));
+		vp->vendor = vendorpec;
 		vp->attribute = attrid;
 		vp->next = NULL;
 		vp->type = pda->type;
@@ -223,12 +213,12 @@ VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char c
 	}
 
 	/* Actual processing */
-	attribute = ptr[0] | (vendorpec << 8);
+	attribute = ptr[0];
 	ptr += 2;
 	attrlen -= 2;
 
 	/* VSA */
-	if (attribute == PW_VENDOR_SPECIFIC) {
+	if ((vendorpec == 0) && (attribute == PW_VENDOR_SPECIFIC)) {
 		if (attrlen < 4) {
 			rc_log(LOG_ERR, "rc_avpair_gen: received VSA "
 			    "attribute with invalid length");
@@ -248,7 +238,7 @@ VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char c
 	}
 
 	/* Normal */
-	attr = rc_dict_getattr(rh, attribute);
+	attr = rc_dict_get_vendor_attr(rh, attribute, vendorpec);
 	if (attr == NULL) {
 		buffer[0] = '\0';	/* Initial length. */
 		x_ptr = ptr;
@@ -263,8 +253,8 @@ VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char c
 		} else {
 			rc_log(LOG_WARNING, "rc_avpair_gen: received "
 			    "unknown VSA attribute %d, vendor %d of "
-			    "length %d: 0x%s", ATTRID(attribute),
-			    VENDOR(attribute), attrlen + 2, buffer);
+			    "length %d: 0x%s", attribute,
+			    vendorpec, attrlen + 2, buffer);
 		}
 		goto skipit;
 	}
@@ -280,6 +270,7 @@ VALUE_PAIR *rc_avpair_gen(rc_handle const *rh, VALUE_PAIR *pair, unsigned char c
 	rpair->next = pair;
 	pair = rpair;
 	strcpy(pair->name, attr->name);
+	pair->vendor = attr->vendor;
 	pair->attribute = attr->value;
 	pair->type = attr->type;
 
@@ -357,8 +348,8 @@ shithappens:
  */
 VALUE_PAIR *rc_avpair_get (VALUE_PAIR *vp, uint32_t attrid, uint32_t vendorpec)
 {
-	for (; vp != NULL && !(ATTRID(vp->attribute) == ATTRID(attrid) &&
-	    VENDOR(vp->attribute) == vendorpec); vp = vp->next)
+	for (; vp != NULL && !(vp->attribute == attrid &&
+	    vp->vendor == vendorpec); vp = vp->next)
 	{
 		continue;
 	}

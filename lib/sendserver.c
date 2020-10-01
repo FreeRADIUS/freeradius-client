@@ -49,15 +49,18 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 	while (vp != NULL)
 	{
 		vsa_length_ptr = NULL;
-		if (VENDOR(vp->attribute) != 0) {
+		if (vp->vendor != 0) {
 			*buf++ = PW_VENDOR_SPECIFIC;
 			vsa_length_ptr = buf;
 			*buf++ = 6;
-			vendor = htonl(VENDOR(vp->attribute));
+			vendor = htonl(vp->vendor);
 			memcpy(buf, &vendor, sizeof(uint32_t));
 			buf += 4;
 			total_length += 6;
 		}
+
+		if (vp->attribute > 0xff) continue;
+
 		*buf++ = (vp->attribute & 0xff);
 
 		switch (vp->attribute)

@@ -104,14 +104,19 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 				fclose(dictfd);
 				return -1;
 			}
+
 			value = atol (valstr);
-			if (value > UINT8_MAX)
+
+			/*
+			 *	Disallow values larger than 16 bits, for compatibility.
+			 */
+			if (value > (1L << 16))
 			{
 				rc_log(LOG_ERR,
-				 "rc_read_dictionary: too large value on line %d of dictionary %s",
-					 line_no, filename);
-				fclose(dictfd);
-				return -1;
+                                "rc_read_dictionary: too large value on line %d of dictionary %s",
+                                        line_no, filename);
+                               fclose(dictfd);
+                               return -1;
 			}
 
 			if (strcmp (typestr, "string") == 0)
@@ -180,10 +185,11 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 			attr->type = type;
 
 			if (dvend != NULL) {
-				attr->value = value | (dvend->vendorpec << 8);
+				attr->vendor = dvend->vendorpec;
 			} else {
-				attr->value = value | (attr_vendorspec << 8);
+				attr->vendor = attr_vendorspec;
 			}
+			attr->value = value;
 
 			/* Insert it into the list */
 			attr->next = rh->dictionary_attributes;
@@ -335,14 +341,6 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 				return -1;
 			}
 			value = atol (valstr);
-			if (value >= (1l << 24))
-			{
-				rc_log(LOG_ERR,
-				 "rc_read_dictionary: too large Vendor-Id on line %d of dictionary %s",
-					 line_no, filename);
-				fclose(dictfd);
-				return -1;
-			}
 
 			/* Create a new VENDOR entry for the list */
 			dvend = malloc(sizeof(DICT_VENDOR));
@@ -373,10 +371,22 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 DICT_ATTR *rc_dict_getattr(rc_handle const *rh, uint32_t attribute)
 {
 	DICT_ATTR      *attr;
+	uint32_t	vendor = 0;
+
+	/*
+	 *	Allow old-style lookups for compatibility
+	 */
+	if (attribute > (1l << 16)) {
+		vendor = attribute >> 16;
+		attribute &= 0xffff;
+	}
+
 
 	attr = rh->dictionary_attributes;
 	while (attr != NULL)
 	{
+		if (attr->vendor != vendor) continue;
+
 		if (attr->value == attribute)
 		{
 			return attr;
@@ -386,6 +396,30 @@ DICT_ATTR *rc_dict_getattr(rc_handle const *rh, uint32_t attribute)
 	return NULL;
 }
 
+/** Lookup a DICT_ATTR by attribute number
+ *
+ * @param rh a handle to parsed configuration.
+ * @param attribute the attribute ID.
+ * @param vendor the vendor ID.
+ * @return the full attribute structure based on the attribute id number.
+ */
+DICT_ATTR *rc_dict_vendor_attr(rc_handle const *rh, uint32_t attribute, uint32_t vendor)
+{
+	DICT_ATTR      *attr;
+
+	attr = rh->dictionary_attributes;
+	while (attr != NULL)
+	{
+		if (attr->vendor != vendor) continue;
+
+		if (attr->value == attribute)
+		{
+			return attr;
+		}
+		attr = attr->next;
+	}
+	return NULL;
+}
 /** Lookup a DICT_ATTR by its name
  *
  * @param rh a handle to parsed configuration.
