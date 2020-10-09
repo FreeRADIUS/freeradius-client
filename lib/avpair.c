@@ -554,6 +554,7 @@ int rc_avpair_parse (rc_handle const *rh, char const *buffer, VALUE_PAIR **first
 			strcpy (pair->name, attr->name);
 			pair->attribute = attr->value;
 			pair->type = attr->type;
+			pair->vendor = attr->vendor;
 
 			switch (pair->type)
 			{
