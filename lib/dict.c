@@ -385,9 +385,7 @@ DICT_ATTR *rc_dict_getattr(rc_handle const *rh, uint32_t attribute)
 	attr = rh->dictionary_attributes;
 	while (attr != NULL)
 	{
-		if (attr->vendor != vendor) continue;
-
-		if (attr->value == attribute)
+		if (attr->vendor == vendor && attr->value == attribute)
 		{
 			return attr;
 		}
@@ -410,9 +408,7 @@ DICT_ATTR *rc_dict_get_vendor_attr(rc_handle const *rh, uint32_t attribute, uint
 	attr = rh->dictionary_attributes;
 	while (attr != NULL)
 	{
-		if (attr->vendor != vendor) continue;
-
-		if (attr->value == attribute)
+		if (attr->vendor == vendor && attr->value == attribute)
 		{
 			return attr;
 		}
