@@ -5,7 +5,7 @@
 ######################################################################
 
 # Update before making a release.
-VERSION=1.1.7
+VERSION=1.1.8
 
 dist-sign: freeradius-client-$(VERSION).tar.gz.sig
 

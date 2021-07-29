@@ -1,5 +1,28 @@
 $Id: ChangeLog,v 1.6 2010/02/04 10:33:33 aland Exp $
 
+FreeRADIUS-client 1.1.8, July 29, 2021
+  o Finally a new release!
+  o Full IPv6 support from Nikos Mavrogiannopoulos.
+  o Silently ignore invalid attributes, instead of dropping the packet.
+  o Remove abort() calls from library, from Nikos Mavrogiannopoulos.
+  o Many dictionary updates, by gureedo.
+  o String handling fixes from Nikos Mavrogiannopoulos.
+  o Catch EINTR and retry, from Nikos Mavrogiannopoulos.
+  o Better logging from Daniel Pocock.
+  o Remove much legacy work-arounds.  Patches from Herwin Weststrate.
+  o sockaddr fixes from Francis Dupont.
+  o Fix crash on parsing bad dates, from Jonathan Berry.
+  o Fix size of attr/vendor IDs, from Marcel Patzlaff.
+  o Disable non-protocol attributes in the dictionary, from Marcel Patzlaff.
+  o Use monotonic timeouts from Marcel Patzlaff.
+  o Support for programmatic secret and server specification,
+    from Marcel Patzlaff.
+  o Better initialize PRNG from from  Marcel Patzlaff.
+  o Fix warning messages from Jorge Pereira.
+  o Copy vendor IDs when copyin AVPAIRs, from Paris Stamatopoulos.
+  o Fix vendor attribute lookup by Paris Stamatopoulos.
+
+
 FreeRADIUS-client 1.1.7, January 19, 2015
   o Finally a new release!
   o Allow "configure --with-nettle" to use nettle MD5

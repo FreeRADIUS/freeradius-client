@@ -1,6 +1,6 @@
 Summary:        FreeRADIUS Client Software
 Name:		freeradius-client-snapshot
-Version:	1.1.7
+Version:	1.1.8
 Release:	0
 Obsoletes:      radiusc radiusclient radiusclient-ng
 Group:          Productivity/Networking/Radius/Clients
