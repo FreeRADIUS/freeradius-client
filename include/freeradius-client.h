@@ -50,7 +50,7 @@
 #endif
 
 #define AUTH_VECTOR_LEN		16
-#define AUTH_PASS_LEN		(7 * 16) /* multiple of 16 */
+#define AUTH_PASS_LEN		(8 * 16) /* multiple of 16 */
 #define AUTH_ID_LEN		64
 #define AUTH_STRING_LEN		253	 /* maximum of 253 */
 
@@ -58,7 +58,7 @@
 
 #define NAME_LENGTH		32
 
-#define MAX_SECRET_LENGTH	(3 * 16) /* MUST be multiple of 16 */
+#define MAX_SECRET_LENGTH	(16 * 16) /* MUST be multiple of 16 */
 
 #define PW_MAX_MSG_SIZE		4096
 
