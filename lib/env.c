@@ -120,7 +120,7 @@ int rc_import_env(ENV *env, char const **import)
 			continue;
 		}
 
-		/* ok, i grant thats not very clean... */
+		/* ok, i grant that's not very clean... */
 		*es = '\0';
 
 		if (rc_add_env(env, *import, es+1) < 0)

@@ -2,7 +2,7 @@
 # port-id-map
 #
 # This file describes the ttyname to port id mapping. The port id
-# is reported as part of a RADIUS authentication or accouting request.
+# is reported as part of a RADIUS authentication or accounting request.
 #
 #ttyname (as returned by ttyname(3))	port-id
 /dev/tty1	1

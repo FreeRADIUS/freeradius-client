@@ -1,6 +1,6 @@
 $Id: BUGS,v 1.3 2010/02/04 10:27:09 aland Exp $
 
-Testing can show the presense of bugs, but not their absence.
+Testing can show the presence of bugs, but not their absence.
                 -- Dijkstra
 
 Radlogin respectively send_server in sendserver.c does not honour a 

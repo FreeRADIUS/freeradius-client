@@ -100,7 +100,7 @@ static int rc_pack_list (VALUE_PAIR *vp, char *secret, AUTH_HDR *auth)
 		  		  AUTH_VECTOR_LEN);
 		  	rc_md5_calc (buf, md5buf, secretlen + AUTH_VECTOR_LEN);
 
-		        /* Remeber the start of the digest */
+		        /* Remember the start of the digest */
 		  	vector = buf;
 
 			/* Xor the password into the MD5 digest */
@@ -195,7 +195,7 @@ static void strappend(char *dest, unsigned max_size, int *pos, const char *src)
  * @param msg must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of
  *	any %PW_REPLY_MESSAGE received.
  * @param flags must be %AUTH or %ACCT
- * @return %OK_RC (0) on success, %TIMEOUT_RC on timeout %REJECT_RC on acess reject, or negative
+ * @return %OK_RC (0) on success, %TIMEOUT_RC on timeout %REJECT_RC on access reject, or negative
  *	on failure as return value.
  */
 int rc_send_server (rc_handle const *rh, SEND_DATA *data, char *msg, unsigned flags)

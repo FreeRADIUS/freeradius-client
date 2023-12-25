@@ -42,7 +42,7 @@ LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char const *username, cha
 	if (rc_avpair_add(rh, &send, PW_SERVICE_TYPE, &service, -1, 0) == NULL)
 		return NULL;
 
-	/* Fill in Framed-Protocol, if neccessary */
+	/* Fill in Framed-Protocol, if necessary */
 
 	if (ftype != 0)
 	{
@@ -50,7 +50,7 @@ LFUNC auth_radius(rc_handle *rh, uint32_t client_port, char const *username, cha
 			return NULL;
 	}
 
-	/* Fill in Framed-Compression, if neccessary */
+	/* Fill in Framed-Compression, if necessary */
 
 	if (ctype != 0)
 	{

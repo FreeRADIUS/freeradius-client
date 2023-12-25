@@ -38,7 +38,7 @@ main (int argc, char **argv)
 	rh = rc_config_init(rh);
 	if (rh == NULL)
 	{
-		printf("ERROR: Failed to initialze configuration\n");
+		printf("ERROR: Failed to initialize configuration\n");
 		exit(1);
 	}
 
