@@ -6,7 +6,7 @@ Obsoletes:      radiusc radiusclient radiusclient-ng
 Group:          Productivity/Networking/Radius/Clients
 License:	Artistic License
 Packager:	Peter Nixon
-URL:		http://www.freeradius.org/
+URL:		https://freeradius.org/
 Source0:	%{name}-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Prefix:		%{_prefix}

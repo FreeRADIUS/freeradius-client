@@ -19,7 +19,7 @@ All these programs are based on a library which lets you develop a
 RADIUS-aware application in less than 50 lines of C code.
 
 The most current documentation is available online at:
-	http://wiki.freeradius.org/project/Radiusclient
+	https://wiki.freeradius.org/project/Radiusclient
 
 It is highly portable and runs on Linux, many BSD variants and Solaris.
 
@@ -53,4 +53,4 @@ bug reports are always welcome.
 
 Additional Security related information on the FreeRADIUS project:
 
-http://www.freeradius.org/security.html
+https://freeradius.org/security/
