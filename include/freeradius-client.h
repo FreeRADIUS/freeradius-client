@@ -413,7 +413,7 @@ typedef struct send_data /* Used to pass information to sendserver() function */
 {
 	uint8_t        code;		//!< RADIUS packet code.
 	uint8_t        seq_nbr;		//!< Packet sequence number.
-	char           *server;		//!< Name/addrress of RADIUS server.
+	char           *server;		//!< Name/address of RADIUS server.
 	int            svc_port;	//!< RADIUS protocol destination port.
 	char           *secret;		//!< Shared secret of RADIUS server.
 	int            timeout;		//!< Session timeout in seconds.
