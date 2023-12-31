@@ -10,11 +10,3 @@
 #
 
 AUTOMAKE_OPTIONS = foreign
-
-EXTRA_DIST = README.debian changelog conffiles control copyright dirs         \
-             docs examples files libradius-ng-dev.dirs libradius-ng-dev.files \
-             libradius-ng.conffiles libradius-ng.dirs libradius-ng.files      \
-             libradius-ng.postinst libradius-ng.substvars postrm              \
-             radiusclient-ng.dirs radiusclient-ng.files                       \
-             radiusclient-ng.postinst rules substvars watch
-
