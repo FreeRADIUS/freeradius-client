@@ -47,7 +47,7 @@ usage(void)
 }
 
 int
-main(int argc, char **argv)
+main(int argc, char *argv[])
 {
     int i, nas_port, ch, acct, server, ecount, firstline, theend;
     void *rh;
