@@ -1,7 +1,7 @@
 #include "md5.h"
 
 /*	The below was retrieved from
- *	http://www.openbsd.org/cgi-bin/cvsweb/~checkout~/src/sys/crypto/md5.c?rev=1.1
+ *	https://cvsweb.openbsd.org/cgi-bin/cvsweb/~checkout~/src/sys/crypto/md5.c?rev=1.4
  *	with the following changes:
  *	#includes commented out.
  *	Support context->count as uint32_t[2] instead of uint64_t
@@ -133,10 +133,8 @@ MD5Final(unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
 	MD5Update(ctx, PADDING, padlen - 8);		/* padlen - 8 <= 64 */
 	MD5Update(ctx, count, 8);
 
-	if (digest != NULL) {
-		for (i = 0; i < 4; i++)
-			PUT_32BIT_LE(digest + i * 4, ctx->state[i]);
-	}
+	for (i = 0; i < 4; i++)
+		PUT_32BIT_LE(digest + i * 4, ctx->state[i]);
 	memset(ctx, 0, sizeof(*ctx));	/* in case it's sensitive */
 }
 
