@@ -1,0 +1,4 @@
+# upstream does not provide changelog
+libfreeradius-client2-dev: debian-changelog-file-missing-or-wrong-name
+# we do use helper template
+libfreeradius-client2-dev: helper-templates-in-copyright
