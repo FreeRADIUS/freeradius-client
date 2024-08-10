@@ -9,6 +9,7 @@
  *
  *  If we don't do this, it might pick up the systems broken MD5.
  */
+#include <freeradius-client.h>
 #include "rc-md5.h"
 
 /** Hash the provided data using MD5

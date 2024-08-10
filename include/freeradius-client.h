@@ -503,13 +503,11 @@ void rc_dict_free(rc_handle *);
 
 /* ip_util.c */
 
-
 int rc_good_ipaddr(char const *);
 unsigned short rc_getport(int);
 int rc_own_hostname(char *, int);
 struct sockaddr;
 int rc_get_srcaddr(struct sockaddr *, const struct sockaddr *);
-
 
 /* log.c */
 
@@ -518,7 +516,7 @@ void rc_log(int, char const *, ...);
 
 /* sendserver.c */
 
-int rc_send_server(rc_handle const*, SEND_DATA *, char *, unsigned flags);
+int rc_send_server(rc_handle const*, SEND_DATA *, char *, unsigned);
 
 /* util.c */
 
@@ -541,7 +539,7 @@ int rc_import_env(struct env *, char const **);
 
 /* md5.c */
 
-void rc_md5_calc(unsigned char *, unsigned char const *, unsigned int);
+void rc_md5_calc(unsigned char *, unsigned char const *, size_t);
 
 __END_DECLS
 
