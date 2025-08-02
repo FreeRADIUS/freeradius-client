@@ -60,7 +60,8 @@ int rc_avpair_assign (VALUE_PAIR *vp, void const *pval, int len)
 		case PW_TYPE_STRING:
 			if (len == -1)
 				len = (uint32_t)strlen((char const *)pval);
-			if (len > AUTH_STRING_LEN) {
+			int max_len = vp->vendor ? (AUTH_STRING_LEN - VSA_HEADER_LEN) : AUTH_STRING_LEN;
+			if (len > max_len) {
 		        	rc_log(LOG_ERR, "rc_avpair_assign: bad attribute length");
 		        	return -1;
 			}

@@ -53,6 +53,7 @@
 #define AUTH_PASS_LEN		(8 * 16) /* multiple of 16 */
 #define AUTH_ID_LEN		64
 #define AUTH_STRING_LEN		253	 /* maximum of 253 */
+#define VSA_HEADER_LEN		6	 /* vendor-specific attribute header: type(1) + length(1) + vendor-id(4) */
 
 #define BUFFER_LEN		8192
 
