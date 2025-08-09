@@ -1,11 +1,12 @@
 #include "md5.h"
 
 /*	The below was retrieved from
- *	http://www.openbsd.org/cgi-bin/cvsweb/~checkout~/src/sys/crypto/md5.c?rev=1.1
+ *	https://cvsweb.openbsd.org/cgi-bin/cvsweb/~checkout~/src/sys/crypto/md5.c?rev=1.4
  *	with the following changes:
  *	#includes commented out.
  *	Support context->count as uint32_t[2] instead of uint64_t
  *	u_int* to uint*
+ *	explicit_bzero() to memset()
  */
 
 /*
@@ -71,8 +72,9 @@ MD5Init(MD5_CTX *ctx)
  * of bytes.
  */
 void
-MD5Update(MD5_CTX *ctx, uint8_t const *input, size_t len)
+MD5Update(MD5_CTX *ctx, const void *inputptr, size_t len)
 {
+	const uint8_t *input = inputptr;
 	size_t have, need;
 
 	/* Check how many bytes we already have and how many more we need. */
@@ -133,10 +135,8 @@ MD5Final(unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
 	MD5Update(ctx, PADDING, padlen - 8);		/* padlen - 8 <= 64 */
 	MD5Update(ctx, count, 8);
 
-	if (digest != NULL) {
-		for (i = 0; i < 4; i++)
-			PUT_32BIT_LE(digest + i * 4, ctx->state[i]);
-	}
+	for (i = 0; i < 4; i++)
+		PUT_32BIT_LE(digest + i * 4, ctx->state[i]);
 	memset(ctx, 0, sizeof(*ctx));	/* in case it's sensitive */
 }
 
@@ -159,7 +159,7 @@ MD5Final(unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
  * the data and converts bytes into longwords for this routine.
  */
 void
-MD5Transform(uint32_t state[4], uint8_t const block[MD5_BLOCK_LENGTH])
+MD5Transform(uint32_t state[4], const uint8_t block[MD5_BLOCK_LENGTH])
 {
 	uint32_t a, b, c, d, in[MD5_BLOCK_LENGTH / 4];
 
