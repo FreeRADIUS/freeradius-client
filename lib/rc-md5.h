@@ -22,7 +22,4 @@
 
 #endif /* HAVE_NETTLE */
 
-void rc_md5_calc(unsigned char *output, unsigned char const *input,
-		     size_t inputlen);
-
 #endif /* _RC_MD5_H */
