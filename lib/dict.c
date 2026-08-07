@@ -256,6 +256,8 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 		}
                 else if (strncmp (buffer, "$INCLUDE", 8) == 0)
                 {
+			char ifilename_buf[PATH_MAX];
+
 			/* Read the $INCLUDE line */
 			if (sscanf (buffer, "%63s%63s", dummystr, namestr) != 2)
 			{
@@ -270,10 +272,18 @@ int rc_read_dictionary (rc_handle *rh, char const *filename)
 			if (namestr[0] != '/') {
 				cp = strrchr(filename, '/');
 				if (cp != NULL) {
-					ifilename = alloca(AUTH_ID_LEN);
-					*cp = '\0';
-					snprintf(ifilename, AUTH_ID_LEN, "%s/%s", filename, namestr);
-					*cp = '/';
+					int n;
+					size_t dir_len = (size_t)(cp - filename);
+					n = snprintf(ifilename_buf, PATH_MAX, "%.*s/%s",
+						(int)dir_len, filename, namestr);
+					if (n < 0 || n >= PATH_MAX) {
+						rc_log(LOG_ERR,
+						 "rc_read_dictionary: $INCLUDE path too long (would be %d bytes, limit %d) on line %d of dictionary %s: %s",
+							 n, PATH_MAX, line_no, filename, namestr);
+						fclose(dictfd);
+						return -1;
+					}
+					ifilename = ifilename_buf;
 				}
 			}
 			if (rc_read_dictionary(rh, ifilename) < 0)
