@@ -30,7 +30,7 @@ FreeRADIUS-client 1.1.7, January 19, 2015
   o Clean up generation of random numbers.
     Patch from Nikos Mavrogiannopoulos.
   o Update BSD license as permitted by Christos Zoulas.
-  o Define PW_MAX_MSG_SIZE for maximum message sice.
+  o Define PW_MAX_MSG_SIZE for maximum message size.
     Patch from Nikos Mavrogiannopoulos.
   o Allow the dictionary file parser to understand
     BEGIN-VENDOR / END-VENDOR as with FreeRADIUS server.
