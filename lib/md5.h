@@ -41,7 +41,7 @@
 #define MD5Transform	librad_MD5Transform
 
 /*  The below was retrieved from
- *  http://www.openbsd.org/cgi-bin/cvsweb/~checkout~/src/sys/crypto/md5.h?rev=1.1
+ *  https://cvsweb.openbsd.org/cgi-bin/cvsweb/~checkout~/src/sys/crypto/md5.h?rev=1.3
  *  With the following changes: uint64_t => uint32_t[2]
  *  Commented out #include <sys/cdefs.h>
  *  Commented out the __BEGIN and __END _DECLS, and the __attributes.
@@ -68,15 +68,13 @@ typedef struct MD5Context {
 	uint8_t buffer[MD5_BLOCK_LENGTH];	//!< Input buffer.
 } MD5_CTX;
 
-/* include <sys/cdefs.h> */
-
 /* __BEGIN_DECLS */
 void	 MD5Init(MD5_CTX *);
-void	 MD5Update(MD5_CTX *, uint8_t const *, size_t)
+void	 MD5Update(MD5_CTX *, const void *, size_t)
 /*		__attribute__((__bounded__(__string__,2,3)))*/;
 void	 MD5Final(uint8_t [MD5_DIGEST_LENGTH], MD5_CTX *)
 /*		__attribute__((__bounded__(__minbytes__,1,MD5_DIGEST_LENGTH)))*/;
-void	 MD5Transform(uint32_t [4], uint8_t const [MD5_BLOCK_LENGTH])
+void	 MD5Transform(uint32_t [4], const uint8_t [MD5_BLOCK_LENGTH])
 /*		__attribute__((__bounded__(__minbytes__,1,4)))*/
 /*		__attribute__((__bounded__(__minbytes__,2,MD5_BLOCK_LENGTH)))*/;
 /* __END_DECLS */
