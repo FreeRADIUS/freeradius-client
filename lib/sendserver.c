@@ -348,13 +348,13 @@ int rc_send_server (rc_handle const *rh, SEND_DATA *data, char *msg, unsigned fl
 	getnameinfo(SA(&our_sockaddr), SS_LEN(&our_sockaddr), NULL, 0, our_addr_txt, sizeof(our_addr_txt), NI_NUMERICHOST);
 	getnameinfo(auth_addr->ai_addr, auth_addr->ai_addrlen, NULL, 0, auth_addr_txt, sizeof(auth_addr_txt), NI_NUMERICHOST);
 
-	DEBUG(LOG_ERR, "DEBUG: local %s : 0, remote %s : %u\n", 
+	DEBUG(LOG_ERR, "DEBUG: local %s : 0, remote %s : %u\n",
 	      our_addr_txt, auth_addr_txt, data->svc_port);
 
 	for (;;)
 	{
 		do {
-			result = sendto (sockfd, (char *) auth, (unsigned int)total_length, 
+			result = sendto (sockfd, (char *) auth, (unsigned int)total_length,
 				(int) 0, SA(auth_addr->ai_addr), auth_addr->ai_addrlen);
 		} while (result == -1 && errno == EINTR);
 		if (result == -1) {
@@ -514,6 +514,327 @@ int rc_send_server (rc_handle const *rh, SEND_DATA *data, char *msg, unsigned fl
  cleanup:
  	if (auth_addr)
  		freeaddrinfo(auth_addr);
+
+	return result;
+}
+
+/** Sends a request to a RADIUS server;
+ *
+ * @param rh a handle to parsed configuration
+ * @param data a pointer to a #SEND_DATA structure
+ * @param msg must be an array of %PW_MAX_MSG_SIZE or %NULL; will contain the concatenation of
+ *	any %PW_REPLY_MESSAGE received.
+ * @param flags must be %AUTH or %ACCT
+ * @param ctx the context that is being set for the resume function
+ * @return %OK_RC (0) on success, %TIMEOUT_RC on timeout %REJECT_RC on acess reject, or negative
+ *	on failure as return value.
+ */
+int rc_send_server_async(rc_handle *rh, SEND_DATA *data, char *msg, unsigned flags, SEND_CONTEXT **ctx)
+{
+	int             sockfd;
+	AUTH_HDR       *auth;
+	char           *server_name;	/* Name of server to query */
+	struct sockaddr_storage our_sockaddr;
+	struct addrinfo *auth_addr = NULL;
+	int             result = 0;
+	int             total_length;
+	int				sock_flags;
+	size_t		secretlen;
+	char            secret[MAX_SECRET_LENGTH + 1];
+	unsigned char   vector[AUTH_VECTOR_LEN];
+	uint8_t          send_buffer[BUFFER_LEN];
+	unsigned	discover_local_ip;
+	char		our_addr_txt[50]; /* hold a text IP */
+	char		auth_addr_txt[50]; /* hold a text IP */
+	VALUE_PAIR 	*vp;
+
+	server_name = data->server;
+	if (server_name == NULL || server_name[0] == '\0')
+		return ERROR_RC;
+
+	if(data->secret != NULL)
+	{
+		strlcpy(secret, data->secret, MAX_SECRET_LENGTH);
+	}
+	if (rc_find_server_addr (rh, server_name, &auth_addr, secret, flags) != 0)
+	{
+		rc_log(LOG_ERR, "rc_send_server: unable to find server: %s", server_name);
+		return ERROR_RC;
+	}
+
+	rc_own_bind_addr(rh, &our_sockaddr);
+	discover_local_ip = 0;
+	if (our_sockaddr.ss_family == AF_INET) {
+		if (((struct sockaddr_in*)(&our_sockaddr))->sin_addr.s_addr == INADDR_ANY) {
+			discover_local_ip = 1;
+		}
+	}
+
+	DEBUG(LOG_ERR, "DEBUG: rc_send_server_async: creating socket to: %s", server_name);
+	if (discover_local_ip) {
+		result = rc_get_srcaddr(SA(&our_sockaddr), auth_addr->ai_addr);
+		if (result != 0) {
+			memset (secret, '\0', sizeof (secret));
+			rc_log(LOG_ERR, "rc_send_server_async: cannot figure our own address");
+			result = ERROR_RC;
+			goto cleanup;
+		}
+	}
+
+	sockfd = socket (our_sockaddr.ss_family, SOCK_DGRAM, 0);
+	if (sockfd < 0)
+	{
+		memset (secret, '\0', sizeof (secret));
+		rc_log(LOG_ERR, "rc_send_server_async: socket: %s", strerror(errno));
+		result = ERROR_RC;
+		goto cleanup;
+	}
+
+	if (our_sockaddr.ss_family == AF_INET)
+		((struct sockaddr_in*)&our_sockaddr)->sin_port = 0;
+	else
+		((struct sockaddr_in6*)&our_sockaddr)->sin6_port = 0;
+
+	if (bind(sockfd, SA(&our_sockaddr), SS_LEN(&our_sockaddr)) < 0)
+	{
+		close (sockfd);
+		memset (secret, '\0', sizeof (secret));
+		rc_log(LOG_ERR, "rc_send_server_async: bind: %s: %s", server_name, strerror(errno));
+		result = ERROR_RC;
+		goto cleanup;
+	}
+
+	/* set socket to nonblocking */
+	sock_flags = fcntl(sockfd, F_GETFD, 0);
+	if (fcntl(sockfd, F_SETFL, sock_flags | O_NONBLOCK)) {
+		result = ERROR_RC;
+		goto cleanup;
+	}
+
+	if (data->svc_port) {
+		if (our_sockaddr.ss_family == AF_INET)
+			((struct sockaddr_in*)auth_addr->ai_addr)->sin_port = htons ((unsigned short) data->svc_port);
+		else
+			((struct sockaddr_in6*)auth_addr->ai_addr)->sin6_port = htons ((unsigned short) data->svc_port);
+	}
+
+	/*
+	 * Fill in NAS-IP-Address (if needed)
+	 */
+	if (rc_avpair_get(data->send_pairs, PW_NAS_IP_ADDRESS, 0) == NULL &&
+	    rc_avpair_get(data->send_pairs, PW_NAS_IPV6_ADDRESS, 0) == NULL) {
+		if (our_sockaddr.ss_family == AF_INET) {
+			uint32_t ip;
+			ip = *((uint32_t*)(&((struct sockaddr_in*)&our_sockaddr)->sin_addr));
+			ip = ntohl(ip);
+
+			rc_avpair_add(rh, &(data->send_pairs), PW_NAS_IP_ADDRESS,
+			    &ip, 0, 0);
+		} else {
+			void *p;
+			p = &((struct sockaddr_in6*)&our_sockaddr)->sin6_addr;
+
+			rc_avpair_add(rh, &(data->send_pairs), PW_NAS_IPV6_ADDRESS,
+			    p, 0, 0);
+		}
+	}
+
+	/* Build a request */
+	auth = (AUTH_HDR *) send_buffer;
+	auth->code = data->code;
+	auth->id = data->seq_nbr;
+
+	if (data->code == PW_ACCOUNTING_REQUEST)
+	{
+		total_length = rc_pack_list(data->send_pairs, secret, auth) + AUTH_HDR_LEN;
+
+		auth->length = htons ((unsigned short) total_length);
+
+		memset((char *) auth->vector, 0, AUTH_VECTOR_LEN);
+		secretlen = strlen (secret);
+		memcpy ((char *) auth + total_length, secret, secretlen);
+		rc_md5_calc (vector, (unsigned char *) auth, total_length + secretlen);
+		memcpy ((char *) auth->vector, (char *) vector, AUTH_VECTOR_LEN);
+	}
+	else
+	{
+		rc_random_vector (vector);
+		memcpy ((char *) auth->vector, (char *) vector, AUTH_VECTOR_LEN);
+
+		total_length = rc_pack_list(data->send_pairs, secret, auth) + AUTH_HDR_LEN;
+
+		auth->length = htons ((unsigned short) total_length);
+	}
+
+	getnameinfo(SA(&our_sockaddr), SS_LEN(&our_sockaddr), NULL, 0, our_addr_txt, sizeof(our_addr_txt), NI_NUMERICHOST);
+	getnameinfo(auth_addr->ai_addr, auth_addr->ai_addrlen, NULL, 0, auth_addr_txt, sizeof(auth_addr_txt), NI_NUMERICHOST);
+
+	DEBUG(LOG_ERR, "DEBUG: local %s : 0, remote %s : %u\n",
+	      our_addr_txt, auth_addr_txt, data->svc_port);
+
+	if (sendto (sockfd, (char *) auth, (unsigned int) total_length, (int) 0,
+		SA(auth_addr->ai_addr), auth_addr->ai_addrlen) == -1) {
+		rc_log(LOG_ERR, "%s: socket: %s", __FUNCTION__, strerror(errno));
+	}
+
+
+	(*ctx)->auth_addr = auth_addr;
+	(*ctx)->sockfd	  = sockfd;
+	memcpy((*ctx)->vector, vector, AUTH_VECTOR_LEN);
+	memcpy((*ctx)->secret, secret, MAX_SECRET_LENGTH + 1);
+
+	return result;
+
+ cleanup:
+ 	if (auth_addr)
+			freeaddrinfo(auth_addr);
+
+	return result;
+}
+
+/** Waits for the reply from the RADIUS server asynchronously;
+ * if receive returns EWOULDBLOCK then resume function shall be called
+ *
+ * @param ctx the context that was set by rc_aaa_async function
+ * @return %OK_RC (0) on success or blocking receive, %TIMEOUT_RC
+ * on timeout %REJECT_RC on acess reject, or negative on failure as return value.
+ */
+int rc_receive_async (SEND_CONTEXT **ctx) {
+	int				sockfd = (*ctx)->sockfd;
+	SEND_DATA		*data  = (*ctx)->data;
+	socklen_t		salen;
+	int             length, pos;
+	int             result = 0;
+	uint8_t         recv_buffer[BUFFER_LEN];
+	AUTH_HDR	    *recv_auth;
+	uint8_t			*attr;
+	char            *server_name;	/* Name of server to query */
+	VALUE_PAIR 	*vp;
+
+	server_name = (*ctx)->data->server;
+	if (server_name == NULL || server_name[0] == '\0')
+		return ERROR_RC;
+
+	salen = (*ctx)->auth_addr->ai_addrlen;
+	length = recvfrom (sockfd, (char *) recv_buffer,
+			   (int) sizeof (recv_buffer),
+			   (int) 0, SA((*ctx)->auth_addr->ai_addr), &salen);
+
+	if (length <= 0) {
+		if (errno == EAGAIN || errno == EWOULDBLOCK) {
+			rc_log(LOG_DEBUG, "E_WOULDBLOCK returned! Resume function shall be called\n");
+			return READBLOCK_RC;
+		} else {
+			rc_log(LOG_ERR, "rc_receive_async: recvfrom: %s:%d: %s", server_name,\
+						data->svc_port, strerror(errno));
+			close (sockfd);
+			memset((*ctx)->secret, '\0', sizeof((*ctx)->secret));
+			result = ERROR_RC;
+
+			goto cleanup;
+		}
+	}
+
+	recv_auth = (AUTH_HDR *)recv_buffer;
+
+	if (length < AUTH_HDR_LEN || length < ntohs(recv_auth->length)) {
+		rc_log(LOG_ERR, "rc_send_server: recvfrom: %s:%d: reply is too short",
+		    server_name, data->svc_port);
+		close(sockfd);
+		memset((*ctx)->secret, '\0', sizeof((*ctx)->secret));
+		result = ERROR_RC;
+		goto cleanup;
+	}
+
+	/*
+	 *	If UDP is larger than RADIUS, shorten it to RADIUS.
+	 */
+	if (length > ntohs(recv_auth->length)) length = ntohs(recv_auth->length);
+
+	/*
+	 *	Verify that it's a valid RADIUS packet before doing ANYTHING with it.
+	 */
+	attr = recv_buffer + AUTH_HDR_LEN;
+	while (attr < (recv_buffer + length)) {
+		if (attr[0] == 0) {
+			rc_log(LOG_ERR, "rc_receive_async: recvfrom: %s:%d: attribute zero is invalid",
+			       server_name, data->svc_port);
+			close(sockfd);
+			memset((*ctx)->secret, '\0', sizeof((*ctx)->secret));
+			return ERROR_RC;
+		}
+
+		if (attr[1] < 2) {
+			rc_log(LOG_ERR, "rc_receive_async: recvfrom: %s:%d: attribute length is too small",
+			       server_name, data->svc_port);
+			close(sockfd);
+			memset((*ctx)->secret, '\0', sizeof((*ctx)->secret));
+			return ERROR_RC;
+		}
+
+		if ((attr + attr[1]) > (recv_buffer + length)) {
+			rc_log(LOG_ERR, "rc_receive_async: recvfrom: %s:%d: attribute overflows the packet",
+			       server_name, data->svc_port);
+			close(sockfd);
+			memset((*ctx)->secret, '\0', sizeof((*ctx)->secret));
+			return ERROR_RC;
+		}
+
+		attr += attr[1];
+	}
+
+	result = rc_check_reply (recv_auth, BUFFER_LEN, (*ctx)->secret,
+								(*ctx)->vector, data->seq_nbr);
+
+	length = ntohs(recv_auth->length)  - AUTH_HDR_LEN;
+	if (length > 0) {
+		data->receive_pairs = rc_avpair_gen((*ctx)->rh, NULL, recv_auth->data,
+		    length, 0);
+	} else {
+		data->receive_pairs = NULL;
+	}
+
+	close (sockfd);
+	memset((*ctx)->secret, '\0', sizeof((*ctx)->secret));
+
+	if (result != OK_RC) {
+		goto cleanup;
+	}
+
+	if ((*ctx)->msg) {
+		*((*ctx)->msg) = '\0';
+		pos = 0;
+		vp = data->receive_pairs;
+		while (vp)
+		{
+			if ((vp = rc_avpair_get(vp, PW_REPLY_MESSAGE, 0)))
+			{
+				strappend((*ctx)->msg, PW_MAX_MSG_SIZE, &pos, vp->strvalue);
+				strappend((*ctx)->msg, PW_MAX_MSG_SIZE, &pos, "\n");
+				vp = vp->next;
+			}
+		}
+	}
+
+	if ((recv_auth->code == PW_ACCESS_ACCEPT) ||
+		(recv_auth->code == PW_PASSWORD_ACK) ||
+		(recv_auth->code == PW_ACCOUNTING_RESPONSE))
+	{
+		result = OK_RC;
+	}
+	else if ((recv_auth->code == PW_ACCESS_REJECT) ||
+		(recv_auth->code == PW_PASSWORD_REJECT))
+	{
+		result = REJECT_RC;
+	}
+	else
+	{
+		result = BADRESP_RC;
+	}
+
+ cleanup:
+ 	if ((*ctx)->auth_addr)
+ 		freeaddrinfo((*ctx)->auth_addr);
 
 	return result;
 }
