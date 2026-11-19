@@ -178,6 +178,7 @@ void rc_own_bind_addr(rc_handle const *rh, struct sockaddr_storage *lia)
 		}
 
 		memcpy(lia, info->ai_addr, info->ai_addrlen);
+		freeaddrinfo(info);
        }
 
        return;

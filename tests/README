@@ -7,3 +7,14 @@ sh run-server.sh #as root
 
 SERVER_IP=172.17.0.14 SERVER_IP6=172.17.0.14 make check
 
+The bindaddr test uses numeric loopback addresses and needs no server:
+
+make -C tests check TESTS=bindaddr
+
+Run a sanitizer build to check that temporary resolver results are freed:
+
+./configure CFLAGS="-O1 -g -fsanitize=address -fno-omit-frame-pointer" \
+    LDFLAGS="-fsanitize=address"
+make
+ASAN_OPTIONS=detect_leaks=1 make -C tests check TESTS=bindaddr
+
